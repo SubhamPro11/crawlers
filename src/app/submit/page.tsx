@@ -1,18 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockDb, CATEGORIES } from "@/data/mockDb";
+import { mockDb, Category } from "@/data/mockDb";
 
 export default function SubmitPage() {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState(CATEGORIES[0]?.id || "");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState("");
   const [pricingModel, setPricingModel] = useState<'free' | 'freemium' | 'paid' | 'unknown'>("unknown");
   const [tagsInput, setTagsInput] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    mockDb.getCategories().then(cats => {
+      setCategories(cats);
+      if (cats.length > 0) {
+        setCategoryId(cats[0].id);
+      }
+    });
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,7 +174,7 @@ export default function SubmitPage() {
             onChange={(e) => setCategoryId(e.target.value)}
             className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white outline-none focus:border-[#10B981] transition-all"
           >
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <option key={cat.id} value={cat.id} className="bg-[#0B0F17] text-white">
                 {cat.name}
               </option>

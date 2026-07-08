@@ -8,15 +8,20 @@ import ToolCard from "@/components/ToolCard";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [categories, setCategories] = useState<Category[]>(mockDb.getCategories());
+  const [categories, setCategories] = useState<Category[]>([]);
   const [recentTools, setRecentTools] = useState<Tool[]>([]);
   const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
   const router = useRouter();
 
   useEffect(() => {
     const loadData = async () => {
-      const allTools = await mockDb.getTools();
+      const [allTools, dbCategories] = await Promise.all([
+        mockDb.getTools(),
+        mockDb.getCategories()
+      ]);
       
+      setCategories(dbCategories);
+
       // Calculate counts in memory
       const counts: Record<string, number> = {};
       allTools.forEach(tool => {

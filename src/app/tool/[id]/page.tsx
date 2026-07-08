@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { mockDb, Tool, CATEGORIES } from "@/data/mockDb";
+import { mockDb, Tool } from "@/data/mockDb";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,11 +19,8 @@ export default function ToolDetailPage({ params }: PageProps) {
     const t = await mockDb.getToolById(id);
     if (t) {
       setTool(t);
-      const cat = CATEGORIES.find(c => c.id === t.category_id);
-      if (cat) {
-        setCategoryName(cat.name);
-        setCategorySlug(cat.slug);
-      }
+      setCategoryName(t.categories?.name || "");
+      setCategorySlug(t.categories?.slug || "");
     }
     setIsLoading(false);
   }, [id]);

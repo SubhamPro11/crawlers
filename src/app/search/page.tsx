@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { mockDb, Tool, CATEGORIES } from "@/data/mockDb";
+import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
 function SearchContent() {
@@ -31,10 +31,6 @@ function SearchContent() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(`/search?q=${encodeURIComponent(searchInput.trim())}`);
-  };
-
-  const getCategoryName = (catId: string) => {
-    return CATEGORIES.find(c => c.id === catId)?.name || "";
   };
 
   const refreshSearch = async () => {
@@ -91,7 +87,7 @@ function SearchContent() {
               <ToolCard 
                 key={tool.id} 
                 tool={tool} 
-                categoryName={getCategoryName(tool.category_id)}
+                categoryName={tool.categories?.name}
                 onRefresh={refreshSearch}
               />
             ))}

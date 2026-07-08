@@ -21,6 +21,10 @@ export interface Tool {
   click_count: number;
   last_crawled_at: string;
   created_at: string;
+  categories?: {
+    name: string;
+    slug: string;
+  };
 }
 
 export const CATEGORIES: Category[] = [
@@ -51,18 +55,37 @@ export const CATEGORIES: Category[] = [
 ];
 
 class MockDb {
-  getCategories(): Category[] {
-    return CATEGORIES;
+  async getCategories(): Promise<Category[]> {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching categories:", error.message);
+      return CATEGORIES;
+    }
+    return data || [];
   }
 
-  getCategoryBySlug(slug: string): Category | undefined {
-    return CATEGORIES.find(c => c.slug === slug);
+  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+
+    if (error) {
+      console.error("Error fetching category by slug:", error.message);
+      return undefined;
+    }
+    return data || undefined;
   }
 
   async getTools(): Promise<Tool[]> {
     const { data, error } = await supabase
       .from("tools")
-      .select("*")
+      .select("*, categories(name, slug)")
       .eq("status", "active");
 
     if (error) {
@@ -75,7 +98,7 @@ class MockDb {
   async getToolsByCategory(categoryId: string): Promise<Tool[]> {
     const { data, error } = await supabase
       .from("tools")
-      .select("*")
+      .select("*, categories(name, slug)")
       .eq("category_id", categoryId)
       .eq("status", "active");
 
@@ -89,7 +112,7 @@ class MockDb {
   async getToolById(id: string): Promise<Tool | undefined> {
     const { data, error } = await supabase
       .from("tools")
-      .select("*")
+      .select("*, categories(name, slug)")
       .eq("id", id)
       .single();
 
@@ -104,10 +127,9 @@ class MockDb {
     const lc = query.toLowerCase().trim();
     if (!lc) return this.getTools();
 
-    // Use full-text search style or custom text filter
     const { data, error } = await supabase
       .from("tools")
-      .select("*")
+      .select("*, categories(name, slug)")
       .eq("status", "active")
       .or(`name.ilike.%${lc}%,short_description.ilike.%${lc}%`);
 
@@ -119,7 +141,6 @@ class MockDb {
   }
 
   async incrementClickCount(id: string): Promise<boolean> {
-    // Increment count using rpc or fetch-update
     const { data: tool, error: fetchError } = await supabase
       .from("tools")
       .select("click_count")
@@ -143,7 +164,7 @@ class MockDb {
     return true;
   }
 
-  async submitTool(tool: Omit<Tool, 'id' | 'click_count' | 'status' | 'last_crawled_at' | 'created_at' | 'source'>): Promise<Tool | null> {
+  async submitTool(tool: Omit<Tool, 'id' | 'click_count' | 'status' | 'last_crawled_at' | 'created_at' | 'source' | 'categories'>): Promise<Tool | null> {
     const newTool = {
       ...tool,
       click_count: 0,

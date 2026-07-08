@@ -17,7 +17,7 @@ export default function CategoryPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchCategoryData = useCallback(async () => {
-    const cat = mockDb.getCategoryBySlug(slug);
+    const cat = await mockDb.getCategoryBySlug(slug);
     if (cat) {
       setCategory(cat);
       const categoryTools = await mockDb.getToolsByCategory(cat.id);
