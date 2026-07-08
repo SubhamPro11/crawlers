@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0B0F17;
+  --foreground: #F8FAFC;
+  --card: #131B2E;
+  --card-foreground: #F1F5F9;
+  --primary: #10B981;
+  --primary-hover: #059669;
+  --muted: #64748B;
+  --border: #1E293B;
+  
+  --font-sans: var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0F17;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Base utility classes using standard tailwind utilities */
+.glow-emerald {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+}
+.glass-panel {
+  background: rgba(19, 27, 46, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.5);
+}
