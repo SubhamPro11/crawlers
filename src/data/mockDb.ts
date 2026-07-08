@@ -25,82 +25,28 @@ export interface Tool {
 
 export const CATEGORIES: Category[] = [
   {
-    id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    name: "Image Generation",
-    slug: "image-generation",
-    description: "Create art, photorealistic photos, and graphics using text descriptions."
+    id: "550e8400-e29b-41d4-a716-446655440000",
+    name: "General Reasoning",
+    slug: "general-reasoning",
+    description: "Multi-step advanced reasoning, data analysis, custom memory, and everyday productivity tasks."
   },
   {
-    id: "b2c3d4e5-f67a-8b9c-0d1e-2f3a4b5c6d7e",
-    name: "Text Extraction / OCR",
-    slug: "text-extraction-ocr",
-    description: "Extract text, tables, and structured data from images, PDFs, and scanned documents."
+    id: "550e8400-e29b-41d4-a716-446655440001",
+    name: "Developer Tools",
+    slug: "developer-tools",
+    description: "AI-first code editors, browser sandboxes, and UI generation utilities."
   },
   {
-    id: "c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
-    name: "Text Summarization",
-    slug: "text-summarization",
-    description: "Condense long articles, PDFs, meetings, or videos into key bullet points and summaries."
+    id: "550e8400-e29b-41d4-a716-446655440002",
+    name: "Search & Research",
+    slug: "search-research",
+    description: "Conversational search engines and document grounding workspaces."
   },
   {
-    id: "d4e5f67a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
-    name: "Chatbots / Conversational AI",
-    slug: "chatbots-conversational-ai",
-    description: "General-purpose chat assistants, companion bots, and custom conversational agents."
-  },
-  {
-    id: "e5f67a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b",
-    name: "Video Generation & Editing",
-    slug: "video-generation-editing",
-    description: "Create videos from text prompts, auto-edit clips, or generate avatars."
-  },
-  {
-    id: "f67a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c",
-    name: "Audio / Voice / Music Generation",
-    slug: "audio-voice-music",
-    description: "Text-to-speech, voice cloning, music generation, and audio cleanup."
-  },
-  {
-    id: "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-    name: "Code Generation & Dev Tools",
-    slug: "code-generation-dev-tools",
-    description: "Write code, debug errors, explain code bases, and automate software development."
-  },
-  {
-    id: "8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e",
-    name: "Writing & Copywriting",
-    slug: "writing-copywriting",
-    description: "Write blog posts, marketing copies, essays, emails, and landing page content."
-  },
-  {
-    id: "9c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f",
-    name: "Data Analysis",
-    slug: "data-analysis",
-    description: "Analyze datasets, build charts, clean data, and run statistical formulas using natural language."
-  },
-  {
-    id: "0d1e2f3a-4b5c-6d7e-8f9a-0b1c2d3e4f5a",
-    name: "Productivity / Automation",
-    slug: "productivity-automation",
-    description: "Automate calendar workflows, generate spreadsheets, and build custom automated agents."
-  },
-  {
-    id: "1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b",
-    name: "Research & Search",
-    slug: "research-search",
-    description: "Scientific paper search, citation mapping, and web searching with detailed source reporting."
-  },
-  {
-    id: "2f3a4b5c-6d7e-8f9a-0b1c-2d3e4f5a6b7c",
-    name: "Translation",
-    slug: "translation",
-    description: "Translate documents, audio, and live speech with high context accuracy."
-  },
-  {
-    id: "3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d",
-    name: "Design & UI Tools",
-    slug: "design-ui-tools",
-    description: "Generate UI designs, remove backgrounds, edit vector graphics, and create design mockups."
+    id: "550e8400-e29b-41d4-a716-446655440003",
+    name: "Creative & Media",
+    slug: "creative-media",
+    description: "Image generation, audio, music, and stylistic media utilities."
   }
 ];
 
