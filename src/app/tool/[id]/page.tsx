@@ -163,9 +163,9 @@ export default function ToolDetailPage({ params }: PageProps) {
                 Associated Tags
               </h3>
               <div className="flex flex-wrap gap-2">
-                {tool.tags.map((tag) => (
+                {tool.tags.map((tag, idx) => (
                   <span 
-                    key={tag} 
+                    key={`${tag}-${idx}`} 
                     className="rounded-lg bg-slate-800 px-3 py-1 text-xs text-slate-300 font-mono"
                   >
                     #{tag}

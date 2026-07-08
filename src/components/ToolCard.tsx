@@ -63,8 +63,8 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
 
         {/* Monospace tag list */}
         <div className="flex flex-wrap gap-x-2 gap-y-1 mb-5 font-mono text-[10px] text-[#8A8F87]">
-          {tool.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="before:content-['['] after:content-[']']">
+          {tool.tags.slice(0, 3).map((tag, idx) => (
+            <span key={`${tag}-${idx}`} className="before:content-['['] after:content-[']']">
               {tag}
             </span>
           ))}
