@@ -16,7 +16,11 @@ function SearchContent() {
 
   useEffect(() => {
     setSearchInput(query);
-    setResults(mockDb.searchTools(query));
+    const performSearch = async () => {
+      const searchResults = await mockDb.searchTools(query);
+      setResults(searchResults);
+    };
+    performSearch();
   }, [query]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -28,8 +32,9 @@ function SearchContent() {
     return CATEGORIES.find(c => c.id === catId)?.name || "";
   };
 
-  const refreshSearch = () => {
-    setResults(mockDb.searchTools(query));
+  const refreshSearch = async () => {
+    const searchResults = await mockDb.searchTools(query);
+    setResults(searchResults);
   };
 
   return (

@@ -1,17 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #0B0F17;
-  --foreground: #F8FAFC;
-  --card: #131B2E;
-  --card-foreground: #F1F5F9;
-  --primary: #10B981;
-  --primary-hover: #059669;
-  --muted: #64748B;
-  --border: #1E293B;
-  
+@theme {
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
   --font-sans: var(--font-geist-sans), Inter, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  
+  --color-background: #0D0F0E;
+  --color-foreground: #EDEEEA;
+  --color-card: #131615;
+  --color-border: #212623;
+  --color-primary: #8FBF3F;
+  --color-accent: #E8A33D;
+  --color-muted: #8A8F87;
+}
+
+:root {
+  --background: #0D0F0E;
+  --foreground: #EDEEEA;
+  --card: #131615;
+  --card-foreground: #EDEEEA;
+  --primary: #8FBF3F;
+  --primary-hover: #7ba235;
+  --muted: #8A8F87;
+  --border: #212623;
+  --accent: #E8A33D;
+  
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
 }
 
 body {
@@ -22,25 +37,42 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0F17;
+  background: #0D0F0E;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 4px;
+  background: #212623;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #343c37;
 }
 
-/* Base utility classes using standard tailwind utilities */
-.glow-emerald {
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+/* Typography styles for class bindings */
+.font-editorial {
+  font-family: var(--font-serif);
 }
-.glass-panel {
-  background: rgba(19, 27, 46, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(30, 41, 59, 0.5);
+
+.font-terminal {
+  font-family: var(--font-mono);
+}
+
+/* Terminal Cursor Blink Effect */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s infinite;
+}
+
+/* Glass terminal styling */
+.terminal-panel {
+  background: rgba(19, 22, 21, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid #212623;
 }

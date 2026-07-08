@@ -15,58 +15,43 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
     if (onRefresh) onRefresh();
   };
 
-  // Get color for pricing badges
   const getPricingBadge = (pricing: string) => {
     switch (pricing) {
       case "free":
-        return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        return "bg-[#8FBF3F]/10 text-[#8FBF3F] border border-[#8FBF3F]/20";
       case "freemium":
-        return "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+        return "bg-[#E8A33D]/10 text-[#E8A33D] border border-[#E8A33D]/20";
       case "paid":
-        return "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20";
+        return "bg-[#8A8F87]/15 text-[#EDEEEA] border border-[#212623]";
       default:
-        return "bg-slate-500/10 text-slate-400 border border-slate-500/20";
+        return "bg-transparent text-[#8A8F87] border border-[#212623]/60";
     }
   };
 
-  // Generate unique gradient based on name characters
-  const getGradient = (name: string) => {
-    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const colors = [
-      "from-[#10B981] to-[#059669]",
-      "from-[#3B82F6] to-[#2563EB]",
-      "from-[#8B5CF6] to-[#7C3AED]",
-      "from-[#EC4899] to-[#DB2777]",
-      "from-[#F59E0B] to-[#D97706]",
-      "from-[#06B6D4] to-[#0891B2]",
-    ];
-    return colors[hash % colors.length];
-  };
-
   return (
-    <div className="group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E] p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-slate-700/80 hover:shadow-slate-900/50 glow-emerald">
+    <div className="group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615] p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#8FBF3F]/40 hover:shadow-black/50">
       <div>
-        {/* Header: Logo Initial + Title + Pricing */}
+        {/* Header: Terminal Initials + Title + Pricing */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${getGradient(tool.name)} text-white font-bold text-base shadow-sm`}>
-              {tool.name.charAt(0)}
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs shadow-inner">
+              {tool.name.substring(0, 2).toLowerCase()}
             </div>
             <div>
               <Link href={`/tool/${tool.id}`} className="hover:underline">
-                <h3 className="font-semibold text-white group-hover:text-[#10B981] transition-colors leading-tight line-clamp-1">
+                <h3 className="font-editorial text-lg font-bold text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
                   {tool.name}
                 </h3>
               </Link>
               {categoryName && (
-                <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-500">
-                  {categoryName}
+                <span className="font-mono text-[9px] tracking-wider text-[#8A8F87] uppercase">
+                  &gt; {categoryName}
                 </span>
               )}
             </div>
           </div>
           
-          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize ${getPricingBadge(tool.pricing_model)}`}>
+          <span className={`rounded-sm px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider ${getPricingBadge(tool.pricing_model)}`}>
             {tool.pricing_model}
           </span>
         </div>
@@ -76,27 +61,21 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
           {tool.short_description}
         </p>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
+        {/* Monospace tag list */}
+        <div className="flex flex-wrap gap-x-2 gap-y-1 mb-5 font-mono text-[10px] text-[#8A8F87]">
           {tool.tags.slice(0, 3).map((tag) => (
-            <span 
-              key={tag} 
-              className="rounded bg-slate-800/60 px-2 py-0.5 text-[11px] text-slate-400 font-medium"
-            >
-              #{tag}
+            <span key={tag} className="before:content-['['] after:content-[']']">
+              {tag}
             </span>
           ))}
         </div>
       </div>
 
       {/* Action Footer */}
-      <div className="flex items-center justify-between border-t border-slate-800/60 pt-4 mt-auto">
-        <div className="flex items-center gap-1 text-slate-500 text-xs">
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <span>{tool.click_count} redirects</span>
+      <div className="flex items-center justify-between border-t border-[#212623]/60 pt-4 mt-auto">
+        <div className="flex items-center gap-1.5 text-[#8A8F87] font-mono text-[9px] uppercase tracking-wider">
+          <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
+          <span>verified</span>
         </div>
 
         <a
@@ -104,12 +83,10 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleVisit}
-          className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-[#10B981] hover:text-[#059669] transition-all group/btn"
+          className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] transition-all group/btn"
         >
-          <span>Visit Platform</span>
-          <svg className="h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
+          <span>run_bot</span>
+          <span className="text-[#8A8F87]/60 font-normal transition-transform group-hover/btn:translate-x-0.5">→</span>
         </a>
       </div>
     </div>

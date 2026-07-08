@@ -35,17 +35,23 @@ export default function SubmitPage() {
       .map(tag => tag.trim().toLowerCase())
       .filter(tag => tag.length > 0);
 
-    // Submit to mock database
-    mockDb.submitTool({
-      name: name.trim(),
-      url: url.trim(),
-      short_description: description.trim(),
-      category_id: categoryId,
-      pricing_model: pricingModel,
-      tags
-    });
-
-    setIsSubmitted(true);
+    // Submit to database
+    const performSubmit = async () => {
+      const result = await mockDb.submitTool({
+        name: name.trim(),
+        url: url.trim(),
+        short_description: description.trim(),
+        category_id: categoryId,
+        pricing_model: pricingModel,
+        tags
+      });
+      if (result) {
+        setIsSubmitted(true);
+      } else {
+        setError("Error submitting tool to database. Try again.");
+      }
+    };
+    performSubmit();
   };
 
   if (isSubmitted) {

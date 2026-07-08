@@ -16,11 +16,12 @@ export default function CategoryPage({ params }: PageProps) {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchCategoryData = () => {
+  const fetchCategoryData = async () => {
     const cat = mockDb.getCategoryBySlug(slug);
     if (cat) {
       setCategory(cat);
-      setTools(mockDb.getToolsByCategory(cat.id));
+      const categoryTools = await mockDb.getToolsByCategory(cat.id);
+      setTools(categoryTools);
     }
     setIsLoading(false);
   };

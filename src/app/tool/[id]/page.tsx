@@ -15,8 +15,8 @@ export default function ToolDetailPage({ params }: PageProps) {
   const [categorySlug, setCategorySlug] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchToolData = () => {
-    const t = mockDb.getToolById(id);
+  const fetchToolData = async () => {
+    const t = await mockDb.getToolById(id);
     if (t) {
       setTool(t);
       const cat = CATEGORIES.find(c => c.id === t.category_id);
@@ -32,9 +32,9 @@ export default function ToolDetailPage({ params }: PageProps) {
     fetchToolData();
   }, [id]);
 
-  const handleVisit = () => {
+  const handleVisit = async () => {
     if (tool) {
-      mockDb.incrementClickCount(tool.id);
+      await mockDb.incrementClickCount(tool.id);
       fetchToolData(); // Reload to update click count
     }
   };
@@ -192,14 +192,12 @@ export default function ToolDetailPage({ params }: PageProps) {
               </span>
             </div>
 
-            {/* Click Count */}
+            {/* Link Status */}
             <div>
-              <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Popularity</div>
-              <div className="text-sm font-semibold text-white flex items-center gap-1.5">
-                <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                </svg>
-                <span>{tool.click_count} external click-outs</span>
+              <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Link Status</div>
+              <div className="text-xs font-semibold text-white flex items-center gap-1.5 font-mono">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#8FBF3F]" />
+                <span>active_connection</span>
               </div>
             </div>
 

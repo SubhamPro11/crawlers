@@ -9,16 +9,29 @@ import ToolCard from "@/components/ToolCard";
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [trendingTools, setTrendingTools] = useState<Tool[]>([]);
+  const [recentTools, setRecentTools] = useState<Tool[]>([]);
+  const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
   const router = useRouter();
 
   useEffect(() => {
     // Load categories
     setCategories(mockDb.getCategories());
-    // Load top 6 trending tools sorted by clicks
-    const allTools = mockDb.getTools();
-    const sorted = [...allTools].sort((a, b) => b.click_count - a.click_count).slice(0, 6);
-    setTrendingTools(sorted);
+    const loadData = async () => {
+      const allTools = await mockDb.getTools();
+      
+      // Calculate counts in memory
+      const counts: Record<string, number> = {};
+      allTools.forEach(tool => {
+        counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
+      });
+      setToolCounts(counts);
+
+      const sorted = [...allTools]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 6);
+      setRecentTools(sorted);
+    };
+    loadData();
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -28,10 +41,12 @@ export default function Home() {
     }
   };
 
-  const refreshTrending = () => {
-    const allTools = mockDb.getTools();
-    const sorted = [...allTools].sort((a, b) => b.click_count - a.click_count).slice(0, 6);
-    setTrendingTools(sorted);
+  const refreshRecent = async () => {
+    const allTools = await mockDb.getTools();
+    const sorted = [...allTools]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 6);
+    setRecentTools(sorted);
   };
 
   // Get icon for categories
@@ -133,17 +148,12 @@ export default function Home() {
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#10B981]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20 mb-6">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-            Curated Use-Case AI Directory
-          </span>
-
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
             Find the exact <span className="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">AI tool</span> for the job
           </h1>
           
-          <p className="text-slate-400 text-lg sm:text-xl max-w-xl mx-auto mb-10 leading-relaxed">
-            Search by what you want to achieve, rather than by brand names. Instant redirects to external tools.
+          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+            A curated index of AI tools categorized by what they do, rather than by brand. Search by task to find the right tool instantly.
           </p>
 
           {/* Large Use-case Search Bar */}
@@ -173,15 +183,15 @@ export default function Home() {
       </section>
 
       {/* Featured / Trending Section */}
-      {trendingTools.length > 0 && (
+      {recentTools.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-                Trending Platforms
+                Recently Indexed
               </h2>
               <p className="text-slate-400 text-xs mt-1">
-                Frequently visited bots and utilities in the directory
+                Latest verified additions to the directory
               </p>
             </div>
             <div className="h-[1px] flex-1 bg-slate-800/80 mx-6 hidden sm:block" />
@@ -193,12 +203,12 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {trendingTools.map((tool) => (
+            {recentTools.map((tool) => (
               <ToolCard 
                 key={tool.id} 
                 tool={tool} 
                 categoryName={categories.find(c => c.id === tool.category_id)?.name}
-                onRefresh={refreshTrending}
+                onRefresh={refreshRecent}
               />
             ))}
           </div>
@@ -218,7 +228,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((cat) => {
-            const count = mockDb.getToolsByCategory(cat.id).length;
+            const count = toolCounts[cat.id] || 0;
             return (
               <Link 
                 key={cat.id} 
