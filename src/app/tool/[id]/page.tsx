@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { mockDb, Tool, CATEGORIES } from "@/data/mockDb";
 
@@ -15,7 +15,7 @@ export default function ToolDetailPage({ params }: PageProps) {
   const [categorySlug, setCategorySlug] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchToolData = async () => {
+  const fetchToolData = useCallback(async () => {
     const t = await mockDb.getToolById(id);
     if (t) {
       setTool(t);
@@ -26,11 +26,11 @@ export default function ToolDetailPage({ params }: PageProps) {
       }
     }
     setIsLoading(false);
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchToolData();
-  }, [id]);
+  }, [fetchToolData]);
 
   const handleVisit = async () => {
     if (tool) {
@@ -223,8 +223,8 @@ export default function ToolDetailPage({ params }: PageProps) {
 
         {/* Compliance Footer */}
         <div className="mt-8 border-t border-slate-800/80 pt-6 text-center">
-          <p className="text-[10px] text-slate-500 leading-normal max-w-xl mx-auto">
-            This entry was automatically aggregated and paraphrased to ensure Robots.txt compliance and copyright standards. Clicking "Visit Official Website" redirects you to the direct external platform in compliance with link-out conventions.
+          <p className="text-[10px] text-slate-500 leading-normal max-w-xl mx-auto font-sans">
+            This entry was automatically aggregated and paraphrased to ensure Robots.txt compliance and copyright standards. Clicking &quot;Visit Official Website&quot; redirects you to the direct external platform in compliance with link-out conventions.
           </p>
         </div>
       </div>

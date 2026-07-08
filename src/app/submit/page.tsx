@@ -207,7 +207,7 @@ export default function SubmitPage() {
             <select
               id="pricing"
               value={pricingModel}
-              onChange={(e) => setPricingModel(e.target.value as any)}
+              onChange={(e) => setPricingModel(e.target.value as 'free' | 'freemium' | 'paid' | 'unknown')}
               className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white outline-none focus:border-[#10B981] transition-all"
             >
               <option value="unknown" className="bg-[#0B0F17]">Unknown</option>

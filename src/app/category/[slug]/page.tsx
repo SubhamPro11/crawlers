@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { mockDb, Category, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
@@ -16,7 +16,7 @@ export default function CategoryPage({ params }: PageProps) {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchCategoryData = async () => {
+  const fetchCategoryData = useCallback(async () => {
     const cat = mockDb.getCategoryBySlug(slug);
     if (cat) {
       setCategory(cat);
@@ -24,11 +24,11 @@ export default function CategoryPage({ params }: PageProps) {
       setTools(categoryTools);
     }
     setIsLoading(false);
-  };
+  }, [slug]);
 
   useEffect(() => {
     fetchCategoryData();
-  }, [slug]);
+  }, [fetchCategoryData]);
 
   if (isLoading) {
     return (

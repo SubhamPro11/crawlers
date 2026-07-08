@@ -11,11 +11,16 @@ function SearchContent() {
   const router = useRouter();
   const query = searchParams.get("q") || "";
   
+  const [prevQuery, setPrevQuery] = useState(query);
   const [searchInput, setSearchInput] = useState(query);
   const [results, setResults] = useState<Tool[]>([]);
 
-  useEffect(() => {
+  if (query !== prevQuery) {
+    setPrevQuery(query);
     setSearchInput(query);
+  }
+
+  useEffect(() => {
     const performSearch = async () => {
       const searchResults = await mockDb.searchTools(query);
       setResults(searchResults);
@@ -99,7 +104,7 @@ function SearchContent() {
           </svg>
           <h3 className="text-base font-bold text-white mb-2">No matching tools</h3>
           <p className="text-slate-400 text-xs max-w-sm mx-auto mb-6">
-            We couldn't find any tools matching your query. Try searching for broader terms like "image", "code", or "summarize".
+            We couldn&apos;t find any tools matching your query. Try searching for broader terms like &quot;image&quot;, &quot;code&quot;, or &quot;summarize&quot;.
           </p>
           <Link
             href="/submit"

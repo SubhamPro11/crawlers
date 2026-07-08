@@ -45,7 +45,7 @@ export default function Footer() {
           <div>
             <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-4">Compliance</h3>
             <p className="text-[10px] leading-relaxed text-[#8A8F87]/80 font-sans">
-              We built Crawlers to catalog AI tools by use case. Our crawler searches Product Hunt and GitHub feeds, checks robots.txt to respect site policies, and paraphrases marketing copy in our own words to avoid copyright issues. We don't embed or iframe external tools — we link you straight to the source.
+              We built Crawlers to catalog AI tools by use case. Our crawler searches Product Hunt and GitHub feeds, checks robots.txt to respect site policies, and paraphrases marketing copy in our own words to avoid copyright issues. We don&apos;t embed or iframe external tools — we link you straight to the source.
             </p>
           </div>
         </div>
