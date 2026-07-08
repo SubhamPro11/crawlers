@@ -148,11 +148,11 @@ export default function Home() {
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#10B981]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
-          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-            Find the exact <span className="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">AI tool</span> for the job
+          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
+            Find the exact <span className="italic text-[#10B981]">AI tool</span> for the job
           </h1>
           
-          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
             A curated index of AI tools categorized by what they do, rather than by brand. Search by task to find the right tool instantly.
           </p>
 
@@ -169,11 +169,11 @@ export default function Home() {
                 placeholder="What do you want to do? (e.g., generate an image, summarize a video, write python code)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none"
+                className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans"
               />
               <button
                 type="submit"
-                className="rounded-lg bg-[#10B981] hover:bg-[#059669] text-slate-950 font-bold px-6 py-3 transition-colors duration-200"
+                className="rounded-lg bg-[#10B981] hover:bg-[#059669] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
               >
                 Search
               </button>
@@ -185,12 +185,12 @@ export default function Home() {
       {/* Featured / Trending Section */}
       {recentTools.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8 font-sans">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
                 Recently Indexed
               </h2>
-              <p className="text-slate-400 text-xs mt-1">
+              <p className="text-slate-400 text-xs mt-1 font-sans">
                 Latest verified additions to the directory
               </p>
             </div>
@@ -217,8 +217,8 @@ export default function Home() {
 
       {/* Category Grid Section */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-t border-slate-900">
-        <div className="mb-10">
-          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <div className="mb-10 font-sans">
+          <h2 className="font-serif text-2xl font-medium tracking-tight text-white sm:text-3xl">
             Browse by Job-to-be-Done
           </h2>
           <p className="text-slate-400 text-sm mt-1">

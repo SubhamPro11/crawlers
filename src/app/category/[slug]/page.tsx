@@ -69,33 +69,33 @@ export default function CategoryPage({ params }: PageProps) {
   return (
     <div className="flex-1 mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
-        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
+        <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
         <span>/</span>
-        <span className="text-slate-300 capitalize">{category.name}</span>
+        <span className="text-slate-300 capitalize font-sans">{category.name}</span>
       </nav>
 
       {/* Header Info */}
-      <div className="border-b border-slate-800/80 pb-8 mb-8">
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#10B981] mb-2">
+      <div className="border-b border-slate-800/80 pb-8 mb-8 font-sans">
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#10B981] mb-2 font-mono">
           Category Directory
         </span>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+        <h1 className="font-serif text-3xl font-medium tracking-tight text-white sm:text-4xl">
           {category.name}
         </h1>
-        <p className="text-slate-400 text-sm mt-3 max-w-2xl leading-relaxed">
+        <p className="text-slate-400 text-base mt-3 max-w-2xl leading-relaxed font-sans">
           {category.description}
         </p>
       </div>
 
       {/* Filters Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8 font-sans">
         <div className="flex flex-wrap gap-2">
           {pricingFilters.map((filter) => (
             <button
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
-              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 ${
+              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 font-sans ${
                 activeFilter === filter.value
                   ? "bg-[#10B981] text-slate-950 shadow-md shadow-[#10B981]/15"
                   : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white hover:border-slate-700"
@@ -105,7 +105,7 @@ export default function CategoryPage({ params }: PageProps) {
             </button>
           ))}
         </div>
-        <span className="text-xs text-slate-500 font-medium">
+        <span className="text-xs text-slate-500 font-medium font-sans">
           Showing {filteredTools.length} of {tools.length} platforms
         </span>
       </div>

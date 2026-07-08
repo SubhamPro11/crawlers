@@ -39,7 +39,7 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
             </div>
             <div>
               <Link href={`/tool/${tool.id}`} className="hover:underline">
-                <h3 className="font-editorial text-lg font-bold text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
+                <h3 className="font-serif text-lg font-medium text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
                   {tool.name}
                 </h3>
               </Link>
@@ -57,7 +57,7 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
         </div>
 
         {/* Short Description */}
-        <p className="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-3">
+        <p className="text-slate-400 text-[15px] leading-relaxed mb-4 line-clamp-3 font-sans">
           {tool.short_description}
         </p>
 

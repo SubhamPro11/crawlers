@@ -14,14 +14,14 @@ export default function Footer() {
               <span className="text-[#8FBF3F]">&gt;</span>
               <span>crawlers //</span>
             </Link>
-            <p className="text-xs leading-5 max-w-xs text-[#8A8F87]">
+            <p className="text-xs leading-5 max-w-xs text-[#8A8F87] font-sans">
               Discover AI bots and command utilities organized strictly by the job to be done. We index, verify, and link directly to external creators.
             </p>
           </div>
 
           {/* Quick Categories */}
           <div>
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white mb-4">Index Sections</h3>
+            <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-4">Index Sections</h3>
             <ul className="space-y-2 text-xs font-mono">
               {quickCategories.map((cat) => (
                 <li key={cat.id}>
@@ -34,8 +34,8 @@ export default function Footer() {
                 </li>
               ))}
               <li>
-                <Link href="/" className="text-[#8FBF3F] hover:underline font-bold">
-                  /all_categories &rarr;
+                <Link href="/" className="text-[#8FBF3F] hover:underline font-sans font-bold text-xs">
+                  All Categories &rarr;
                 </Link>
               </li>
             </ul>
@@ -43,21 +43,21 @@ export default function Footer() {
 
           {/* Legal / Policy */}
           <div>
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white mb-4">Compliance</h3>
-            <p className="text-[10px] leading-relaxed text-[#8A8F87]/80">
+            <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-4">Compliance</h3>
+            <p className="text-[10px] leading-relaxed text-[#8A8F87]/80 font-sans">
               We built Crawlers to catalog AI tools by use case. Our crawler searches Product Hunt and GitHub feeds, checks robots.txt to respect site policies, and paraphrases marketing copy in our own words to avoid copyright issues. We don't embed or iframe external tools — we link you straight to the source.
             </p>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-[#212623]/80 pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono">
+        <div className="mt-8 border-t border-[#212623]/80 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs font-sans">
           <p>&copy; {new Date().getFullYear()} crawlers_index. All rights reserved.</p>
-          <div className="flex gap-4 mt-4 sm:mt-0">
+          <div className="flex gap-4 mt-4 sm:mt-0 font-sans font-semibold">
             <Link href="/submit" className="hover:text-[#8FBF3F] transition-colors">
-              [submit_entry]
+              Submit Entry
             </Link>
             <span className="text-slate-800">|</span>
-            <span className="text-[#8A8F87]/60">link_out_only</span>
+            <span className="text-[#8A8F87]/60 font-normal">Link-out Only</span>
           </div>
         </div>
       </div>

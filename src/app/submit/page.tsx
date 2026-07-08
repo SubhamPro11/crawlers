@@ -92,20 +92,20 @@ export default function SubmitPage() {
   }
 
   return (
-    <div className="flex-1 mx-auto max-w-2xl w-full px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex-1 mx-auto max-w-2xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
-        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
+        <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
         <span>/</span>
-        <span className="text-slate-300">Submit a Tool</span>
+        <span className="text-slate-300 font-sans">Submit a Tool</span>
       </nav>
 
       {/* Header */}
-      <div className="border-b border-slate-800/80 pb-6 mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white">
+      <div className="border-b border-slate-800/80 pb-6 mb-8 font-sans">
+        <h1 className="font-serif text-3xl font-medium tracking-tight text-white">
           Submit an AI Platform
         </h1>
-        <p className="text-slate-400 text-sm mt-2">
+        <p className="text-slate-400 text-sm mt-2 font-sans">
           Suggest a bot or utility for indexing. All submittals undergo a manual compliance review.
         </p>
       </div>

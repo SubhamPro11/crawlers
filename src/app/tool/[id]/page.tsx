@@ -93,22 +93,22 @@ export default function ToolDetailPage({ params }: PageProps) {
   return (
     <div className="flex-1 mx-auto max-w-4xl w-full px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-8">
-        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-8 font-sans">
+        <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
         <span>/</span>
         {categorySlug && (
           <>
-            <Link href={`/category/${categorySlug}`} className="hover:text-white transition-colors capitalize">
+            <Link href={`/category/${categorySlug}`} className="hover:text-white transition-colors capitalize font-sans">
               {categoryName}
             </Link>
             <span>/</span>
           </>
         )}
-        <span className="text-slate-300">{tool.name}</span>
+        <span className="text-slate-300 font-sans">{tool.name}</span>
       </nav>
 
       {/* Main Detail Card */}
-      <div className="rounded-2xl border border-slate-800 bg-[#131B2E] p-6 sm:p-10 shadow-2xl shadow-black/25">
+      <div className="rounded-2xl border border-slate-800 bg-[#131B2E] p-6 sm:p-10 shadow-2xl shadow-black/25 font-sans">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800/80">
           
           {/* Logo & Basic Info */}
@@ -117,13 +117,13 @@ export default function ToolDetailPage({ params }: PageProps) {
               {tool.name.charAt(0)}
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              <h1 className="font-serif text-2xl sm:text-3xl font-medium text-white tracking-tight">
                 {tool.name}
               </h1>
               {categoryName && (
                 <Link 
                   href={`/category/${categorySlug}`}
-                  className="inline-block text-xs font-semibold text-[#10B981] hover:underline uppercase tracking-wider mt-1"
+                  className="inline-block text-xs font-semibold text-[#10B981] hover:underline uppercase tracking-wider mt-1 font-mono"
                 >
                   {categoryName}
                 </Link>
@@ -151,12 +151,12 @@ export default function ToolDetailPage({ params }: PageProps) {
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
           {/* Left Column: Description & Tags */}
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-6 font-sans">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                 About the Platform
               </h3>
-              <p className="text-slate-200 text-base leading-relaxed">
+              <p className="text-slate-300 text-[16px] leading-relaxed">
                 {tool.short_description}
               </p>
             </div>
@@ -169,7 +169,7 @@ export default function ToolDetailPage({ params }: PageProps) {
                 {tool.tags.map((tag) => (
                   <span 
                     key={tag} 
-                    className="rounded-lg bg-slate-800 px-3 py-1 text-xs text-slate-300 font-medium"
+                    className="rounded-lg bg-slate-800 px-3 py-1 text-xs text-slate-300 font-mono"
                   >
                     #{tag}
                   </span>

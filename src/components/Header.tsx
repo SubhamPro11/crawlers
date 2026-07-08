@@ -23,23 +23,23 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-1.5 font-mono text-sm font-bold tracking-tight text-[#EDEEEA] group">
+          <Link href="/" className="flex items-center gap-1.5 font-mono text-sm font-bold tracking-tight text-white group">
             <span className="text-[#8FBF3F] group-hover:translate-x-0.5 transition-transform duration-200">&gt;</span>
-            <span className="text-white">crawlers //</span>
+            <span>crawlers //</span>
             <span className="h-3 w-1.5 bg-[#8FBF3F] cursor-blink inline-block" />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link 
               href="/" 
-              className="text-xs font-mono font-medium text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
             >
-              /explore
+              Explore
             </Link>
             <Link 
               href="/search" 
-              className="text-xs font-mono font-medium text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
             >
-              /search
+              Search
             </Link>
           </nav>
         </div>
@@ -53,7 +53,7 @@ export default function Header() {
               placeholder="Query index..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-48 lg:w-56 rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-8 text-xs font-mono text-[#EDEEEA] placeholder-slate-600 outline-none focus:border-[#8FBF3F] focus:ring-1 focus:ring-[#8FBF3F] transition-all"
+              className="w-48 lg:w-56 rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-8 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none focus:border-[#8FBF3F] focus:ring-1 focus:ring-[#8FBF3F] transition-all"
             />
             <button
               type="submit"
@@ -78,9 +78,9 @@ export default function Header() {
           {/* Submit Link */}
           <Link
             href="/submit"
-            className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-mono font-bold text-[#0D0F0E] hover:bg-[#7ba235] transition-all duration-200"
+            className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] transition-all duration-200"
           >
-            submit_bot
+            Submit Bot
           </Link>
         </div>
       </div>
@@ -94,7 +94,7 @@ export default function Header() {
               placeholder="Query index..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-md border border-[#212623] bg-[#131615] py-2 pl-3 pr-8 text-xs font-mono text-[#EDEEEA] placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
+              className="w-full rounded-md border border-[#212623] bg-[#131615] py-2 pl-3 pr-8 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
               autoFocus
             />
             <button

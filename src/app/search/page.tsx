@@ -40,35 +40,35 @@ function SearchContent() {
   return (
     <div className="mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
-        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
+        <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
         <span>/</span>
-        <span className="text-slate-300">Search Results</span>
+        <span className="text-slate-300 font-sans">Search Results</span>
       </nav>
 
       {/* Header */}
-      <div className="border-b border-slate-800/80 pb-6 mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white">
+      <div className="border-b border-slate-800/80 pb-6 mb-8 font-sans">
+        <h1 className="font-serif text-3xl font-medium tracking-tight text-white">
           {query ? `Search Results for "${query}"` : "Search Directory"}
         </h1>
-        <p className="text-slate-400 text-sm mt-2">
+        <p className="text-slate-400 text-sm mt-2 font-sans">
           Discover tools by typing what you need to do
         </p>
       </div>
 
       {/* Search Input Box */}
-      <div className="mb-10 max-w-xl">
+      <div className="mb-10 max-w-xl font-sans">
         <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131B2E] border border-slate-800 p-1.5 focus-within:border-[#10B981] transition-all">
           <input
             type="text"
             placeholder="Type your use case..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full bg-transparent px-4 py-2 text-sm text-white placeholder-slate-500 outline-none"
+            className="w-full bg-transparent px-4 py-2 text-sm text-white placeholder-slate-500 outline-none font-sans"
           />
           <button
             type="submit"
-            className="rounded-lg bg-[#10B981] hover:bg-[#059669] text-slate-950 font-bold px-4 py-2 text-xs transition-colors duration-200"
+            className="rounded-lg bg-[#10B981] hover:bg-[#059669] text-slate-950 font-bold px-4 py-2 text-xs transition-colors duration-200 font-sans"
           >
             Find
           </button>
@@ -78,7 +78,7 @@ function SearchContent() {
       {/* Results Grid */}
       {results.length > 0 ? (
         <div>
-          <div className="mb-6 text-xs text-slate-500 font-semibold">
+          <div className="mb-6 text-xs text-slate-500 font-semibold font-sans">
             Found {results.length} matching tools
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
