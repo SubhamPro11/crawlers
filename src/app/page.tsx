@@ -95,6 +95,27 @@ export default function Home() {
     const baseClass = "h-6 w-6 text-[#10B981] group-hover:text-white transition-colors duration-300";
 
     // 1. Precise Keyword Mapping
+    if (s.includes("3d")) {
+      return <Layout className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("accessibility")) {
+      return <UserCheck className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("directories")) {
+      return <FileText className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("newsletters")) {
+      return <Mail className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("api-tools") || s.includes("api")) {
+      return <Code className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("ar-vr") || s.includes("vr")) {
+      return <Eye className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("architecture")) {
+      return <Construction className={baseClass} strokeWidth={2} />;
+    }
     if (s.includes("developer-tools") || s.includes("devtools") || s.includes("code-assistant")) {
       return <Code className={baseClass} strokeWidth={2} />;
     }
