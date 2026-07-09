@@ -524,6 +524,15 @@ export default function Home() {
               const groupCategories = filteredCategories.filter(cat => getCategoryGroup(cat).id === group.id);
               if (groupCategories.length === 0) return null;
               
+              // Sort categories so populated ones come first, empty ones go to bottom
+              const sortedGroupCategories = [...groupCategories].sort((a, b) => {
+                const countA = toolCounts[a.id] || 0;
+                const countB = toolCounts[b.id] || 0;
+                if (countA > 0 && countB === 0) return -1;
+                if (countA === 0 && countB > 0) return 1;
+                return a.name.localeCompare(b.name);
+              });
+              
               return (
                 <div key={group.id} id={`group-${group.id}`} className="scroll-mt-28">
                   <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
@@ -537,13 +546,16 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {groupCategories.map((cat) => {
+                    {sortedGroupCategories.map((cat) => {
                       const count = toolCounts[cat.id] || 0;
+                      const isZero = count === 0;
                       return (
                         <Link 
                           key={cat.id} 
                           href={`/category/${cat.slug}`}
-                          className="group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300"
+                          className={`group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300 ${
+                            isZero ? "opacity-50 hover:opacity-85" : ""
+                          }`}
                         >
                           <div>
                             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800/85 mb-4 group-hover:bg-[#10B981]/10 border border-slate-800 transition-all duration-300">
@@ -556,11 +568,15 @@ export default function Home() {
                               {cat.description || "Browse curated tools for this domain."}
                             </p>
                           </div>
-                          <div className="mt-5 flex items-center justify-between text-xs text-slate-500 font-medium">
-                            <span>{count} {count === 1 ? 'tool' : 'tools'} available</span>
-                            <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              Explore &rarr;
+                          <div className="mt-5 flex items-center justify-between text-xs font-medium">
+                            <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
+                              {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
                             </span>
+                            {!isZero && (
+                              <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                Explore &rarr;
+                              </span>
+                            )}
                           </div>
                         </Link>
                       );
