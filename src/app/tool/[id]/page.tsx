@@ -39,7 +39,7 @@ export default function ToolDetailPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#10B981]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function ToolDetailPage({ params }: PageProps) {
         <p className="text-slate-400 mb-8">The AI tool you are searching for is not registered in our database.</p>
         <Link 
           href="/" 
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#10B981] px-5 text-sm font-semibold text-slate-950 hover:bg-[#059669] transition-colors"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
         >
           Go Back Home
         </Link>
@@ -79,7 +79,7 @@ export default function ToolDetailPage({ params }: PageProps) {
   const getGradient = (name: string) => {
     const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const colors = [
-      "from-[#10B981] to-[#06B6D4]",
+      "from-[#8FBF3F] to-[#06B6D4]",
       "from-[#3B82F6] to-[#8B5CF6]",
       "from-[#EC4899] to-[#F43F5E]",
       "from-[#F59E0B] to-[#EF4444]",
@@ -105,7 +105,7 @@ export default function ToolDetailPage({ params }: PageProps) {
       </nav>
 
       {/* Main Detail Card */}
-      <div className="rounded-2xl border border-slate-800 bg-[#131B2E] p-6 sm:p-10 shadow-2xl shadow-black/25 font-sans">
+      <div className="rounded-2xl border border-[#212623] bg-[#131615] p-6 sm:p-10 shadow-2xl shadow-black/25 font-sans">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800/80">
           
           {/* Logo & Basic Info */}
@@ -120,7 +120,7 @@ export default function ToolDetailPage({ params }: PageProps) {
               {categoryName && (
                 <Link 
                   href={`/category/${categorySlug}`}
-                  className="inline-block text-xs font-semibold text-[#10B981] hover:underline uppercase tracking-wider mt-1 font-mono"
+                  className="inline-block text-xs font-semibold text-[#8FBF3F] hover:underline uppercase tracking-wider mt-1 font-mono"
                 >
                   {categoryName}
                 </Link>
@@ -135,7 +135,7 @@ export default function ToolDetailPage({ params }: PageProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleVisit}
-              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-[#10B981] hover:bg-[#059669] px-6 text-sm font-bold text-slate-950 transition-all duration-200 shadow-md shadow-[#10B981]/15 group"
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-[#8FBF3F] hover:bg-[#7ba235] px-6 text-sm font-bold text-slate-950 transition-all duration-200 shadow-md shadow-[#8FBF3F]/15 group"
             >
               <span>Visit Official Website</span>
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

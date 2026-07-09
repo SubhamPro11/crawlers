@@ -185,7 +185,7 @@ export default function Home() {
   // Get icon for categories
   const getCategoryIcon = (slug: string) => {
     const s = slug.toLowerCase();
-    const baseClass = "h-6 w-6 text-[#10B981] group-hover:text-white transition-colors duration-300";
+    const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
 
     // 1. Precise Keyword Mapping
     if (s.includes("3d")) {
@@ -351,11 +351,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative px-4 py-20 sm:px-6 lg:px-8 text-center overflow-hidden border-b border-[#1E293B] bg-gradient-to-b from-[#0e1627] to-[#0B0F17]">
         {/* Subtle decorative glow */}
-        <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#10B981]/5 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
           <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-            Find the exact <span className="italic text-[#10B981]">AI tool</span> for the job
+            Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> for the job
           </h1>
           
           <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
@@ -364,7 +364,7 @@ export default function Home() {
 
           {/* Large Use-case Search Bar */}
           <form onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
-            <div className="relative flex items-center rounded-xl bg-[#131B2E] border border-slate-800 p-2 focus-within:border-[#10B981] focus-within:ring-1 focus-within:ring-[#10B981] shadow-xl shadow-black/30 transition-all duration-300">
+            <div className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300">
               <div className="pl-3 text-slate-500">
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -379,7 +379,7 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="rounded-lg bg-[#10B981] hover:bg-[#059669] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
+                className="rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
               >
                 Search
               </button>
@@ -403,7 +403,7 @@ export default function Home() {
             <div className="h-[1px] flex-1 bg-slate-800/80 mx-6 hidden sm:block" />
             <Link 
               href="/search" 
-              className="text-[#10B981] hover:text-[#059669] text-sm font-semibold transition-colors"
+              className="text-[#8FBF3F] hover:text-[#7ba235] text-sm font-semibold transition-colors"
             >
               Browse All Tools &rarr;
             </Link>
@@ -443,7 +443,7 @@ export default function Home() {
                 setCategorySearchQuery(e.target.value);
                 setSelectedLetter("All"); // Reset letter filter when searching
               }}
-              className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] pl-10 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#10B981] transition-all font-sans"
+              className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] pl-10 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all font-sans"
             />
             <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -471,8 +471,8 @@ export default function Home() {
             }}
             className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold font-sans transition-all ${
               selectedLetter === "All" && !categorySearchQuery
-                ? "bg-[#10B981] text-slate-950"
-                : "bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-white"
+                ? "bg-[#8FBF3F] text-slate-950"
+                : "bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-white"
             }`}
           >
             All Categories
@@ -492,7 +492,7 @@ export default function Home() {
                     element.scrollIntoView({ behavior: "smooth", block: "start" });
                   }
                 }}
-                className="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-[#10B981] hover:border-[#10B981]/40 transition-all font-sans"
+                className="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans"
               >
                 {group.name}
               </button>
@@ -504,7 +504,7 @@ export default function Home() {
         {(selectedLetter !== "All" || categorySearchQuery) && (
           <div className="flex items-center justify-between text-xs text-slate-400 mb-6 font-mono bg-slate-900/30 border border-slate-900 px-4 py-2.5 rounded-lg">
             <div>
-              Active Index filter: <span className="text-[#10B981] font-sans font-bold">{selectedLetter !== "All" ? `Letter "${selectedLetter}"` : `Search "${categorySearchQuery}"`}</span>
+              Active Index filter: <span className="text-[#8FBF3F] font-sans font-bold">{selectedLetter !== "All" ? `Letter "${selectedLetter}"` : `Search "${categorySearchQuery}"`}</span>
               <span className="text-slate-600 mx-2">|</span>
               Found {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
             </div>
@@ -553,27 +553,27 @@ export default function Home() {
                         <Link 
                           key={cat.id} 
                           href={`/category/${cat.slug}`}
-                          className={`group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300 ${
+                          className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-6 hover:-translate-y-1 hover:bg-[#131615] hover:border-[#8FBF3F]/40 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 ${
                             isZero ? "opacity-50 hover:opacity-85" : ""
                           }`}
                         >
                           <div>
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800/85 mb-4 group-hover:bg-[#10B981]/10 border border-slate-800 transition-all duration-300">
+                            <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
                               {getCategoryIcon(cat.slug)}
                             </div>
-                            <h3 className="text-base font-bold text-white group-hover:text-[#10B981] transition-colors duration-300 line-clamp-1">
+                            <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
                               {cat.name}
                             </h3>
-                            <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2">
+                            <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
                               {cat.description || "Browse curated tools for this domain."}
                             </p>
                           </div>
-                          <div className="mt-5 flex items-center justify-between text-xs font-medium">
+                          <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
                             <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
                               {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
                             </span>
                             {!isZero && (
-                              <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 Explore &rarr;
                               </span>
                             )}

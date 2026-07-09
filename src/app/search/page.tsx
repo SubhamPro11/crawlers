@@ -59,7 +59,7 @@ function SearchContent() {
 
       {/* Search Input Box */}
       <div className="mb-10 max-w-xl font-sans">
-        <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131B2E] border border-slate-800 p-1.5 focus-within:border-[#10B981] transition-all">
+        <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-1.5 focus-within:border-[#8FBF3F] transition-all">
           <input
             type="text"
             placeholder="Type your use case..."
@@ -69,7 +69,7 @@ function SearchContent() {
           />
           <button
             type="submit"
-            className="rounded-lg bg-[#10B981] hover:bg-[#059669] text-slate-950 font-bold px-4 py-2 text-xs transition-colors duration-200 font-sans"
+            className="rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-4 py-2 text-xs transition-colors duration-200 font-sans"
           >
             Find
           </button>
@@ -94,7 +94,7 @@ function SearchContent() {
           </div>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-slate-800 bg-[#131B2E]/20 p-12 text-center">
+        <div className="rounded-xl border border-dashed border-[#212623] bg-[#131615]/20 p-12 text-center">
           <svg className="mx-auto h-12 w-12 text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -104,7 +104,7 @@ function SearchContent() {
           </p>
           <Link
             href="/submit"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#10B981] px-4 text-xs font-semibold text-slate-950 hover:bg-[#059669] transition-colors"
+            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
           >
             Submit a New Bot
           </Link>
@@ -118,7 +118,7 @@ export default function SearchPage() {
   return (
     <Suspense fallback={
       <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#10B981]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
       </div>
     }>
       <SearchContent />

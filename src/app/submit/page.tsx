@@ -67,7 +67,7 @@ export default function SubmitPage() {
   if (isSubmitted) {
     return (
       <div className="flex-1 mx-auto max-w-xl w-full px-4 py-20 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-[#10B981] border border-emerald-500/20 mb-6">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#8FBF3F]/10 text-[#8FBF3F] border border-[#8FBF3F]/20 mb-6">
           <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -92,7 +92,7 @@ export default function SubmitPage() {
           </button>
           <Link
             href="/"
-            className="rounded-lg bg-[#10B981] hover:bg-[#059669] px-5 py-2.5 text-xs font-semibold text-slate-950 transition-colors"
+            className="rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] px-5 py-2.5 text-xs font-semibold text-slate-950 transition-colors"
           >
             Back Home
           </Link>
@@ -139,7 +139,7 @@ export default function SubmitPage() {
             placeholder="e.g. Midjourney"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#10B981] transition-all"
+            className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
             required
           />
         </div>
@@ -155,7 +155,7 @@ export default function SubmitPage() {
             placeholder="https://example.com"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#10B981] transition-all"
+            className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
             required
           />
           <p className="text-[10px] text-slate-500 mt-1.5">
@@ -172,10 +172,10 @@ export default function SubmitPage() {
             id="category"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white outline-none focus:border-[#10B981] transition-all"
+            className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white outline-none focus:border-[#8FBF3F] transition-all"
           >
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id} className="bg-[#0B0F17] text-white">
+              <option key={cat.id} value={cat.id} className="bg-[#0D0F0E] text-white">
                 {cat.name}
               </option>
             ))}
@@ -198,7 +198,7 @@ export default function SubmitPage() {
             placeholder="Write a brief, 1-sentence summary of what this tool does. Do not copy paste description text verbatim."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#10B981] transition-all resize-none"
+            className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all resize-none"
             maxLength={180} // Give a bit of margin but validate strictly on 140
             required
           />
@@ -218,12 +218,12 @@ export default function SubmitPage() {
               id="pricing"
               value={pricingModel}
               onChange={(e) => setPricingModel(e.target.value as 'free' | 'freemium' | 'paid' | 'unknown')}
-              className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white outline-none focus:border-[#10B981] transition-all"
+              className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white outline-none focus:border-[#8FBF3F] transition-all"
             >
-              <option value="unknown" className="bg-[#0B0F17]">Unknown</option>
-              <option value="free" className="bg-[#0B0F17]">Free</option>
-              <option value="freemium" className="bg-[#0B0F17]">Freemium (Free tier + paid upgrades)</option>
-              <option value="paid" className="bg-[#0B0F17]">Paid</option>
+              <option value="unknown" className="bg-[#0D0F0E]">Unknown</option>
+              <option value="free" className="bg-[#0D0F0E]">Free</option>
+              <option value="freemium" className="bg-[#0D0F0E]">Freemium (Free tier + paid upgrades)</option>
+              <option value="paid" className="bg-[#0D0F0E]">Paid</option>
             </select>
           </div>
 
@@ -238,7 +238,7 @@ export default function SubmitPage() {
               placeholder="e.g. art, vectors, mockup"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
-              className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#10B981] transition-all"
+              className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
             />
           </div>
         </div>
@@ -247,13 +247,13 @@ export default function SubmitPage() {
         <div className="flex justify-end gap-4 pt-4 border-t border-slate-800/60">
           <Link
             href="/"
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-800 bg-[#0b0f17] px-6 text-sm font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-[#212623] bg-[#0D0F0E] px-6 text-sm font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
           >
             Cancel
           </Link>
           <button
             type="submit"
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-[#10B981] px-6 text-sm font-bold text-slate-950 hover:bg-[#059669] transition-colors shadow-md shadow-[#10B981]/15"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-[#8FBF3F] px-6 text-sm font-bold text-slate-950 hover:bg-[#7ba235] transition-colors shadow-md shadow-[#8FBF3F]/15"
           >
             Submit Platform
           </button>

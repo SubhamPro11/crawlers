@@ -33,7 +33,7 @@ export default function CategoryPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#10B981]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default function CategoryPage({ params }: PageProps) {
         <p className="text-slate-400 mb-8">The category you are looking for does not exist in our directory.</p>
         <Link 
           href="/" 
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#10B981] px-5 text-sm font-semibold text-slate-950 hover:bg-[#059669] transition-colors"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
         >
           Go Back Home
         </Link>
@@ -77,7 +77,7 @@ export default function CategoryPage({ params }: PageProps) {
 
       {/* Header Info */}
       <div className="border-b border-slate-800/80 pb-8 mb-8 font-sans">
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#10B981] mb-2 font-mono">
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#8FBF3F] mb-2 font-mono">
           Category Directory
         </span>
         <h1 className="font-serif text-3xl font-medium tracking-tight text-white sm:text-4xl">
@@ -97,7 +97,7 @@ export default function CategoryPage({ params }: PageProps) {
               onClick={() => setActiveFilter(filter.value)}
               className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 font-sans ${
                 activeFilter === filter.value
-                  ? "bg-[#10B981] text-slate-950 shadow-md shadow-[#10B981]/15"
+                  ? "bg-[#8FBF3F] text-slate-950 shadow-md shadow-[#8FBF3F]/15"
                   : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
@@ -132,7 +132,7 @@ export default function CategoryPage({ params }: PageProps) {
           </p>
           <Link
             href="/submit"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#10B981] px-4 text-xs font-semibold text-slate-950 hover:bg-[#059669] transition-colors"
+            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
           >
             Submit Bot
           </Link>
