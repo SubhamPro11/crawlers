@@ -5,6 +5,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import {
+  Sparkles, Code, Search, Image, AudioLines, Video, FileText, Bot, 
+  Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
+  Sprout, GraduationCap, Gamepad2, Landmark, Heart, Shield,
+  MessageSquare, UserCheck, BarChart2, PenTool, Cloud, Cpu, Compass, 
+  Globe, Film, BookOpen, Eye, Music, Radio, Smile, HelpCircle, 
+  Construction, Users, Activity, Laptop, Scissors, Mic, PenSquare,
+  TrendingUp, Mail, Calendar
+} from "lucide-react";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,93 +91,145 @@ export default function Home() {
 
   // Get icon for categories
   const getCategoryIcon = (slug: string) => {
+    const s = slug.toLowerCase();
     const baseClass = "h-6 w-6 text-[#10B981] group-hover:text-white transition-colors duration-300";
-    switch (slug) {
-      case "image-generation":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        );
-      case "text-extraction-ocr":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4a2 2 0 002-2v-4a2 2 0 00-2-2h-4v8zM4 8h4a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2V10a2 2 0 012-2z" />
-          </svg>
-        );
-      case "text-summarization":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-          </svg>
-        );
-      case "chatbots-conversational-ai":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-        );
-      case "video-generation-editing":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        );
-      case "audio-voice-music":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-          </svg>
-        );
-      case "code-generation-dev-tools":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-          </svg>
-        );
-      case "writing-copywriting":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-        );
-      case "data-analysis":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        );
-      case "productivity-automation":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
-      case "research-search":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        );
-      case "translation":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c-1.043 2.56-2.547 4.9-4.43 6.868M9.078 12.012A11.21 11.21 0 013 9.488" />
-          </svg>
-        );
-      case "design-ui-tools":
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-3" />
-          </svg>
-        );
-      default:
-        return (
-          <svg className={baseClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-        );
+
+    // 1. Precise Keyword Mapping
+    if (s.includes("developer-tools") || s.includes("devtools") || s.includes("code-assistant")) {
+      return <Code className={baseClass} strokeWidth={2} />;
     }
+    if (s.includes("farming")) {
+      return <Sprout className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("legal-assistants") || s.includes("contract-management") || s.includes("compliance")) {
+      return <Scale className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("nutrition") || s.includes("food")) {
+      return <Apple className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("video-editor") || s === "video") {
+      return <Film className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("video-generator") || s.includes("avatar")) {
+      return <Video className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("video-subtitling")) {
+      return <AudioLines className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("academia") || s.includes("learning-tools") || s.includes("language-learning")) {
+      return <GraduationCap className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("gaming")) {
+      return <Gamepad2 className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("finance") || s.includes("fintech") || s.includes("accounting")) {
+      return <Landmark className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("healthcare") || s.includes("telemedicine") || s.includes("medical-imaging")) {
+      return <Heart className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("cybersecurity") || s.includes("privacy") || s.includes("identity")) {
+      return <Shield className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("chatbot-builders") || s === "chatbots" || s.includes("customer-support")) {
+      return <MessageSquare className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("hr") || s.includes("recruiting") || s.includes("job-tools")) {
+      return <UserCheck className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("seo") || s.includes("lead-generation")) {
+      return <TrendingUp className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("marketing") || s.includes("sales-tools") || s.includes("ad-generator")) {
+      return <BarChart2 className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("image-generation")) {
+      return <Image className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("graphic-design") || s.includes("writing-assistants") || s.includes("copywriting")) {
+      return <PenTool className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("image-editing") || s.includes("video-enhancer") || s.includes("animation")) {
+      return <Sparkles className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("app-builders") || s.includes("website-builders") || s.includes("no-code")) {
+      return <Laptop className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("background-remover")) {
+      return <Scissors className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("meme-generator")) {
+      return <Smile className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("email")) {
+      return <Mail className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("cloud")) {
+      return <Cloud className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("robotics") || s.includes("iot")) {
+      return <Cpu className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("geospatial") || s.includes("travel") || s.includes("market-research")) {
+      return <Compass className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("web3") || s.includes("search-engines")) {
+      return <Globe className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("music")) {
+      return <Music className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("audio") || s.includes("podcast")) {
+      return <Radio className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("translator") || s.includes("localization")) {
+      return <Languages className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("transcription") || s.includes("dubbing")) {
+      return <Mic className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("search") || s.includes("research")) {
+      return <Search className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("storytelling") || s.includes("knowledge")) {
+      return <BookOpen className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("note-taking") || s.includes("mind-mapping")) {
+      return <PenSquare className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("document-ai") || s.includes("documentation") || s.includes("resume-tools")) {
+      return <FileText className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("agents") || s.includes("personal-assistants") || s.includes("companion")) {
+      return <Bot className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("workflow") || s.includes("automation")) {
+      return <Workflow className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("database")) {
+      return <Database className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("productivity") || s.includes("project-management") || s.includes("calendar")) {
+      return <Calendar className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("construction")) {
+      return <Construction className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("parenting")) {
+      return <Users className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("sports")) {
+      return <Activity className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("observability") || s.includes("sentiment")) {
+      return <Eye className={baseClass} strokeWidth={2} />;
+    }
+    if (s.includes("logo") || s.includes("character")) {
+      return <Layout className={baseClass} strokeWidth={2} />;
+    }
+
+    // Default fallback
+    return <HelpCircle className={baseClass} strokeWidth={2} />;
   };
 
   return (
