@@ -15,6 +15,99 @@ import {
   TrendingUp, Mail, Calendar
 } from "lucide-react";
 
+interface CategoryGroup {
+  id: string;
+  name: string;
+  slugs: string[];
+  keywords: string[];
+}
+
+const CATEGORY_GROUPS: CategoryGroup[] = [
+  {
+    id: "text-writing",
+    name: "Text & Writing",
+    slugs: ["writing-assistants", "copywriting", "storytelling", "transcription", "translator", "localization", "resume-tools", "document-ai", "documentation", "note-taking-apps", "newsletters"],
+    keywords: ["writing", "copywrite", "transcribe", "translate", "localiz", "resume", "document", "note", "letter", "summariz"]
+  },
+  {
+    id: "audio-video",
+    name: "Audio, Video & Media",
+    slugs: ["video", "video-editor", "video-generator", "video-enhancer", "video-subtitling", "talking-avatar-generator", "animation", "music-generation", "audio", "voice-cloning", "podcast", "dubbing"],
+    keywords: ["video", "avatar", "animat", "music", "audio", "voice", "podcast", "dub"]
+  },
+  {
+    id: "design-creative",
+    name: "Design & 3D Creative",
+    slugs: ["image-generation", "image-editing", "background-remover", "logo-generator", "character-design", "infographics", "graphic-design", "fashion", "architecture", "ar-vr", "3d", "3d-printing", "meme-generator"],
+    keywords: ["image", "design", "creative", "logo", "graphic", "fashion", "architecture", "vr", "3d", "meme", "remover"]
+  },
+  {
+    id: "productivity-business",
+    name: "Productivity & Business",
+    slugs: ["productivity", "project-management", "calendar-scheduling", "meeting-assistants", "crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "email-assistants", "spreadsheets", "mind-mapping"],
+    keywords: ["productiv", "project", "calendar", "schedul", "meeting", "crm", "hr", "recruit", "complian", "tax", "account", "contract", "business", "email", "spreadsheet", "mind"]
+  },
+  {
+    id: "dev-tech",
+    name: "Developer & Tech Tools",
+    slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot"],
+    keywords: ["dev", "code", "software", "test", "build", "cloud", "debug", "web3", "robot", "iot"]
+  },
+  {
+    id: "data-security",
+    name: "Data, Models & Security",
+    slugs: ["database-tools", "observability", "cybersecurity", "privacy", "identity", "synthetic-data", "data-labeling", "data", "models", "computer-vision"],
+    keywords: ["data", "db", "security", "privacy", "identity", "model", "vision", "observab"]
+  },
+  {
+    id: "marketing-sales",
+    name: "Marketing, Sales & SEO",
+    slugs: ["marketing", "sales-tools", "lead-generation", "seo", "social-media-tools", "ad-generator"],
+    keywords: ["market", "sale", "lead", "seo", "social", "ad-"]
+  },
+  {
+    id: "search-agents",
+    name: "Search, Chat & AI Agents",
+    slugs: ["search-research", "search-engines", "local-search-engines", "ai-directories", "chatbot-builders", "chatbots", "ai-agents", "personal-assistants", "ai-companion", "customer-support", "general-reasoning", "sentiment-analysis"],
+    keywords: ["search", "engine", "directory", "chat", "agent", "assist", "companion", "support", "reasoning", "sentiment"]
+  },
+  {
+    id: "education-lifestyle",
+    name: "Education & Lifestyle",
+    slugs: ["academia", "learning-tools", "language-learning", "reading", "parenting", "dating", "wellness", "fitness", "sports-analytics", "pets", "travel", "others"],
+    keywords: ["academia", "learn", "read", "parent", "date", "well", "fit", "sport", "pet", "travel", "other"]
+  },
+  {
+    id: "science-industry",
+    name: "Science, Health & Industry",
+    slugs: ["farming", "construction", "manufacturing", "real-estate", "home-design", "insurance", "government", "healthcare", "telemedicine", "medical-imaging", "drug-discovery", "biotech", "cleantech", "energy", "climate", "weather", "space-tech", "legal-assistants", "patent-tools", "fleet-management", "supply-chain", "geospatial"],
+    keywords: ["farm", "construct", "manufactur", "estate", "house", "insurance", "govern", "health", "medic", "drug", "bio", "clean", "energy", "climate", "weather", "space", "legal", "patent", "fleet", "chain", "geo"]
+  }
+];
+
+const getCategoryGroup = (cat: Category): CategoryGroup => {
+  const slug = cat.slug.toLowerCase();
+  
+  // 1. Direct Slug Match
+  for (const group of CATEGORY_GROUPS) {
+    if (group.slugs.includes(slug)) {
+      return group;
+    }
+  }
+  
+  // 2. Keyword Match
+  for (const group of CATEGORY_GROUPS) {
+    for (const kw of group.keywords) {
+      if (slug.includes(kw)) {
+        return group;
+      }
+    }
+  }
+  
+  // Default fallback: Education & Lifestyle
+  return CATEGORY_GROUPS[8];
+};
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -368,35 +461,40 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Alphabet Navigation Bar */}
-        <div className="flex flex-wrap gap-1 items-center mb-8 border-b border-slate-900 pb-6 font-mono text-[10px]">
+        {/* Sticky Group Jump Nav */}
+        <div className="sticky top-[73px] z-30 flex flex-nowrap items-center gap-2 overflow-x-auto bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 py-4 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
           <button
-            onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
-            className={`px-3 py-1.5 rounded-lg font-sans font-bold transition-all ${
-              selectedLetter === "All"
+            onClick={() => {
+              setSelectedLetter("All");
+              setCategorySearchQuery("");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold font-sans transition-all ${
+              selectedLetter === "All" && !categorySearchQuery
                 ? "bg-[#10B981] text-slate-950"
-                : "bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white"
+                : "bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-white"
             }`}
           >
             All Categories
           </button>
-          <div className="h-4 w-[1px] bg-slate-800 mx-2 hidden sm:block" />
-          {alphabet.map((letter) => {
-            const hasCategories = lettersWithCategories.includes(letter);
+          
+          <div className="h-5 w-[1px] bg-slate-850 flex-shrink-0 mx-1" />
+          
+          {CATEGORY_GROUPS.map((group) => {
+            const hasCategoriesInView = filteredCategories.some(cat => getCategoryGroup(cat).id === group.id);
+            if (!hasCategoriesInView) return null;
             return (
               <button
-                key={letter}
-                disabled={!hasCategories}
-                onClick={() => { setSelectedLetter(letter); setCategorySearchQuery(""); }}
-                className={`w-7 h-7 flex items-center justify-center rounded-lg transition-all font-bold ${
-                  selectedLetter === letter
-                    ? "bg-[#10B981] text-slate-950"
-                    : hasCategories
-                    ? "bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-[#10B981] hover:border-[#10B981]/40"
-                    : "bg-slate-950/20 text-slate-700 cursor-not-allowed border border-slate-900/40"
-                }`}
+                key={group.id}
+                onClick={() => {
+                  const element = document.getElementById(`group-${group.id}`);
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                className="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-[#10B981] hover:border-[#10B981]/40 transition-all font-sans"
               >
-                {letter}
+                {group.name}
               </button>
             );
           })}
@@ -419,35 +517,56 @@ export default function Home() {
           </div>
         )}
 
-        {/* Categories Grid */}
+        {/* Grouped Categories Grid */}
         {filteredCategories.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredCategories.map((cat) => {
-              const count = toolCounts[cat.id] || 0;
+          <div className="space-y-12">
+            {CATEGORY_GROUPS.map((group) => {
+              const groupCategories = filteredCategories.filter(cat => getCategoryGroup(cat).id === group.id);
+              if (groupCategories.length === 0) return null;
+              
               return (
-                <Link 
-                  key={cat.id} 
-                  href={`/category/${cat.slug}`}
-                  className="group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300"
-                >
-                  <div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800/85 mb-4 group-hover:bg-[#10B981]/10 border border-slate-800 transition-all duration-300">
-                      {getCategoryIcon(cat.slug)}
+                <div key={group.id} id={`group-${group.id}`} className="scroll-mt-28">
+                  <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-serif text-lg font-medium text-white sm:text-xl">
+                        {group.name}
+                      </h3>
+                      <span className="rounded-full bg-slate-900/80 border border-slate-800 px-2.5 py-0.5 text-xs text-slate-400 font-mono font-bold">
+                        {groupCategories.length}
+                      </span>
                     </div>
-                    <h3 className="text-base font-bold text-white group-hover:text-[#10B981] transition-colors duration-300 line-clamp-1">
-                      {cat.name}
-                    </h3>
-                    <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2">
-                      {cat.description || "Browse curated tools for this domain."}
-                    </p>
                   </div>
-                  <div className="mt-5 flex items-center justify-between text-xs text-slate-500 font-medium">
-                    <span>{count} {count === 1 ? 'tool' : 'tools'} available</span>
-                    <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      Explore &rarr;
-                    </span>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {groupCategories.map((cat) => {
+                      const count = toolCounts[cat.id] || 0;
+                      return (
+                        <Link 
+                          key={cat.id} 
+                          href={`/category/${cat.slug}`}
+                          className="group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300"
+                        >
+                          <div>
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800/85 mb-4 group-hover:bg-[#10B981]/10 border border-slate-800 transition-all duration-300">
+                              {getCategoryIcon(cat.slug)}
+                            </div>
+                            <h3 className="text-base font-bold text-white group-hover:text-[#10B981] transition-colors duration-300 line-clamp-1">
+                              {cat.name}
+                            </h3>
+                            <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2">
+                              {cat.description || "Browse curated tools for this domain."}
+                            </p>
+                          </div>
+                          <div className="mt-5 flex items-center justify-between text-xs text-slate-500 font-medium">
+                            <span>{count} {count === 1 ? 'tool' : 'tools'} available</span>
+                            <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              Explore &rarr;
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
