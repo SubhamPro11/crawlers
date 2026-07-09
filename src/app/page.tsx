@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool } from "@/data/mockDb";
@@ -12,6 +12,34 @@ export default function Home() {
   const [recentTools, setRecentTools] = useState<Tool[]>([]);
   const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
   const router = useRouter();
+
+  const [selectedLetter, setSelectedLetter] = useState<string>("All");
+  const [categorySearchQuery, setCategorySearchQuery] = useState<string>("");
+
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  const lettersWithCategories = useMemo(() => {
+    const letters = new Set<string>();
+    categories.forEach(cat => {
+      const firstChar = cat.name.charAt(0).toUpperCase();
+      if (/[A-Z]/.test(firstChar)) {
+        letters.add(firstChar);
+      }
+    });
+    return Array.from(letters).sort();
+  }, [categories]);
+
+  const filteredCategories = useMemo(() => {
+    return categories.filter(cat => {
+      const matchesSearch = cat.name.toLowerCase().includes(categorySearchQuery.toLowerCase()) ||
+                            (cat.description && cat.description.toLowerCase().includes(categorySearchQuery.toLowerCase()));
+      
+      const firstChar = cat.name.charAt(0).toUpperCase();
+      const matchesLetter = selectedLetter === "All" || firstChar === selectedLetter;
+      
+      return matchesSearch && matchesLetter;
+    });
+  }, [categories, selectedLetter, categorySearchQuery]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -218,47 +246,144 @@ export default function Home() {
         </section>
       )}
 
-      {/* Category Grid Section */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-t border-slate-900">
-        <div className="mb-10 font-sans">
-          <h2 className="font-serif text-2xl font-medium tracking-tight text-white sm:text-3xl">
-            Browse by Job-to-be-Done
-          </h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Choose a specific category to discover specialized tools
-          </p>
+      {/* Category Indexing Section */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-slate-900">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 font-sans">
+          <div>
+            <h2 className="font-serif text-2xl font-medium tracking-tight text-white sm:text-3xl">
+              Browse Directory Index
+            </h2>
+            <p className="text-slate-400 text-sm mt-1">
+              Filter by letter or search to discover use-case collections
+            </p>
+          </div>
+          
+          {/* Category Quick Filter */}
+          <div className="relative max-w-xs w-full">
+            <input
+              type="text"
+              placeholder="Search 143 categories..."
+              value={categorySearchQuery}
+              onChange={(e) => {
+                setCategorySearchQuery(e.target.value);
+                setSelectedLetter("All"); // Reset letter filter when searching
+              }}
+              className="w-full rounded-lg border border-slate-800 bg-[#0B0F17] pl-10 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#10B981] transition-all font-sans"
+            />
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            {categorySearchQuery && (
+              <button
+                onClick={() => setCategorySearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {categories.map((cat) => {
-            const count = toolCounts[cat.id] || 0;
+        {/* Alphabet Navigation Bar */}
+        <div className="flex flex-wrap gap-1 items-center mb-8 border-b border-slate-900 pb-6 font-mono text-[10px]">
+          <button
+            onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
+            className={`px-3 py-1.5 rounded-lg font-sans font-bold transition-all ${
+              selectedLetter === "All"
+                ? "bg-[#10B981] text-slate-950"
+                : "bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white"
+            }`}
+          >
+            All Categories
+          </button>
+          <div className="h-4 w-[1px] bg-slate-800 mx-2 hidden sm:block" />
+          {alphabet.map((letter) => {
+            const hasCategories = lettersWithCategories.includes(letter);
             return (
-              <Link 
-                key={cat.id} 
-                href={`/category/${cat.slug}`}
-                className="group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300"
+              <button
+                key={letter}
+                disabled={!hasCategories}
+                onClick={() => { setSelectedLetter(letter); setCategorySearchQuery(""); }}
+                className={`w-7 h-7 flex items-center justify-center rounded-lg transition-all font-bold ${
+                  selectedLetter === letter
+                    ? "bg-[#10B981] text-slate-950"
+                    : hasCategories
+                    ? "bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-[#10B981] hover:border-[#10B981]/40"
+                    : "bg-slate-950/20 text-slate-700 cursor-not-allowed border border-slate-900/40"
+                }`}
               >
-                <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800/85 mb-4 group-hover:bg-[#10B981]/10 border border-slate-800 transition-all duration-300">
-                    {getCategoryIcon(cat.slug)}
-                  </div>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#10B981] transition-colors duration-300">
-                    {cat.name}
-                  </h3>
-                  <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2">
-                    {cat.description}
-                  </p>
-                </div>
-                <div className="mt-5 flex items-center justify-between text-xs text-slate-500 font-medium">
-                  <span>{count} {count === 1 ? 'tool' : 'tools'} available</span>
-                  <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Explore &rarr;
-                  </span>
-                </div>
-              </Link>
+                {letter}
+              </button>
             );
           })}
         </div>
+
+        {/* Active Filters Display */}
+        {(selectedLetter !== "All" || categorySearchQuery) && (
+          <div className="flex items-center justify-between text-xs text-slate-400 mb-6 font-mono bg-slate-900/30 border border-slate-900 px-4 py-2.5 rounded-lg">
+            <div>
+              Active Index filter: <span className="text-[#10B981] font-sans font-bold">{selectedLetter !== "All" ? `Letter "${selectedLetter}"` : `Search "${categorySearchQuery}"`}</span>
+              <span className="text-slate-600 mx-2">|</span>
+              Found {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
+            </div>
+            <button
+              onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
+              className="text-xs text-rose-400 hover:text-rose-300 font-sans font-semibold transition-colors"
+            >
+              Clear filter
+            </button>
+          </div>
+        )}
+
+        {/* Categories Grid */}
+        {filteredCategories.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredCategories.map((cat) => {
+              const count = toolCounts[cat.id] || 0;
+              return (
+                <Link 
+                  key={cat.id} 
+                  href={`/category/${cat.slug}`}
+                  className="group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#131B2E]/50 p-6 hover:bg-[#131B2E] hover:border-slate-700 transition-all duration-300"
+                >
+                  <div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800/85 mb-4 group-hover:bg-[#10B981]/10 border border-slate-800 transition-all duration-300">
+                      {getCategoryIcon(cat.slug)}
+                    </div>
+                    <h3 className="text-base font-bold text-white group-hover:text-[#10B981] transition-colors duration-300 line-clamp-1">
+                      {cat.name}
+                    </h3>
+                    <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2">
+                      {cat.description || "Browse curated tools for this domain."}
+                    </p>
+                  </div>
+                  <div className="mt-5 flex items-center justify-between text-xs text-slate-500 font-medium">
+                    <span>{count} {count === 1 ? 'tool' : 'tools'} available</span>
+                    <span className="text-[#10B981] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Explore &rarr;
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-[#131B2E]/20 border border-slate-900 rounded-2xl font-sans">
+            <svg className="mx-auto h-10 w-10 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            <h3 className="text-sm font-semibold text-white">No categories found</h3>
+            <p className="text-xs text-slate-500 mt-1">Try clearing your filters or typing a different search query</p>
+            <button
+              onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
+              className="mt-4 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-white transition-colors duration-200"
+            >
+              Reset Search Filter
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
