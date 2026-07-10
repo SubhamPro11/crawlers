@@ -7,6 +7,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categories = await mockDb.getCategories();
   const tools = await mockDb.getTools();
 
+  // Collect unique tags across all tools
+  const tagSet = new Set<string>();
+  tools.forEach((tool) => {
+    if (tool.tags && Array.isArray(tool.tags)) {
+      tool.tags.forEach((tag) => {
+        if (tag && tag.trim()) {
+          tagSet.add(tag.trim());
+        }
+      });
+    }
+  });
+
   const categoryUrls = categories.map((cat) => ({
     url: `${baseUrl}/category/${cat.slug}`,
     lastModified: new Date(),
@@ -19,6 +31,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(tool.created_at || Date.now()),
     changeFrequency: "weekly" as const,
     priority: 0.6,
+  }));
+
+  const tagUrls = Array.from(tagSet).map((tag) => ({
+    url: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.4,
   }));
 
   return [
@@ -42,5 +61,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...categoryUrls,
     ...toolUrls,
+    ...tagUrls,
   ];
 }
