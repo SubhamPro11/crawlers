@@ -314,11 +314,11 @@ export default function Home() {
 
         <div className="relative mx-auto max-w-3xl">
           <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6">
-            Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> for the job
+            Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> by use case
           </h1>
           
           <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
-            A curated index of AI tools categorized by what they do, rather than by brand. Search by task to find the right tool instantly.
+            A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
           </p>
 
           {/* Large Use-case Search Bar */}
@@ -508,9 +508,9 @@ export default function Home() {
                 <div key={group.id} id={`group-${group.id}`} className="scroll-mt-28">
                   <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
                     <div className="flex items-center gap-3">
-                      <h3 className="font-serif text-lg font-medium text-white sm:text-xl">
+                      <h2 className="font-serif text-lg font-medium text-white sm:text-xl">
                         {group.name}
-                      </h3>
+                      </h2>
                       <span className="rounded-full bg-slate-900/80 border border-slate-800 px-2.5 py-0.5 text-xs text-slate-400 font-mono font-bold">
                         {groupCategories.length}
                       </span>

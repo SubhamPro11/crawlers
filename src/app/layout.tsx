@@ -24,14 +24,17 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://crawlers.dpdns.org"),
   title: {
-    default: "Crawlers - Find AI Tools By Use Case",
+    default: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
     template: "%s | Crawlers"
   },
-  description: "Curated directory indexing 150+ categories of AI tools. Search by use case and find exact solutions for writing, design, audio, and developer workflows.",
-  keywords: ["AI tools", "AI directory", "artificial intelligence bots", "use case search", "find AI platforms", "curated bots list"],
+  description: "Curated AI tools directory indexing 150+ categories by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
+  keywords: ["AI tools", "AI directory", "artificial intelligence bots", "use case search", "find AI platforms", "curated bots list", "AI tools directory"],
+  alternates: {
+    canonical: "https://crawlers.dpdns.org/",
+  },
   openGraph: {
-    title: "Crawlers - Find AI Tools By Use Case",
-    description: "Curated directory indexing 150+ categories of AI tools. Search by use case and find exact solutions for writing, design, audio, and developer workflows.",
+    title: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
+    description: "Curated AI tools directory indexing 150+ categories by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
     url: "https://crawlers.dpdns.org",
     siteName: "Crawlers",
     type: "website",
@@ -39,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Crawlers - Find AI Tools By Use Case",
-    description: "Curated directory indexing 150+ categories of AI tools. Search by use case and find exact solutions for writing, design, audio, and developer workflows.",
+    title: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
+    description: "Curated AI tools directory indexing 150+ categories by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
   },
   robots: {
     index: true,
@@ -53,12 +56,34 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Crawlers",
+    "url": "https://crawlers.dpdns.org",
+    "logo": "https://crawlers.dpdns.org/globe.svg",
+    "description": "Curated AI tools directory indexing 150+ categories by use case."
+  };
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        {process.env.NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={`{"token": "${process.env.NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN}"}`}
+          />
+        )}
+      </head>
       <body className="min-h-full flex flex-col bg-[#0D0F0E] text-[#EDEEEA] font-sans">
         <Header />
         <main className="flex-1 flex flex-col">

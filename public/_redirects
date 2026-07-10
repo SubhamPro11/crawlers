@@ -1,0 +1,2 @@
+# Force HTTPS redirect at the edge
+http://* https://crawlers.dpdns.org/:splat 301

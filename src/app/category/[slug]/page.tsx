@@ -42,5 +42,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params;
-  return <CategoryPageClient slug={slug} />;
+  const category = await mockDb.getCategoryBySlug(slug);
+  let jsonLd = null;
+
+  if (category) {
+    const tools = await mockDb.getToolsByCategory(category.id);
+    jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": category.name,
+      "description": category.description,
+      "url": `https://crawlers.dpdns.org/category/${slug}`,
+      "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": tools.length,
+        "itemListElement": tools.map((tool, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "url": `https://crawlers.dpdns.org/tool/${tool.id}`,
+          "name": tool.name
+        }))
+      }
+    };
+  }
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <CategoryPageClient slug={slug} />
+    </>
+  );
 }
