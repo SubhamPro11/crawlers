@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import {
-  Sparkles, Code, Search, Image as ImageIcon, AudioLines, Video, FileText, Bot, 
+  Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
   Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
-  Sprout, GraduationCap, Gamepad2, Landmark, Heart, Shield,
-  MessageSquare, UserCheck, BarChart2, PenTool, Cloud, Cpu, Compass, 
-  Globe, Film, BookOpen, Eye, Music, Radio, Smile, HelpCircle, 
-  Construction, Users, Activity, Laptop, Scissors, Mic, PenSquare,
+  Sprout, GraduationCap, Gamepad2, Landmark, Heart, 
+  MessageSquare, UserCheck, PenTool, Cloud, Cpu, Compass, 
+  Globe, Film, BookOpen, Eye, Music, Smile, HelpCircle, 
+  Users, Activity, Laptop, Scissors, Mic, 
   TrendingUp, Mail, Calendar, Briefcase, FileSearch, Book, StickyNote,
   Clapperboard, Wand2, Captions, Tv, Volume2, Waves, Podcast, Mic2,
   Paintbrush, Eraser, Shapes, User, PieChart, Palette, Shirt, Glasses,
@@ -20,7 +20,7 @@ import {
   Presentation, Terminal, BugPlay, Blocks, Smartphone, Bug, Coins, Wifi,
   Wrench, EyeOff, Fingerprint, Copy, Tag, Folder, Brain, ShieldAlert,
   Megaphone, DollarSign, Magnet, Share2, Award, ShoppingBag, MapPin,
-  FolderOpen, LifeBuoy, Gauge, Leaf, Dumbbell, Dog, Hammer, Factory,
+  FolderOpen, LifeBuoy, Gauge, Leaf, Dumbbell, Hammer, Factory,
   Home as HomeIcon, ShieldCheck, Building, Stethoscope, HeartPulse, Pill, Dna,
   Recycle, CloudLightning, CloudSun, Rocket, Truck, Package, Zap, GitBranch,
   Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy
@@ -139,18 +139,7 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-  const lettersWithCategories = useMemo(() => {
-    const letters = new Set<string>();
-    categories.forEach(cat => {
-      const firstChar = cat.name.charAt(0).toUpperCase();
-      if (/[A-Z]/.test(firstChar)) {
-        letters.add(firstChar);
-      }
-    });
-    return Array.from(letters).sort();
-  }, [categories]);
 
   const filteredCategories = useMemo(() => {
     return categories.filter(cat => {
@@ -163,6 +152,29 @@ export default function Home() {
       return matchesSearch && matchesLetter;
     });
   }, [categories, selectedLetter, categorySearchQuery]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      const { scrollLeft, scrollWidth, clientWidth } = el;
+      setShowLeftFade(scrollLeft > 2);
+      setShowRightFade(scrollLeft < scrollWidth - clientWidth - 2);
+    }
+  }, []);
+
+  const handleScroll = () => {
+    checkScroll();
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, [checkScroll, filteredCategories]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -204,7 +216,7 @@ export default function Home() {
   };
 
   // Explicit mapping of category slugs to unique, hand-picked Lucide icons
-  const CATEGORY_ICON_MAP: Record<string, React.ComponentType<any>> = {
+  const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
     // Text & Writing
     "writing-assistants": PenTool,
     "copywriting": Type,
@@ -501,7 +513,14 @@ export default function Home() {
 
         {/* Sticky Group Jump Nav */}
         <div className="sticky top-[73px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative">
-          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
+          {showLeftFade && (
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-45" />
+          )}
+          <div 
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth"
+          >
             <button
               onClick={() => {
                 setSelectedLetter("All");
@@ -538,8 +557,9 @@ export default function Home() {
               );
             })}
           </div>
-          {/* Fade mask at the trailing edge (right side) */}
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-45 md:hidden" />
+          {showRightFade && (
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-45" />
+          )}
         </div>
 
         {/* Active Filters Display */}
