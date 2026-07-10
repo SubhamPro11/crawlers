@@ -74,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} h-full antialiased dark overflow-x-hidden`}
       suppressHydrationWarning
     >
       <head>
@@ -90,7 +90,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="min-h-full flex flex-col bg-[#0D0F0E] text-[#EDEEEA] font-sans">
+      <body className="min-h-full flex flex-col bg-[#0D0F0E] text-[#EDEEEA] font-sans overflow-x-hidden">
         <Header />
         <main className="flex-1 flex flex-col">
           {children}
