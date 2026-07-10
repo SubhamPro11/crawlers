@@ -64,9 +64,13 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
         {/* Monospace tag list */}
         <div className="flex flex-wrap gap-x-2 gap-y-1 mb-5 font-mono text-[10px] text-[#8A8F87]">
           {tool.tags.slice(0, 3).map((tag, idx) => (
-            <span key={`${tag}-${idx}`} className="before:content-['['] after:content-[']']">
+            <Link
+              key={`${tag}-${idx}`}
+              href={`/tag/${encodeURIComponent(tag)}`}
+              className="before:content-['['] after:content-[']'] hover:text-[#8FBF3F] transition-colors"
+            >
               {tag}
-            </span>
+            </Link>
           ))}
         </div>
       </div>

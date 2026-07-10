@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { User } from "@supabase/supabase-js";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -57,8 +58,8 @@ export default function Header() {
         },
       });
       if (error) throw error;
-    } catch (err: any) {
-      console.error("Authentication error:", err.message);
+    } catch (err) {
+      console.error("Authentication error:", (err as Error).message);
     }
   };
 
@@ -67,8 +68,8 @@ export default function Header() {
       await supabase.auth.signOut();
       setDropdownOpen(false);
       router.refresh();
-    } catch (err: any) {
-      console.error("Sign out error:", err.message);
+    } catch (err) {
+      console.error("Sign out error:", (err as Error).message);
     }
   };
 
@@ -101,23 +102,25 @@ export default function Header() {
         {/* Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Quick Search Input */}
-          <form onSubmit={handleSearchSubmit} className="relative hidden sm:block">
+          <div 
+            onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
+            className="relative hidden sm:block cursor-pointer"
+          >
             <input
               type="text"
               placeholder="Query index..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-48 lg:w-56 rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-8 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none focus:border-[#8FBF3F] focus:ring-1 focus:ring-[#8FBF3F] transition-all"
+              readOnly
+              className="w-48 lg:w-56 cursor-pointer rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-14 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none hover:border-[#8FBF3F]/60 transition-all"
             />
-            <button
-              type="submit"
-              className="absolute right-2.5 top-2.5 text-[#8A8F87] hover:text-[#8FBF3F]"
-            >
+            <div className="absolute right-8 top-1.5 pointer-events-none hidden lg:flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-500">
+              <span>⌘</span><span>K</span>
+            </div>
+            <div className="absolute right-2.5 top-2.5 text-[#8A8F87]">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </button>
-          </form>
+            </div>
+          </div>
 
           {/* Search Toggle Mobile */}
           <button 

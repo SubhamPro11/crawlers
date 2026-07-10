@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { mockDb, Category, Tool } from "@/data/mockDb";
+import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import {
   Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
@@ -26,98 +26,7 @@ import {
   Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy
 } from "lucide-react";
 
-interface CategoryGroup {
-  id: string;
-  name: string;
-  slugs: string[];
-  keywords: string[];
-}
 
-const CATEGORY_GROUPS: CategoryGroup[] = [
-  {
-    id: "text-writing",
-    name: "Text & Writing",
-    slugs: ["writing-assistants", "copywriting", "storytelling", "transcription", "translator", "localization", "resume-tools", "document-ai", "documentation", "note-taking-apps", "newsletters", "ai-newsletters"],
-    keywords: ["writing", "copywrite", "transcribe", "translate", "localiz", "resume", "document", "note", "letter", "summariz"]
-  },
-  {
-    id: "audio-video",
-    name: "Audio, Video & Media",
-    slugs: ["video", "video-editor", "video-generator", "video-enhancer", "video-subtitling", "talking-avatar-generator", "animation", "music-generation", "audio", "voice-cloning", "podcast", "dubbing", "text-to-speech"],
-    keywords: ["video", "avatar", "animat", "music", "audio", "voice", "podcast", "dub"]
-  },
-  {
-    id: "design-creative",
-    name: "Design & 3D Creative",
-    slugs: ["image-generation", "image-editing", "background-remover", "logo-generator", "character-design", "infographics", "graphic-design", "fashion", "architecture", "ar-vr", "3d", "3d-printing", "meme-generator", "creative-media"],
-    keywords: ["image", "design", "creative", "logo", "graphic", "fashion", "architecture", "vr", "3d", "meme", "remover"]
-  },
-  {
-    id: "productivity-business",
-    name: "Productivity & Business",
-    slugs: ["productivity", "project-management", "calendar-scheduling", "meeting-assistants", "crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "email-assistants", "spreadsheets", "mind-mapping", "automation", "workflow-automation", "diagramming", "events", "nonprofit", "presentation", "finance", "fintech", "knowledge-management"],
-    keywords: ["productiv", "project", "calendar", "schedul", "meeting", "crm", "hr", "recruit", "complian", "tax", "account", "contract", "business", "email", "spreadsheet", "mind"]
-  },
-  {
-    id: "dev-tech",
-    name: "Developer & Tech Tools",
-    slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot", "prompt-tools", "api-tools"],
-    keywords: ["dev", "code", "software", "test", "build", "cloud", "debug", "web3", "robot", "iot"]
-  },
-  {
-    id: "data-security",
-    name: "Data, Models & Security",
-    slugs: ["database-tools", "observability", "cybersecurity", "privacy", "identity", "synthetic-data", "data-labeling", "data", "models", "leaderboards-benchmarks", "computer-vision", "content-moderation"],
-    keywords: ["data", "db", "security", "privacy", "identity", "model", "vision", "observab"]
-  },
-  {
-    id: "marketing-sales",
-    name: "Marketing, Sales & SEO",
-    slugs: ["marketing", "sales-tools", "lead-generation", "seo", "social-media-tools", "ad-generator", "e-commerce", "market-research"],
-    keywords: ["market", "sale", "lead", "seo", "social", "ad-"]
-  },
-  {
-    id: "search-agents",
-    name: "Search, Chat & AI Agents",
-    slugs: ["search-research", "search-engines", "local-search-engines", "ai-directories", "chatbot-builders", "chatbots", "ai-agents", "personal-assistants", "ai-companion", "customer-support", "general-reasoning", "sentiment-analysis", "research-tools"],
-    keywords: ["search", "engine", "directory", "chat", "agent", "assist", "companion", "support", "reasoning", "sentiment"]
-  },
-  {
-    id: "education-lifestyle",
-    name: "Education & Lifestyle",
-    slugs: ["academia", "learning-tools", "language-learning", "reading", "parenting", "dating", "wellness", "fitness", "sports-analytics", "pets", "travel", "others", "accessibility", "food", "gaming", "job-tools", "nutrition", "mental-health"],
-    keywords: ["academia", "learn", "read", "parent", "date", "well", "fit", "sport", "pet", "travel", "other"]
-  },
-  {
-    id: "science-industry",
-    name: "Science, Health & Industry",
-    slugs: ["farming", "construction", "manufacturing", "real-estate", "home-design", "insurance", "government", "healthcare", "telemedicine", "medical-imaging", "drug-discovery", "biotech", "cleantech", "energy", "climate", "weather", "space-tech", "legal-assistants", "patent-tools", "fleet-management", "supply-chain", "geospatial"],
-    keywords: ["farm", "construct", "manufactur", "estate", "house", "insurance", "govern", "health", "medic", "drug", "bio", "clean", "energy", "climate", "weather", "space", "legal", "patent", "fleet", "chain", "geo"]
-  }
-];
-
-const getCategoryGroup = (cat: Category): CategoryGroup => {
-  const slug = cat.slug.toLowerCase();
-  
-  // 1. Direct Slug Match
-  for (const group of CATEGORY_GROUPS) {
-    if (group.slugs.includes(slug)) {
-      return group;
-    }
-  }
-  
-  // 2. Keyword Match
-  for (const group of CATEGORY_GROUPS) {
-    for (const kw of group.keywords) {
-      if (slug.includes(kw)) {
-        return group;
-      }
-    }
-  }
-  
-  // Default fallback: Education & Lifestyle
-  return CATEGORY_GROUPS[8];
-};
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
