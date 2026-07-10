@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useMemo } from "react";
+import { use, useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { mockDb, Category, Tool, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
@@ -32,26 +32,19 @@ export default function CategoryPage({ params }: PageProps) {
     });
   }, [tools, activeFilter, sortBy]);
 
-  useEffect(() => {
-    let active = true;
-    const fetchCategoryData = async () => {
-      const cat = await mockDb.getCategoryBySlug(slug);
-      if (cat && active) {
-        setCategory(cat);
-        const categoryTools = await mockDb.getToolsByCategory(cat.id);
-        if (active) {
-          setTools(categoryTools);
-          setIsLoading(false);
-        }
-      } else if (active) {
-        setIsLoading(false);
-      }
-    };
-    fetchCategoryData();
-    return () => {
-      active = false;
-    };
+  const fetchCategoryData = useCallback(async () => {
+    const cat = await mockDb.getCategoryBySlug(slug);
+    if (cat) {
+      setCategory(cat);
+      const categoryTools = await mockDb.getToolsByCategory(cat.id);
+      setTools(categoryTools);
+    }
+    setIsLoading(false);
   }, [slug]);
+
+  useEffect(() => {
+    fetchCategoryData();
+  }, [fetchCategoryData]);
 
   if (isLoading) {
     return (
