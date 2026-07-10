@@ -21,8 +21,30 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Crawlers - Find AI Tools By Use Case",
-  description: "Browse curated AI tools and bots based on what you need to achieve, rather than by brand names.",
+  metadataBase: new URL("https://crawlers.dpdns.org"),
+  title: {
+    default: "Crawlers - Find AI Tools By Use Case",
+    template: "%s | Crawlers"
+  },
+  description: "Curated directory indexing 150+ categories of AI tools. Search by use case and find exact solutions for writing, design, audio, and developer workflows.",
+  keywords: ["AI tools", "AI directory", "artificial intelligence bots", "use case search", "find AI platforms", "curated bots list"],
+  openGraph: {
+    title: "Crawlers - Find AI Tools By Use Case",
+    description: "Curated directory indexing 150+ categories of AI tools. Search by use case and find exact solutions for writing, design, audio, and developer workflows.",
+    url: "https://crawlers.dpdns.org",
+    siteName: "Crawlers",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Crawlers - Find AI Tools By Use Case",
+    description: "Curated directory indexing 150+ categories of AI tools. Search by use case and find exact solutions for writing, design, audio, and developer workflows.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({

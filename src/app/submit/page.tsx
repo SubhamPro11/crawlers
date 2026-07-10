@@ -86,13 +86,13 @@ export default function SubmitPage() {
               setTagsInput("");
               setPricingModel("unknown");
             }}
-            className="rounded-lg border border-slate-800 bg-slate-900 px-5 py-2.5 text-xs font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+            className="flex h-11 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 px-6 text-xs font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
           >
             Submit Another Bot
           </button>
           <Link
             href="/"
-            className="rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] px-5 py-2.5 text-xs font-semibold text-slate-950 transition-colors"
+            className="flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] px-6 text-xs font-semibold text-slate-950 transition-colors"
           >
             Back Home
           </Link>
@@ -247,13 +247,13 @@ export default function SubmitPage() {
         <div className="flex justify-end gap-4 pt-4 border-t border-slate-800/60">
           <Link
             href="/"
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-[#212623] bg-[#0D0F0E] px-6 text-sm font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+            className="inline-flex h-11 items-center justify-center rounded-lg border border-[#212623] bg-[#0D0F0E] px-6 text-sm font-semibold text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
           >
             Cancel
           </Link>
           <button
             type="submit"
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-[#8FBF3F] px-6 text-sm font-bold text-slate-950 hover:bg-[#7ba235] transition-colors shadow-md shadow-[#8FBF3F]/15"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-6 text-sm font-bold text-slate-950 hover:bg-[#7ba235] transition-colors shadow-md shadow-[#8FBF3F]/15"
           >
             Submit Platform
           </button>

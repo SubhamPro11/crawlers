@@ -59,17 +59,17 @@ function SearchContent() {
 
       {/* Search Input Box */}
       <div className="mb-10 max-w-xl font-sans">
-        <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-1.5 focus-within:border-[#8FBF3F] transition-all">
+        <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] transition-all">
           <input
             type="text"
             placeholder="Type your use case..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full bg-transparent px-4 py-2 text-sm text-white placeholder-slate-500 outline-none font-sans"
+            className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans"
           />
           <button
             type="submit"
-            className="rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-4 py-2 text-xs transition-colors duration-200 font-sans"
+            className="shrink-0 flex items-center justify-center h-11 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-6 text-sm transition-colors duration-200 font-sans"
           >
             Find
           </button>
@@ -104,7 +104,7 @@ function SearchContent() {
           </p>
           <Link
             href="/submit"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
           >
             Submit a New Bot
           </Link>

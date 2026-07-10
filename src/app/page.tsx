@@ -6,13 +6,24 @@ import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import {
-  Sparkles, Code, Search, Image, AudioLines, Video, FileText, Bot, 
+  Sparkles, Code, Search, Image as ImageIcon, AudioLines, Video, FileText, Bot, 
   Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
   Sprout, GraduationCap, Gamepad2, Landmark, Heart, Shield,
   MessageSquare, UserCheck, BarChart2, PenTool, Cloud, Cpu, Compass, 
   Globe, Film, BookOpen, Eye, Music, Radio, Smile, HelpCircle, 
   Construction, Users, Activity, Laptop, Scissors, Mic, PenSquare,
-  TrendingUp, Mail, Calendar
+  TrendingUp, Mail, Calendar, Briefcase, FileSearch, Book, StickyNote,
+  Clapperboard, Wand2, Captions, Tv, Volume2, Waves, Podcast, Mic2,
+  Paintbrush, Eraser, Shapes, User, PieChart, Palette, Shirt, Glasses,
+  Box, Printer, Laugh, Layers, Timer, ListTodo, HeartHandshake, UserPlus,
+  UserSearch, Calculator, FileSignature, Send, Table, GitFork, Ticket,
+  Presentation, Terminal, BugPlay, Blocks, Smartphone, Bug, Coins, Wifi,
+  Wrench, EyeOff, Fingerprint, Copy, Tag, Folder, Brain, ShieldAlert,
+  Megaphone, DollarSign, Magnet, Share2, Award, ShoppingBag, MapPin,
+  FolderOpen, LifeBuoy, Gauge, Leaf, Dumbbell, Dog, Hammer, Factory,
+  Home as HomeIcon, ShieldCheck, Building, Stethoscope, HeartPulse, Pill, Dna,
+  Recycle, CloudLightning, CloudSun, Rocket, Truck, Package, Zap, GitBranch,
+  Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy
 } from "lucide-react";
 
 interface CategoryGroup {
@@ -26,55 +37,55 @@ const CATEGORY_GROUPS: CategoryGroup[] = [
   {
     id: "text-writing",
     name: "Text & Writing",
-    slugs: ["writing-assistants", "copywriting", "storytelling", "transcription", "translator", "localization", "resume-tools", "document-ai", "documentation", "note-taking-apps", "newsletters"],
+    slugs: ["writing-assistants", "copywriting", "storytelling", "transcription", "translator", "localization", "resume-tools", "document-ai", "documentation", "note-taking-apps", "newsletters", "ai-newsletters"],
     keywords: ["writing", "copywrite", "transcribe", "translate", "localiz", "resume", "document", "note", "letter", "summariz"]
   },
   {
     id: "audio-video",
     name: "Audio, Video & Media",
-    slugs: ["video", "video-editor", "video-generator", "video-enhancer", "video-subtitling", "talking-avatar-generator", "animation", "music-generation", "audio", "voice-cloning", "podcast", "dubbing"],
+    slugs: ["video", "video-editor", "video-generator", "video-enhancer", "video-subtitling", "talking-avatar-generator", "animation", "music-generation", "audio", "voice-cloning", "podcast", "dubbing", "text-to-speech"],
     keywords: ["video", "avatar", "animat", "music", "audio", "voice", "podcast", "dub"]
   },
   {
     id: "design-creative",
     name: "Design & 3D Creative",
-    slugs: ["image-generation", "image-editing", "background-remover", "logo-generator", "character-design", "infographics", "graphic-design", "fashion", "architecture", "ar-vr", "3d", "3d-printing", "meme-generator"],
+    slugs: ["image-generation", "image-editing", "background-remover", "logo-generator", "character-design", "infographics", "graphic-design", "fashion", "architecture", "ar-vr", "3d", "3d-printing", "meme-generator", "creative-media"],
     keywords: ["image", "design", "creative", "logo", "graphic", "fashion", "architecture", "vr", "3d", "meme", "remover"]
   },
   {
     id: "productivity-business",
     name: "Productivity & Business",
-    slugs: ["productivity", "project-management", "calendar-scheduling", "meeting-assistants", "crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "email-assistants", "spreadsheets", "mind-mapping"],
+    slugs: ["productivity", "project-management", "calendar-scheduling", "meeting-assistants", "crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "email-assistants", "spreadsheets", "mind-mapping", "automation", "workflow-automation", "diagramming", "events", "nonprofit", "presentation", "finance", "fintech", "knowledge-management"],
     keywords: ["productiv", "project", "calendar", "schedul", "meeting", "crm", "hr", "recruit", "complian", "tax", "account", "contract", "business", "email", "spreadsheet", "mind"]
   },
   {
     id: "dev-tech",
     name: "Developer & Tech Tools",
-    slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot"],
+    slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot", "prompt-tools", "api-tools"],
     keywords: ["dev", "code", "software", "test", "build", "cloud", "debug", "web3", "robot", "iot"]
   },
   {
     id: "data-security",
     name: "Data, Models & Security",
-    slugs: ["database-tools", "observability", "cybersecurity", "privacy", "identity", "synthetic-data", "data-labeling", "data", "models", "computer-vision"],
+    slugs: ["database-tools", "observability", "cybersecurity", "privacy", "identity", "synthetic-data", "data-labeling", "data", "models", "leaderboards-benchmarks", "computer-vision", "content-moderation"],
     keywords: ["data", "db", "security", "privacy", "identity", "model", "vision", "observab"]
   },
   {
     id: "marketing-sales",
     name: "Marketing, Sales & SEO",
-    slugs: ["marketing", "sales-tools", "lead-generation", "seo", "social-media-tools", "ad-generator"],
+    slugs: ["marketing", "sales-tools", "lead-generation", "seo", "social-media-tools", "ad-generator", "e-commerce", "market-research"],
     keywords: ["market", "sale", "lead", "seo", "social", "ad-"]
   },
   {
     id: "search-agents",
     name: "Search, Chat & AI Agents",
-    slugs: ["search-research", "search-engines", "local-search-engines", "ai-directories", "chatbot-builders", "chatbots", "ai-agents", "personal-assistants", "ai-companion", "customer-support", "general-reasoning", "sentiment-analysis"],
+    slugs: ["search-research", "search-engines", "local-search-engines", "ai-directories", "chatbot-builders", "chatbots", "ai-agents", "personal-assistants", "ai-companion", "customer-support", "general-reasoning", "sentiment-analysis", "research-tools"],
     keywords: ["search", "engine", "directory", "chat", "agent", "assist", "companion", "support", "reasoning", "sentiment"]
   },
   {
     id: "education-lifestyle",
     name: "Education & Lifestyle",
-    slugs: ["academia", "learning-tools", "language-learning", "reading", "parenting", "dating", "wellness", "fitness", "sports-analytics", "pets", "travel", "others"],
+    slugs: ["academia", "learning-tools", "language-learning", "reading", "parenting", "dating", "wellness", "fitness", "sports-analytics", "pets", "travel", "others", "accessibility", "food", "gaming", "job-tools", "nutrition", "mental-health"],
     keywords: ["academia", "learn", "read", "parent", "date", "well", "fit", "sport", "pet", "travel", "other"]
   },
   {
@@ -115,8 +126,18 @@ export default function Home() {
   const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
   const router = useRouter();
 
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState<string>("All");
   const [categorySearchQuery, setCategorySearchQuery] = useState<string>("");
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -182,183 +203,200 @@ export default function Home() {
     setRecentTools(sorted);
   };
 
+  // Explicit mapping of category slugs to unique, hand-picked Lucide icons
+  const CATEGORY_ICON_MAP: Record<string, React.ComponentType<any>> = {
+    // Text & Writing
+    "writing-assistants": PenTool,
+    "copywriting": Type,
+    "storytelling": BookOpen,
+    "transcription": Mic,
+    "translator": Languages,
+    "localization": Globe,
+    "resume-tools": Briefcase,
+    "document-ai": FileSearch,
+    "documentation": Book,
+    "note-taking-apps": StickyNote,
+    "newsletters": Mail,
+    "ai-newsletters": Inbox,
+
+    // Audio, Video & Media
+    "video": Film,
+    "video-editor": Scissors,
+    "video-generator": Clapperboard,
+    "video-enhancer": Wand2,
+    "video-subtitling": Captions,
+    "talking-avatar-generator": Tv,
+    "animation": Sparkles,
+    "music-generation": Music,
+    "audio": Volume2,
+    "voice-cloning": Waves,
+    "podcast": Podcast,
+    "dubbing": Mic2,
+    "text-to-speech": AudioLines,
+
+    // Design & 3D Creative
+    "image-generation": ImageIcon,
+    "image-editing": Paintbrush,
+    "background-remover": Eraser,
+    "logo-generator": Shapes,
+    "character-design": User,
+    "infographics": PieChart,
+    "graphic-design": Palette,
+    "fashion": Shirt,
+    "architecture": Compass,
+    "ar-vr": Glasses,
+    "3d": Box,
+    "3d-printing": Printer,
+    "meme-generator": Laugh,
+    "creative-media": Layers,
+
+    // Productivity & Business
+    "productivity": Timer,
+    "project-management": ListTodo,
+    "calendar-scheduling": Calendar,
+    "meeting-assistants": Users,
+    "crm": HeartHandshake,
+    "hr": UserPlus,
+    "recruiting": UserSearch,
+    "compliance": Scale,
+    "tax-accounting": Calculator,
+    "contract-management": FileSignature,
+    "business-tools": Briefcase,
+    "email-assistants": Send,
+    "spreadsheets": Table,
+    "mind-mapping": Network,
+    "automation": Zap,
+    "workflow-automation": Workflow,
+    "diagramming": GitFork,
+    "events": Ticket,
+    "nonprofit": Heart,
+    "presentation": Presentation,
+    "finance": Landmark,
+    "fintech": Coins,
+    "knowledge-management": FolderOpen,
+
+    // Developer & Tech Tools
+    "developer-tools": Terminal,
+    "devtools": Command,
+    "code-assistant": Code,
+    "software-testing": BugPlay,
+    "no-code": Blocks,
+    "app-builders": Smartphone,
+    "website-builders": Laptop,
+    "cloud-management": Cloud,
+    "debugging": Bug,
+    "web3": Coins,
+    "robotics": Cpu,
+    "iot": Wifi,
+    "prompt-tools": Wrench,
+    "api-tools": Plug,
+
+    // Data, Models & Security
+    "database-tools": Database,
+    "observability": Activity,
+    "cybersecurity": Lock,
+    "privacy": EyeOff,
+    "identity": Fingerprint,
+    "synthetic-data": Copy,
+    "data-labeling": Tag,
+    "data": Folder,
+    "models": GitBranch,
+    "leaderboards-benchmarks": Trophy,
+    "computer-vision": Eye,
+    "content-moderation": ShieldAlert,
+
+    // Marketing, Sales & SEO
+    "marketing": Megaphone,
+    "sales-tools": DollarSign,
+    "lead-generation": Magnet,
+    "seo": TrendingUp,
+    "social-media-tools": Share2,
+    "ad-generator": Award,
+    "e-commerce": ShoppingBag,
+    "market-research": BarChart3,
+
+    // Search, Chat & AI Agents
+    "search-research": Search,
+    "search-engines": Globe,
+    "local-search-engines": MapPin,
+    "ai-directories": FolderOpen,
+    "chatbot-builders": Settings,
+    "chatbots": MessageSquare,
+    "ai-agents": Bot,
+    "personal-assistants": UserCheck,
+    "ai-companion": Smile,
+    "customer-support": LifeBuoy,
+    "general-reasoning": Brain,
+    "sentiment-analysis": Gauge,
+    "research-tools": Notebook,
+
+    // Education & Lifestyle
+    "academia": GraduationCap,
+    "learning-tools": Library,
+    "language-learning": Languages,
+    "reading": BookOpen,
+    "parenting": Users,
+    "dating": Heart,
+    "wellness": Leaf,
+    "fitness": Dumbbell,
+    "sports-analytics": Activity,
+    "pets": PawPrint,
+    "travel": Compass,
+    "others": HelpCircle,
+    "accessibility": UserCheck,
+    "food": Apple,
+    "gaming": Gamepad2,
+    "job-tools": Briefcase,
+    "nutrition": Utensils,
+    "mental-health": Brain,
+
+    // Science, Health & Industry
+    "farming": Sprout,
+    "construction": Hammer,
+    "manufacturing": Factory,
+    "real-estate": HomeIcon,
+    "home-design": Layout,
+    "insurance": ShieldCheck,
+    "government": Building,
+    "healthcare": Stethoscope,
+    "telemedicine": HeartPulse,
+    "medical-imaging": Heart,
+    "drug-discovery": Pill,
+    "biotech": Dna,
+    "cleantech": Recycle,
+    "energy": Zap,
+    "climate": CloudLightning,
+    "weather": CloudSun,
+    "space-tech": Rocket,
+    "legal-assistants": Scale,
+    "patent-tools": FileText,
+    "fleet-management": Truck,
+    "supply-chain": Package,
+    "geospatial": Globe
+  };
+
   // Get icon for categories
   const getCategoryIcon = (slug: string) => {
     const s = slug.toLowerCase();
     const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
 
-    // 1. Precise Keyword Mapping
-    if (s.includes("3d")) {
-      return <Layout className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("accessibility")) {
-      return <UserCheck className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("directories")) {
-      return <FileText className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("newsletters")) {
-      return <Mail className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("api-tools") || s.includes("api")) {
-      return <Code className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("ar-vr") || s.includes("vr")) {
-      return <Eye className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("architecture")) {
-      return <Construction className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("developer-tools") || s.includes("devtools") || s.includes("code-assistant")) {
-      return <Code className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("farming")) {
-      return <Sprout className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("legal-assistants") || s.includes("contract-management") || s.includes("compliance")) {
-      return <Scale className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("nutrition") || s.includes("food")) {
-      return <Apple className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("video-editor") || s === "video") {
-      return <Film className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("video-generator") || s.includes("avatar")) {
-      return <Video className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("video-subtitling")) {
-      return <AudioLines className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("academia") || s.includes("learning-tools") || s.includes("language-learning")) {
-      return <GraduationCap className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("gaming")) {
-      return <Gamepad2 className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("finance") || s.includes("fintech") || s.includes("accounting")) {
-      return <Landmark className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("healthcare") || s.includes("telemedicine") || s.includes("medical-imaging")) {
-      return <Heart className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("cybersecurity") || s.includes("privacy") || s.includes("identity")) {
-      return <Shield className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("chatbot-builders") || s === "chatbots" || s.includes("customer-support")) {
-      return <MessageSquare className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("hr") || s.includes("recruiting") || s.includes("job-tools")) {
-      return <UserCheck className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("seo") || s.includes("lead-generation")) {
-      return <TrendingUp className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("marketing") || s.includes("sales-tools") || s.includes("ad-generator")) {
-      return <BarChart2 className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("image-generation")) {
-      return <Image className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("graphic-design") || s.includes("writing-assistants") || s.includes("copywriting")) {
-      return <PenTool className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("image-editing") || s.includes("video-enhancer") || s.includes("animation")) {
-      return <Sparkles className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("app-builders") || s.includes("website-builders") || s.includes("no-code")) {
-      return <Laptop className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("background-remover")) {
-      return <Scissors className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("meme-generator")) {
-      return <Smile className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("email")) {
-      return <Mail className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("cloud")) {
-      return <Cloud className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("robotics") || s.includes("iot")) {
-      return <Cpu className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("geospatial") || s.includes("travel") || s.includes("market-research")) {
-      return <Compass className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("web3") || s.includes("search-engines")) {
-      return <Globe className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("music")) {
-      return <Music className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("audio") || s.includes("podcast")) {
-      return <Radio className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("translator") || s.includes("localization")) {
-      return <Languages className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("transcription") || s.includes("dubbing")) {
-      return <Mic className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("search") || s.includes("research")) {
-      return <Search className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("storytelling") || s.includes("knowledge")) {
-      return <BookOpen className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("note-taking") || s.includes("mind-mapping")) {
-      return <PenSquare className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("document-ai") || s.includes("documentation") || s.includes("resume-tools")) {
-      return <FileText className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("agents") || s.includes("personal-assistants") || s.includes("companion")) {
-      return <Bot className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("workflow") || s.includes("automation")) {
-      return <Workflow className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("database")) {
-      return <Database className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("productivity") || s.includes("project-management") || s.includes("calendar")) {
-      return <Calendar className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("construction")) {
-      return <Construction className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("parenting")) {
-      return <Users className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("sports")) {
-      return <Activity className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("observability") || s.includes("sentiment")) {
-      return <Eye className={baseClass} strokeWidth={2} />;
-    }
-    if (s.includes("logo") || s.includes("character")) {
-      return <Layout className={baseClass} strokeWidth={2} />;
-    }
-
-    // Default fallback
-    return <HelpCircle className={baseClass} strokeWidth={2} />;
+    const IconComponent = CATEGORY_ICON_MAP[s] || HelpCircle;
+    return <IconComponent className={baseClass} strokeWidth={2} />;
   };
 
   return (
     <div className="flex flex-col flex-1">
       {/* Hero Section */}
-      <section className="relative px-4 py-20 sm:px-6 lg:px-8 text-center overflow-hidden border-b border-[#1E293B] bg-gradient-to-b from-[#0e1627] to-[#0B0F17]">
+      <section className="relative px-4 py-12 sm:py-20 sm:px-6 lg:px-8 text-center overflow-hidden border-b border-[#1E293B] bg-gradient-to-b from-[#0e1627] to-[#0B0F17]">
         {/* Subtle decorative glow */}
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
-          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
+          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6">
             Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> for the job
           </h1>
           
-          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+          <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
             A curated index of AI tools categorized by what they do, rather than by brand. Search by task to find the right tool instantly.
           </p>
 
@@ -372,14 +410,14 @@ export default function Home() {
               </div>
               <input
                 type="text"
-                placeholder="What do you want to do? (e.g., generate an image, summarize a video, write python code)"
+                placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans"
               />
               <button
                 type="submit"
-                className="rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
+                className="shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
               >
                 Search
               </button>
@@ -437,7 +475,7 @@ export default function Home() {
           <div className="relative max-w-xs w-full">
             <input
               type="text"
-              placeholder="Search 143 categories..."
+              placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}
               value={categorySearchQuery}
               onChange={(e) => {
                 setCategorySearchQuery(e.target.value);
@@ -462,42 +500,46 @@ export default function Home() {
         </div>
 
         {/* Sticky Group Jump Nav */}
-        <div className="sticky top-[73px] z-30 flex flex-nowrap items-center gap-2 overflow-x-auto bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 py-4 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
-          <button
-            onClick={() => {
-              setSelectedLetter("All");
-              setCategorySearchQuery("");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold font-sans transition-all ${
-              selectedLetter === "All" && !categorySearchQuery
-                ? "bg-[#8FBF3F] text-slate-950"
-                : "bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-white"
-            }`}
-          >
-            All Categories
-          </button>
-          
-          <div className="h-5 w-[1px] bg-slate-850 flex-shrink-0 mx-1" />
-          
-          {CATEGORY_GROUPS.map((group) => {
-            const hasCategoriesInView = filteredCategories.some(cat => getCategoryGroup(cat).id === group.id);
-            if (!hasCategoriesInView) return null;
-            return (
-              <button
-                key={group.id}
-                onClick={() => {
-                  const element = document.getElementById(`group-${group.id}`);
-                  if (element) {
-                    element.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }
-                }}
-                className="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans"
-              >
-                {group.name}
-              </button>
-            );
-          })}
+        <div className="sticky top-[73px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative">
+          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
+            <button
+              onClick={() => {
+                setSelectedLetter("All");
+                setCategorySearchQuery("");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold font-sans transition-all ${
+                selectedLetter === "All" && !categorySearchQuery
+                  ? "bg-[#8FBF3F] text-slate-950"
+                  : "bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-white"
+              }`}
+            >
+              All Categories
+            </button>
+            
+            <div className="h-5 w-[1px] bg-slate-850 flex-shrink-0 mx-1 snap-start" />
+            
+            {CATEGORY_GROUPS.map((group) => {
+              const hasCategoriesInView = filteredCategories.some(cat => getCategoryGroup(cat).id === group.id);
+              if (!hasCategoriesInView) return null;
+              return (
+                <button
+                  key={group.id}
+                  onClick={() => {
+                    const element = document.getElementById(`group-${group.id}`);
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  }}
+                  className="flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans"
+                >
+                  {group.name}
+                </button>
+              );
+            })}
+          </div>
+          {/* Fade mask at the trailing edge (right side) */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-45 md:hidden" />
         </div>
 
         {/* Active Filters Display */}
@@ -553,7 +595,7 @@ export default function Home() {
                         <Link 
                           key={cat.id} 
                           href={`/category/${cat.slug}`}
-                          className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-6 hover:-translate-y-1 hover:bg-[#131615] hover:border-[#8FBF3F]/40 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 ${
+                          className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:-translate-y-1 hover:bg-[#131615] hover:border-[#8FBF3F]/40 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 ${
                             isZero ? "opacity-50 hover:opacity-85" : ""
                           }`}
                         >

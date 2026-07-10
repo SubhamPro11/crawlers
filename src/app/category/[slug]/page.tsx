@@ -45,7 +45,7 @@ export default function CategoryPage({ params }: PageProps) {
         <p className="text-slate-400 mb-8">The category you are looking for does not exist in our directory.</p>
         <Link 
           href="/" 
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
+          className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
         >
           Go Back Home
         </Link>
@@ -95,7 +95,7 @@ export default function CategoryPage({ params }: PageProps) {
             <button
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
-              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 font-sans ${
+              className={`rounded-full px-4 py-2.5 text-xs font-bold transition-all duration-200 font-sans ${
                 activeFilter === filter.value
                   ? "bg-[#8FBF3F] text-slate-950 shadow-md shadow-[#8FBF3F]/15"
                   : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white hover:border-slate-700"
@@ -132,7 +132,7 @@ export default function CategoryPage({ params }: PageProps) {
           </p>
           <Link
             href="/submit"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
           >
             Submit Bot
           </Link>

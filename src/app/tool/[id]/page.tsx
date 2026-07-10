@@ -51,7 +51,7 @@ export default function ToolDetailPage({ params }: PageProps) {
         <p className="text-slate-400 mb-8">The AI tool you are searching for is not registered in our database.</p>
         <Link 
           href="/" 
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
+          className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
         >
           Go Back Home
         </Link>
@@ -105,7 +105,7 @@ export default function ToolDetailPage({ params }: PageProps) {
       </nav>
 
       {/* Main Detail Card */}
-      <div className="rounded-2xl border border-[#212623] bg-[#131615] p-6 sm:p-10 shadow-2xl shadow-black/25 font-sans">
+      <div className="rounded-2xl border border-[#212623] bg-[#131615] p-5 sm:p-10 shadow-2xl shadow-black/25 font-sans">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800/80">
           
           {/* Logo & Basic Info */}
