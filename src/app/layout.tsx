@@ -1,9 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Newsreader, JetBrains_Mono, Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CommandPalette from "@/components/CommandPalette";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0D0F0E",
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

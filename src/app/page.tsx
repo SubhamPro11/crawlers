@@ -381,19 +381,19 @@ export default function Home() {
       )}
 
       {/* Category Indexing Section */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-slate-900">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-t border-slate-900">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 font-sans">
           <div>
             <h2 className="font-serif text-2xl font-medium tracking-tight text-white sm:text-3xl">
               Browse Directory Index
             </h2>
             <p className="text-slate-400 text-sm mt-1">
-              Filter by letter or search to discover use-case collections
+              Filter by section or search to discover use-case collections
             </p>
           </div>
           
           {/* Category Quick Filter */}
-          <div className="relative max-w-xs w-full">
+          <div className="relative w-full md:max-w-xs">
             <input
               type="text"
               placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}
