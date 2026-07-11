@@ -1,4 +1,7 @@
 {
+  "name": "crawlers",
+  "pages_build_output_dir": ".vercel/output/static",
+  "compatibility_date": "2024-01-01",
   "observability": {
     "logs": {
       "enabled": true,
