@@ -33,6 +33,11 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [recentTools, setRecentTools] = useState<Tool[]>([]);
   const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
+  
+  const [favoriteTools, setFavoriteTools] = useState<Tool[]>([]);
+  const [recentToolsList, setRecentToolsList] = useState<Tool[]>([]);
+  const [trendingTools, setTrendingTools] = useState<Tool[]>([]);
+  
   const router = useRouter();
 
   const [isMobile, setIsMobile] = useState(false);
@@ -47,8 +52,6 @@ export default function Home() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-
 
   const filteredCategories = useMemo(() => {
     return categories.filter(cat => {
@@ -85,29 +88,56 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkScroll);
   }, [checkScroll, filteredCategories]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      const [allTools, dbCategories] = await Promise.all([
-        mockDb.getTools(),
-        mockDb.getCategories()
-      ]);
-      
-      setCategories(dbCategories);
+  const loadData = useCallback(async () => {
+    const [allTools, dbCategories] = await Promise.all([
+      mockDb.getTools(),
+      mockDb.getCategories()
+    ]);
+    
+    setCategories(dbCategories);
 
-      // Calculate counts in memory
-      const counts: Record<string, number> = {};
-      allTools.forEach(tool => {
-        counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
-      });
-      setToolCounts(counts);
+    // Calculate counts in memory
+    const counts: Record<string, number> = {};
+    allTools.forEach(tool => {
+      counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
+    });
+    setToolCounts(counts);
 
-      const sorted = [...allTools]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 6);
-      setRecentTools(sorted);
-    };
-    loadData();
+    const sorted = [...allTools]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 6);
+    setRecentTools(sorted);
+
+    // Sort trending tools by click_count desc
+    const trending = [...allTools]
+      .sort((a, b) => (b.click_count || 0) - (a.click_count || 0))
+      .slice(0, 8);
+    setTrendingTools(trending);
+
+    // Load favorites and recently viewed from localStorage
+    const favIds: string[] = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
+    const recItems: Array<{ id: string; type: string }> = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+
+    const favTools = allTools.filter(t => favIds.includes(t.id));
+    setFavoriteTools(favTools);
+
+    const recentIds = recItems.filter(i => i.type === "tool").map(i => i.id);
+    const recTools = recentIds
+      .map(id => allTools.find(t => t.id === id))
+      .filter((t): t is Tool => !!t);
+    setRecentToolsList(recTools);
   }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadData();
+    
+    const handleFavoritesUpdate = () => {
+      loadData();
+    };
+    window.addEventListener("favorites-updated", handleFavoritesUpdate);
+    return () => window.removeEventListener("favorites-updated", handleFavoritesUpdate);
+  }, [loadData]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,11 +147,7 @@ export default function Home() {
   };
 
   const refreshRecent = async () => {
-    const allTools = await mockDb.getTools();
-    const sorted = [...allTools]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 6);
-    setRecentTools(sorted);
+    loadData();
   };
 
   // Explicit mapping of category slugs to unique, hand-picked Lucide icons
@@ -347,7 +373,114 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured / Trending Section */}
+      {/* Personalized Welcome, Continue Exploring & Favorite Tools */}
+      {(recentToolsList.length > 0 || favoriteTools.length > 0) && (
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 border-b border-slate-900">
+          <div className="mb-6 font-sans">
+            <h2 className="font-serif text-2xl font-medium text-white tracking-tight">
+              Welcome back
+            </h2>
+            <p className="text-slate-500 text-xs mt-1 font-mono">
+              &gt; personalized_explorer_panel
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Recently Viewed */}
+            {recentToolsList.length > 0 ? (
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
+                  <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
+                  continue_exploring (recently viewed)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {recentToolsList.slice(0, 4).map((tool) => (
+                    <ToolCard
+                      key={`recent-${tool.id}`}
+                      tool={tool}
+                      categoryName={categories.find(c => c.id === tool.category_id)?.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Favorite Tools */}
+            {favoriteTools.length > 0 ? (
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#8FBF3F] fill-current" />
+                  bookmarked_tools (favorites)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {favoriteTools.slice(0, 4).map((tool) => (
+                    <ToolCard
+                      key={`fav-home-${tool.id}`}
+                      tool={tool}
+                      categoryName={categories.find(c => c.id === tool.category_id)?.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      )}
+
+      {/* Trending Carousel Section */}
+      {trendingTools.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900">
+          <div className="mb-6 font-sans">
+            <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
+              Trending AI Tools
+            </h2>
+            <p className="text-[#8FBF3F] text-xs mt-1 font-mono">
+              &gt; sorted_by_engagement_velocity
+            </p>
+          </div>
+
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
+            {trendingTools.map((tool) => (
+              <div 
+                key={`trending-${tool.id}`} 
+                className="snap-start flex-shrink-0 w-80 rounded-xl border border-[#212623] bg-gradient-to-br from-[#131615] to-[#0A0D0B] p-6 shadow-lg hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5 transition-all duration-300 group"
+              >
+                <div className="flex justify-between items-start gap-2 mb-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs">
+                    {tool.name.substring(0, 2).toLowerCase()}
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    {tool.click_count || 0} views
+                  </span>
+                </div>
+                <Link href={`/tool/${tool.id}`} className="block mb-2">
+                  <h4 className="font-serif text-base font-semibold text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
+                    {tool.name}
+                  </h4>
+                </Link>
+                <p className="text-slate-400 text-xs leading-relaxed mb-4 line-clamp-2 h-8">
+                  {tool.short_description}
+                </p>
+                <div className="flex items-center justify-between border-t border-[#212623]/60 pt-3 text-[10px] font-mono">
+                  <span className="text-[#8A8F87] uppercase tracking-wider truncate max-w-[150px]">
+                    {categories.find(c => c.id === tool.category_id)?.name || "bot"}
+                  </span>
+                  <a
+                    href={tool.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#8FBF3F] font-bold hover:underline"
+                  >
+                    run_bot &rarr;
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Featured / Recently Indexed Section */}
       {recentTools.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8 font-sans">

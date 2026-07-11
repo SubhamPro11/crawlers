@@ -32,6 +32,16 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
       setCategory(cat);
       const categoryTools = await mockDb.getToolsByCategory(cat.id);
       setTools(categoryTools);
+
+      // Log Recently Viewed Category
+      const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+      const filtered = items.filter((i: { id: string }) => i.id !== cat.id);
+      const updated = [
+        { id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, timestamp: Date.now() },
+        ...filtered
+      ].slice(0, 10);
+      localStorage.setItem("crawlers_recent_items", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("recent-items-updated"));
     }
     setIsLoading(false);
   }, [slug]);
