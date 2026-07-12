@@ -88,6 +88,51 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkScroll);
   }, [checkScroll, filteredCategories]);
 
+  // Load from local storage cache instantly on mount
+  useEffect(() => {
+    try {
+      const cachedTools = localStorage.getItem("crawlers_cached_tools");
+      const cachedCats = localStorage.getItem("crawlers_cached_categories");
+      if (cachedTools && cachedCats) {
+        const tools = JSON.parse(cachedTools) as Tool[];
+        const cats = JSON.parse(cachedCats) as Category[];
+        
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCategories(cats);
+
+        const counts: Record<string, number> = {};
+        tools.forEach(tool => {
+          counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
+        });
+        setToolCounts(counts);
+
+        const sorted = [...tools]
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 6);
+        setRecentTools(sorted);
+
+        const trending = [...tools]
+          .sort((a, b) => (b.click_count || 0) - (a.click_count || 0))
+          .slice(0, 8);
+        setTrendingTools(trending);
+
+        const favIds: string[] = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
+        const recItems: Array<{ id: string; type: string }> = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+
+        const favTools = tools.filter(t => favIds.includes(t.id));
+        setFavoriteTools(favTools);
+
+        const recentIds = recItems.filter(i => i.type === "tool").map(i => i.id);
+        const recTools = recentIds
+          .map(id => tools.find(t => t.id === id))
+          .filter((t): t is Tool => !!t);
+        setRecentToolsList(recTools);
+      }
+    } catch (e) {
+      console.error("Error reading tools cache on mount:", e);
+    }
+  }, []);
+
   const loadData = useCallback(async () => {
     const [allTools, dbCategories] = await Promise.all([
       mockDb.getTools(),
@@ -126,6 +171,14 @@ export default function Home() {
       .map(id => allTools.find(t => t.id === id))
       .filter((t): t is Tool => !!t);
     setRecentToolsList(recTools);
+
+    // Save to cache for instant load next time
+    try {
+      localStorage.setItem("crawlers_cached_tools", JSON.stringify(allTools));
+      localStorage.setItem("crawlers_cached_categories", JSON.stringify(dbCategories));
+    } catch (e) {
+      console.error("Error saving tools cache:", e);
+    }
   }, []);
 
   useEffect(() => {

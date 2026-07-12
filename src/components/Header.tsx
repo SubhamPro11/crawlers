@@ -22,8 +22,23 @@ export default function Header() {
     });
 
     // Listen to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      
+      // Dispatch toast notifications on state changes
+      if (event === "SIGNED_IN" && session) {
+        window.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: { message: `Logged in as ${session.user.email}`, type: "success" }
+          })
+        );
+      } else if (event === "SIGNED_OUT") {
+        window.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: { message: "Signed out successfully", type: "info" }
+          })
+        );
+      }
     });
 
     // Handle clicks outside of dropdown
@@ -54,7 +69,7 @@ export default function Header() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+          redirectTo: typeof window !== "undefined" ? window.location.href : undefined,
         },
       });
       if (error) throw error;

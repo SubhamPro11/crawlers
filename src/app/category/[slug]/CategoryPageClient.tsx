@@ -26,12 +26,38 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
     });
   }, [tools, activeFilter, sortBy]);
 
+  // Load from local storage cache instantly on mount/slug change
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(`crawlers_cached_cat_${slug}`);
+      if (cached) {
+        const { category: cachedCat, tools: cachedTools } = JSON.parse(cached);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCategory(cachedCat);
+        setTools(cachedTools);
+        setIsLoading(false);
+      }
+    } catch (e) {
+      console.error("Error reading category cache:", e);
+    }
+  }, [slug]);
+
   const fetchCategoryData = useCallback(async () => {
     const cat = await mockDb.getCategoryBySlug(slug);
     if (cat) {
       setCategory(cat);
       const categoryTools = await mockDb.getToolsByCategory(cat.id);
       setTools(categoryTools);
+
+      // Save to cache
+      try {
+        localStorage.setItem(
+          `crawlers_cached_cat_${slug}`,
+          JSON.stringify({ category: cat, tools: categoryTools })
+        );
+      } catch (e) {
+        console.error("Error writing category cache:", e);
+      }
 
       // Log Recently Viewed Category
       const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
