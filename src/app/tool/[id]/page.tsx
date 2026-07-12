@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { mockDb } from "@/data/mockDb";
 import ToolDetailPageClient from "./ToolDetailPageClient";
-
-export const runtime = "edge";
-
 interface PageProps {
   params: Promise<{ id: string }>;
 }
