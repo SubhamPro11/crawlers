@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
-import { FeaturedCollections, WhyCrawlers, AINews } from "@/components/HomepageExtensions";
+import { WhyCrawlers, AINews } from "@/components/HomepageExtensions";
 import {
   Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
   Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
@@ -509,8 +509,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <FeaturedCollections />
 
       {/* Trending Carousel Section */}
       {trendingTools.length > 0 && (

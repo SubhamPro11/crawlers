@@ -1,68 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Tool, Category } from "@/data/mockDb";
-
-// Predefined Collections with corresponding search queries
-const COLLECTIONS = [
-  { id: "students", name: "Best AI for Students", query: "study study-aid research notes education", icon: "🎓", color: "from-[#3B82F6]/20 to-[#1D4ED8]/10" },
-  { id: "coding", name: "Best Coding AI", query: "code programmer python developer git vscode vscode-extension javascript typescript cursor copilot IDE compiler debugging database sql sql-queries terminal commands CLI api sdk coding documentation documentation-ai documentation-generator automation automation-tools automation-ai scripts script-generation code-generation code-editor code-review pull-request devops kubernetes docker cloud deployment ci-cd software-engineering software-architect software-developer programming programming-assistant coding-assistant", icon: "💻", color: "from-[#10B981]/20 to-[#047857]/10" },
-  { id: "image", name: "Best Image AI", query: "image generation illustration design midjourney photo logo upscale vector stable-diffusion dall-e canva drawing painting graphic-design texture", icon: "🎨", color: "from-[#EC4899]/20 to-[#BE185D]/10" },
-  { id: "marketing", name: "Best Marketing AI", query: "marketing seo copywriting ad-generation social-media linkedin instagram twitter advertising marketing-copy email-marketing analytics sales outbound cold-email leads campaigns campaign-management content-marketing blog-posts articles outreach growth-hacking conversion-optimization funnel-optimization landing-pages", icon: "📈", color: "from-[#F59E0B]/20 to-[#B45309]/10" },
-  { id: "writing", name: "Best Writing AI", query: "writing copywriting storytelling newsletters blogging notes editor documentation grammar spellcheck translator resume localization", icon: "✍️", color: "from-[#8B5CF6]/20 to-[#6D28D9]/10" },
-  { id: "video", name: "Best Video AI", query: "video youtube editing shorts tiktok reel capcut subtitles video-editor transcript audio voiceover text-to-speech avatar cloning animation dynamic-video sora runway pika luma", icon: "🎬", color: "from-[#EF4444]/20 to-[#B91C1C]/10" },
-  { id: "productivity", name: "Best Productivity AI", query: "productivity note-taking documentation task-manager scheduler automation templates calender workspace notion slack discord meetings summaries transcriptions recording action-items follow-ups emails newsletters shortcuts flow workflow-integration integration dashboards", icon: "⚡", color: "from-[#06B6D4]/25 to-[#0891B2]/10" },
-  { id: "free", name: "Best Free AI", query: "free open-source no-login offline self-hosted free-plan free-tier community-edition", icon: "🎁", color: "from-[#8FBF3F]/25 to-[#6E9B28]/10" }
-];
-
-
 
 interface HomepageExtensionsProps {
   totalTools: number;
   totalCategories: number;
   lastUpdated?: string;
-}
-
-export function FeaturedCollections() {
-  const router = useRouter();
-
-  const handleCollectionClick = (query: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}`);
-  };
-
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900 font-sans">
-      <div className="mb-6">
-        <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
-          Featured Collections
-        </h2>
-        <p className="text-slate-500 text-xs mt-1 font-mono">
-          &gt; curated_toolsets_by_usecase
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {COLLECTIONS.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => handleCollectionClick(c.query)}
-            className={`group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-gradient-to-br ${c.color} p-5 hover:border-[#8FBF3F]/35 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 text-left`}
-          >
-            <div className="text-2xl mb-3 group-hover:scale-110 transition-transform duration-300">{c.icon}</div>
-            <div>
-              <h3 className="font-bold text-white text-sm group-hover:text-[#8FBF3F] transition-colors">
-                {c.name}
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-1 font-mono">
-                Explore tools &rarr;
-              </p>
-            </div>
-          </button>
-        ))}
-      </div>
-    </section>
-  );
 }
 
 export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: HomepageExtensionsProps) {
