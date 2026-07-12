@@ -111,6 +111,12 @@ export default function Header() {
             >
               Search
             </Link>
+            <Link 
+              href="/compare" 
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            >
+              Compare
+            </Link>
           </nav>
         </div>
 
@@ -261,6 +267,13 @@ export default function Header() {
               className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
             >
               Search
+            </Link>
+            <Link 
+              href="/compare" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+            >
+              Compare
             </Link>
           </div>
 

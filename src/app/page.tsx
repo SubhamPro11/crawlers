@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import { FeaturedCollections, WhyCrawlers, AINews } from "@/components/HomepageExtensions";
 import {
   Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
   Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
@@ -37,6 +38,7 @@ export default function Home() {
   const [favoriteTools, setFavoriteTools] = useState<Tool[]>([]);
   const [recentToolsList, setRecentToolsList] = useState<Tool[]>([]);
   const [trendingTools, setTrendingTools] = useState<Tool[]>([]);
+  const [totalToolsCount, setTotalToolsCount] = useState<number>(0);
   
   const router = useRouter();
 
@@ -99,6 +101,7 @@ export default function Home() {
         
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setCategories(cats);
+        setTotalToolsCount(tools.length);
 
         const counts: Record<string, number> = {};
         tools.forEach(tool => {
@@ -140,6 +143,7 @@ export default function Home() {
     ]);
     
     setCategories(dbCategories);
+    setTotalToolsCount(allTools.length);
 
     // Calculate counts in memory
     const counts: Record<string, number> = {};
@@ -480,6 +484,8 @@ export default function Home() {
         </section>
       )}
 
+      <FeaturedCollections />
+
       {/* Trending Carousel Section */}
       {trendingTools.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900">
@@ -565,6 +571,10 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <AINews />
+
+      <WhyCrawlers totalTools={totalToolsCount || 150} totalCategories={categories.length || 140} />
 
       {/* Category Indexing Section */}
       <section className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-t border-slate-900">
