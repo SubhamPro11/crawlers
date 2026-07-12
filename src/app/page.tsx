@@ -114,8 +114,9 @@ export default function Home() {
           .slice(0, 6);
         setRecentTools(sorted);
 
+        // TODO: reinstate real view-count sort once analytics tracking is wired up
         const trending = [...tools]
-          .sort((a, b) => (b.click_count || 0) - (a.click_count || 0))
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 8);
         setTrendingTools(trending);
 
@@ -157,9 +158,9 @@ export default function Home() {
       .slice(0, 6);
     setRecentTools(sorted);
 
-    // Sort trending tools by click_count desc
+    // TODO: reinstate real view-count sort once analytics tracking is wired up
     const trending = [...allTools]
-      .sort((a, b) => (b.click_count || 0) - (a.click_count || 0))
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, 8);
     setTrendingTools(trending);
 
@@ -492,10 +493,10 @@ export default function Home() {
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900">
           <div className="mb-6 font-sans">
             <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
-              Trending AI Tools
+              Recently Verified
             </h2>
             <p className="text-[#8FBF3F] text-xs mt-1 font-mono">
-              &gt; sorted_by_engagement_velocity
+              &gt; sorted_by_verification_date
             </p>
           </div>
 
@@ -509,9 +510,6 @@ export default function Home() {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs">
                     {tool.name.substring(0, 2).toLowerCase()}
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">
-                    {tool.click_count || 0} views
-                  </span>
                 </div>
                 <Link href={`/tool/${tool.id}`} className="block mb-2">
                   <h4 className="font-serif text-base font-semibold text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
