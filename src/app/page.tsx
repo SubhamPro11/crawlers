@@ -39,6 +39,28 @@ export default function Home() {
   const [recentToolsList, setRecentToolsList] = useState<Tool[]>([]);
   const [trendingTools, setTrendingTools] = useState<Tool[]>([]);
   const [totalToolsCount, setTotalToolsCount] = useState<number>(0);
+  const [lastUpdatedStr, setLastUpdatedStr] = useState<string>("today");
+
+  const updateLastUpdatedDate = useCallback((toolsList: Tool[]) => {
+    if (!toolsList || toolsList.length === 0) return;
+    const dates = toolsList
+      .map(t => t.created_at ? new Date(t.created_at).getTime() : 0)
+      .filter(t => !isNaN(t) && t > 0);
+    if (dates.length > 0) {
+      const maxTime = Math.max(...dates);
+      const maxDate = new Date(maxTime);
+      const diffDays = Math.floor((Date.now() - maxTime) / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) {
+        setLastUpdatedStr("today");
+      } else if (diffDays === 1) {
+        setLastUpdatedStr("yesterday");
+      } else if (diffDays < 7) {
+        setLastUpdatedStr(`${diffDays} days ago`);
+      } else {
+        setLastUpdatedStr(maxDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }));
+      }
+    }
+  }, []);
   
   const router = useRouter();
 
@@ -102,6 +124,7 @@ export default function Home() {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setCategories(cats);
         setTotalToolsCount(tools.length);
+        updateLastUpdatedDate(tools);
 
         const counts: Record<string, number> = {};
         tools.forEach(tool => {
@@ -135,7 +158,7 @@ export default function Home() {
     } catch (e) {
       console.error("Error reading tools cache on mount:", e);
     }
-  }, []);
+  }, [updateLastUpdatedDate]);
 
   const loadData = useCallback(async () => {
     const [allTools, dbCategories] = await Promise.all([
@@ -145,6 +168,7 @@ export default function Home() {
     
     setCategories(dbCategories);
     setTotalToolsCount(allTools.length);
+    updateLastUpdatedDate(allTools);
 
     // Calculate counts in memory
     const counts: Record<string, number> = {};
@@ -184,7 +208,7 @@ export default function Home() {
     } catch (e) {
       console.error("Error saving tools cache:", e);
     }
-  }, []);
+  }, [updateLastUpdatedDate]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -573,7 +597,7 @@ export default function Home() {
 
       <AINews />
 
-      <WhyCrawlers totalTools={totalToolsCount || 150} totalCategories={categories.length || 140} />
+      <WhyCrawlers totalTools={totalToolsCount || 150} totalCategories={categories.length || 140} lastUpdated={lastUpdatedStr} />
 
       {/* Category Indexing Section */}
       <section className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-t border-slate-900">

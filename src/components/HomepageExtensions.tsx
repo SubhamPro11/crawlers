@@ -42,6 +42,7 @@ const NEWS_ITEMS = [
 interface HomepageExtensionsProps {
   totalTools: number;
   totalCategories: number;
+  lastUpdated?: string;
 }
 
 export function FeaturedCollections() {
@@ -85,12 +86,12 @@ export function FeaturedCollections() {
   );
 }
 
-export function WhyCrawlers({ totalTools, totalCategories }: HomepageExtensionsProps) {
+export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: HomepageExtensionsProps) {
   const stats = [
-    { value: `${totalTools}+`, label: "ai tools listed" },
-    { value: `${totalCategories}+`, label: "use-case categories" },
-    { value: "25k+", label: "monthly visits" },
-    { value: "today", label: "last updated", isDate: true }
+    { value: totalTools > 0 ? totalTools.toLocaleString() : "...", label: "ai tools listed" },
+    { value: totalCategories > 0 ? totalCategories.toLocaleString() : "...", label: "use-case categories" },
+    { value: "Direct Link", label: "no embeds or iframes" },
+    { value: lastUpdated || "today", label: "last updated", isDate: true }
   ];
 
   return (
