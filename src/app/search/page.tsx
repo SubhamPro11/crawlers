@@ -62,6 +62,7 @@ function SearchContent() {
         <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] transition-all">
           <input
             type="text"
+            aria-label="Search directory by task"
             placeholder="Type your use case..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}

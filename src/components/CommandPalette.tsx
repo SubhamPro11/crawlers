@@ -233,6 +233,7 @@ export default function CommandPalette() {
           <input
             ref={inputRef}
             type="text"
+            aria-label="Search command palette"
             placeholder="Search categories, tools, tags..."
             value={searchQuery}
             onChange={(e) => {

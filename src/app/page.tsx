@@ -414,6 +414,7 @@ export default function Home() {
               </div>
               <input
                 type="text"
+                aria-label="Search directory by task"
                 placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -592,6 +593,7 @@ export default function Home() {
           <div className="relative w-full md:max-w-xs">
             <input
               type="text"
+              aria-label="Search categories"
               placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}
               value={categorySearchQuery}
               onChange={(e) => {

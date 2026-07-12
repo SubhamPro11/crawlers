@@ -43,7 +43,7 @@ export default function AssistantWidget() {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#212623]/80 pb-2 mb-3 text-[10px] text-slate-500">
             <span className="text-[#8FBF3F]">&gt; run_assistant //</span>
-            <button onClick={() => setIsOpen(false)} className="hover:text-white">✕</button>
+            <button onClick={() => setIsOpen(false)} className="hover:text-white" aria-label="Close assistant panel">✕</button>
           </div>
 
           <p className="text-xs text-slate-300 leading-relaxed mb-4 font-sans">

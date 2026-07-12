@@ -125,12 +125,22 @@ export default function Header() {
           {/* Quick Search Input */}
           <div 
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent("toggle-command-palette"));
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Open command palette"
             className="relative hidden sm:block cursor-pointer"
           >
             <input
               type="text"
-              placeholder="Query index..."
+              placeholder="Search index... (Ctrl + K)"
               readOnly
+              aria-label="Search index"
               className="w-48 lg:w-56 cursor-pointer rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-14 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none hover:border-[#8FBF3F]/60 transition-all"
             />
             <div className="absolute right-8 top-1.5 pointer-events-none hidden lg:flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-500">
@@ -165,6 +175,7 @@ export default function Header() {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-[#8FBF3F] to-[#7ba235] text-[#0D0F0E] font-bold text-xs shadow-md border border-[#8FBF3F]/35 hover:scale-105 transition-transform"
                   title={user.email}
+                  aria-label="User account dropdown"
                 >
                   {user.email?.charAt(0).toUpperCase()}
                 </button>
