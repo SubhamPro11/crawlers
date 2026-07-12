@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import TagPageClient from "./TagPageClient";
 
+export const runtime = "edge";
+
 interface PageProps {
   params: Promise<{ name: string }>;
 }

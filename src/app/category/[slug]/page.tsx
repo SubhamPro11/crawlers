@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { mockDb } from "@/data/mockDb";
 import CategoryPageClient from "./CategoryPageClient";
 
+export const runtime = "edge";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
