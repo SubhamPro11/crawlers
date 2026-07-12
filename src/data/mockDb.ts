@@ -279,6 +279,87 @@ class MockDb {
     return data;
   }
 
+  async checkDuplicate(name: string, url: string): Promise<boolean> {
+    const cleanName = name.trim().toLowerCase();
+    const cleanUrl = url.trim().toLowerCase().replace(/\/$/, "");
+
+    const { data: allTools, error } = await supabase
+      .from("tools")
+      .select("name, url");
+
+    if (error || !allTools) {
+      console.error("Error checking duplicate:", error?.message);
+      return false;
+    }
+
+    return allTools.some(t => {
+      const dbName = t.name.trim().toLowerCase();
+      const dbUrl = t.url.trim().toLowerCase().replace(/\/$/, "");
+      return dbName === cleanName || dbUrl === cleanUrl || dbUrl.includes(cleanUrl) || cleanUrl.includes(dbUrl);
+    });
+  }
+
+  async adminInsertTool(tool: Omit<Tool, 'id' | 'click_count' | 'status' | 'last_crawled_at' | 'created_at' | 'source' | 'categories'>): Promise<Tool | null> {
+    const newTool = {
+      ...tool,
+      click_count: 0,
+      status: 'active',
+      source: 'admin_bulk_upload',
+      last_crawled_at: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase
+      .from("tools")
+      .insert(newTool)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error admin inserting tool:", error.message);
+      return null;
+    }
+    return data;
+  }
+
+  async getPendingTools(): Promise<Tool[]> {
+    const { data, error } = await supabase
+      .from("tools")
+      .select("*, categories(name, slug)")
+      .eq("status", "needs_review");
+
+    if (error) {
+      console.error("Error fetching pending tools:", error.message);
+      return [];
+    }
+    return data || [];
+  }
+
+  async approveTool(id: string): Promise<boolean> {
+    const { error } = await supabase
+      .from("tools")
+      .update({ status: "active" })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error approving tool:", error.message);
+      return false;
+    }
+    return true;
+  }
+
+  async rejectTool(id: string): Promise<boolean> {
+    const { error } = await supabase
+      .from("tools")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error rejecting tool:", error.message);
+      return false;
+    }
+    return true;
+  }
+
   async getToolsByTag(tag: string): Promise<Tool[]> {
     const { data, error } = await supabase
       .from("tools")

@@ -47,6 +47,12 @@ export default function SubmitPage() {
 
     // Submit to database
     const performSubmit = async () => {
+      const isDuplicate = await mockDb.checkDuplicate(name.trim(), url.trim());
+      if (isDuplicate) {
+        setError("This AI bot or website URL is already registered in our directory.");
+        return;
+      }
+
       const result = await mockDb.submitTool({
         name: name.trim(),
         url: url.trim(),
