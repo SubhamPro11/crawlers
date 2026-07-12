@@ -381,7 +381,7 @@ export default function Home() {
 
   // Get icon for categories
   const getCategoryIcon = (slug: string) => {
-    const s = slug.toLowerCase();
+    const s = (slug || "").toLowerCase();
     const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
 
     const IconComponent = CATEGORY_ICON_MAP[s] || HelpCircle;

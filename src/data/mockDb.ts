@@ -98,6 +98,9 @@ export const CATEGORY_GROUPS: CategoryGroup[] = [
 ];
 
 export const getCategoryGroup = (cat: Category): CategoryGroup => {
+  if (!cat || !cat.slug) {
+    return CATEGORY_GROUPS[8]; // Default fallback: Education & Lifestyle
+  }
   const slug = cat.slug.toLowerCase();
   
   // 1. Direct Slug Match
