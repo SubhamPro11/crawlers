@@ -9,63 +9,84 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const category = await mockDb.getCategoryBySlug(slug);
+  try {
+    const resolvedParams = params ? await params : null;
+    const slug = resolvedParams?.slug;
+    if (!slug) {
+      return {
+        title: "Category Not Found",
+        description: "The requested category does not exist in the Crawlers directory.",
+      };
+    }
 
-  if (!category) {
+    const category = await mockDb.getCategoryBySlug(slug);
+
+    if (!category) {
+      return {
+        title: "Category Not Found",
+        description: "The requested category does not exist in the Crawlers directory.",
+      };
+    }
+
+    const tools = await mockDb.getToolsByCategory(category.id);
+    const toolCount = tools.length;
+
     return {
-      title: "Category Not Found",
-      description: "The requested category does not exist in the Crawlers directory.",
+      title: `${category.name} — ${toolCount} AI Tool${toolCount !== 1 ? "s" : ""} Indexed`,
+      description: category.description,
+      openGraph: {
+        title: `${category.name} — AI Tools Directory | Crawlers`,
+        description: category.description,
+        url: `https://crawlers.dpdns.org/category/${slug}`,
+        type: "website",
+      },
+      twitter: {
+        card: "summary",
+        title: `${category.name} — AI Tools | Crawlers`,
+        description: category.description,
+      },
+      alternates: {
+        canonical: `https://crawlers.dpdns.org/category/${slug}`,
+      },
+    };
+  } catch (err) {
+    console.error("Error in generateMetadata for category:", err);
+    return {
+      title: "Category | Crawlers",
     };
   }
-
-  const tools = await mockDb.getToolsByCategory(category.id);
-  const toolCount = tools.length;
-
-  return {
-    title: `${category.name} — ${toolCount} AI Tool${toolCount !== 1 ? "s" : ""} Indexed`,
-    description: category.description,
-    openGraph: {
-      title: `${category.name} — AI Tools Directory | Crawlers`,
-      description: category.description,
-      url: `https://crawlers.dpdns.org/category/${slug}`,
-      type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title: `${category.name} — AI Tools | Crawlers`,
-      description: category.description,
-    },
-    alternates: {
-      canonical: `https://crawlers.dpdns.org/category/${slug}`,
-    },
-  };
 }
 
 export default async function CategoryPage({ params }: PageProps) {
-  const { slug } = await params;
-  const category = await mockDb.getCategoryBySlug(slug);
+  let slug = "";
   let jsonLd = null;
+  try {
+    const resolvedParams = params ? await params : null;
+    slug = resolvedParams?.slug || "";
+    const category = slug ? await mockDb.getCategoryBySlug(slug) : undefined;
 
-  if (category) {
-    const tools = await mockDb.getToolsByCategory(category.id);
-    jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      "name": category.name,
-      "description": category.description,
-      "url": `https://crawlers.dpdns.org/category/${slug}`,
-      "mainEntity": {
-        "@type": "ItemList",
-        "numberOfItems": tools.length,
-        "itemListElement": tools.map((tool, index) => ({
-          "@type": "ListItem",
-          "position": index + 1,
-          "url": `https://crawlers.dpdns.org/tool/${tool.id}`,
-          "name": tool.name
-        }))
-      }
-    };
+    if (category) {
+      const tools = await mockDb.getToolsByCategory(category.id);
+      jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": category.name,
+        "description": category.description,
+        "url": `https://crawlers.dpdns.org/category/${slug}`,
+        "mainEntity": {
+          "@type": "ItemList",
+          "numberOfItems": tools.length,
+          "itemListElement": tools.map((tool, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "url": `https://crawlers.dpdns.org/tool/${tool.id}`,
+            "name": tool.name
+          }))
+        }
+      };
+    }
+  } catch (err) {
+    console.error("Error in CategoryPage server component:", err);
   }
 
   return (
