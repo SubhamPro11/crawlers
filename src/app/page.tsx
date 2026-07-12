@@ -595,7 +595,7 @@ export default function Home() {
         </section>
       )}
 
-      <AINews />
+      <AINews tools={recentTools} categories={categories} />
 
       <WhyCrawlers totalTools={totalToolsCount || 150} totalCategories={categories.length || 140} lastUpdated={lastUpdatedStr} />
 

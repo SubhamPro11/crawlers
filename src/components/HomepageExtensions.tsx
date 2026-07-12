@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Tool, Category } from "@/data/mockDb";
 
 // Predefined Collections with corresponding search queries
 const COLLECTIONS = [
@@ -14,30 +16,7 @@ const COLLECTIONS = [
   { id: "free", name: "Best Free AI", query: "free open-source no-login offline self-hosted free-plan free-tier community-edition", icon: "🎁", color: "from-[#8FBF3F]/25 to-[#6E9B28]/10" }
 ];
 
-// Curated News Items (Statically defined as fallback, gracefully updates)
-const NEWS_ITEMS = [
-  {
-    title: "Claude 3.5 Sonnet Released with Artifacts UI",
-    date: "July 2026",
-    summary: "Anthropic's latest model shows groundbreaking software engineering reasoning and introduces interactive code workspaces.",
-    tag: "Model Update",
-    url: "https://www.anthropic.com/news/claude-3-5-sonnet"
-  },
-  {
-    title: "Google Studio Launches 2M Token Context Window",
-    date: "June 2026",
-    summary: "Gemini 1.5 Pro now processes up to 2 million tokens of source code, logs, video, and audio file inputs simultaneously.",
-    tag: "Feature Release",
-    url: "https://deepmind.google/technologies/gemini/"
-  },
-  {
-    title: "GPT-4o mini Replaces Legacy 3.5 Turbo Models",
-    date: "June 2026",
-    summary: "OpenAI launches a highly capable small model with multimodal processing, offering 60% lower costs than prior API models.",
-    tag: "API Announcement",
-    url: "https://openai.com/news/"
-  }
-];
+
 
 interface HomepageExtensionsProps {
   totalTools: number;
@@ -149,47 +128,62 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
   );
 }
 
-export function AINews() {
-  return (
+interface AINewsProps {
+  tools: Tool[];
+  categories: Category[];
+}
+
+const formatReleaseDate = (dateStr: string) => {
+  if (!dateStr) return "recently";
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "recently";
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+};
+
+export function AINews({ tools, categories }: AINewsProps) {
+  const displayTools = tools.slice(0, 3);
+
+  return (displayTools.length > 0 ? (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900 font-sans">
       <div className="mb-6">
         <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
-          Latest AI Releases & Updates
+          Recently Added to the Index
         </h2>
         <p className="text-[#8FBF3F] text-xs mt-1 font-mono">
-          &gt; real_time_industry_news_ticks
+          &gt; newest_index_entries
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {NEWS_ITEMS.map((item, idx) => (
-          <a
-            key={idx}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block border border-[#212623] bg-[#131615]/30 rounded-xl p-6 hover:border-[#8FBF3F]/35 transition-all duration-300"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-[10px] px-2 py-0.5 rounded border border-[#8FBF3F]/20 bg-[#8FBF3F]/10 text-[#8FBF3F] font-mono uppercase">
-                {item.tag}
-              </span>
-              <span className="text-[10px] text-slate-500 font-mono">
-                {item.date}
-              </span>
-            </div>
-            <h3 className="text-white font-bold text-sm group-hover:text-[#8FBF3F] transition-colors leading-snug line-clamp-1 mb-2 font-serif">
-              {item.title}
-            </h3>
-            <p className="text-slate-400 text-xs leading-relaxed line-clamp-2">
-              {item.summary}
-            </p>
-            <div className="mt-4 text-[10px] font-mono text-[#8FBF3F]/80 group-hover:text-white transition-colors">
-              Read source article &rarr;
-            </div>
-          </a>
-        ))}
+        {displayTools.map((tool) => {
+          const catName = categories.find(c => c.id === tool.category_id)?.name || "AI Tool";
+          return (
+            <Link
+              key={tool.id}
+              href={`/tool/${tool.id}`}
+              className="group block border border-[#212623] bg-[#131615]/30 rounded-xl p-6 hover:border-[#8FBF3F]/35 transition-all duration-300"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[10px] px-2 py-0.5 rounded border border-[#8FBF3F]/20 bg-[#8FBF3F]/10 text-[#8FBF3F] font-mono uppercase">
+                  {catName}
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono">
+                  {formatReleaseDate(tool.created_at)}
+                </span>
+              </div>
+              <h3 className="text-white font-bold text-sm group-hover:text-[#8FBF3F] transition-colors leading-snug line-clamp-1 mb-2 font-serif">
+                {tool.name}
+              </h3>
+              <p className="text-slate-400 text-xs leading-relaxed line-clamp-2">
+                {tool.short_description}
+              </p>
+              <div className="mt-4 text-[10px] font-mono text-[#8FBF3F]/80 group-hover:text-white transition-colors">
+                View indexed tool &rarr;
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
-  );
+  ) : null);
 }
