@@ -3,6 +3,7 @@ import { mockDb } from "@/data/mockDb";
 import ToolDetailPageClient from "./ToolDetailPageClient";
 
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ id: string }>;
