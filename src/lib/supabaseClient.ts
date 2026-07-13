@@ -51,7 +51,8 @@ const createMockSupabase = (): SupabaseClient => {
 export const supabase: SupabaseClient = isValidKey(supabaseAnonKey) && supabaseUrl.startsWith("http")
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
-        persistSession: false,
+        persistSession: typeof window !== "undefined",
+        detectSessionInUrl: typeof window !== "undefined",
       },
     })
   : createMockSupabase();
