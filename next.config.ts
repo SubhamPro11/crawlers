@@ -34,6 +34,22 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/category/:slug",
+        destination: "/category?slug=:slug",
+      },
+      {
+        source: "/tag/:name",
+        destination: "/tag?name=:name",
+      },
+      {
+        source: "/tool/:id",
+        destination: "/tool?id=:id",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
