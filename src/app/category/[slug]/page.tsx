@@ -5,14 +5,13 @@ import CategoryPageClient from "./CategoryPageClient";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-interface PageProps {
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+}): Promise<Metadata> {
   try {
-    const resolvedParams = params ? await params : null;
-    const slug = resolvedParams?.slug;
+    const { slug } = await params;
     if (!slug) {
       return {
         title: "Category Not Found",
@@ -58,12 +57,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   let slug = "";
   let jsonLd = null;
   try {
-    const resolvedParams = params ? await params : null;
-    slug = resolvedParams?.slug || "";
+    const resolvedParams = await params;
+    slug = resolvedParams.slug;
     const category = slug ? await mockDb.getCategoryBySlug(slug) : undefined;
 
     if (category) {

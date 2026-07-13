@@ -4,15 +4,15 @@ import TagPageClient from "./TagPageClient";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-interface PageProps {
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ name: string }>;
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+}): Promise<Metadata> {
   try {
-    const resolvedParams = params ? await params : null;
-    const name = resolvedParams?.name || "";
-    const tag = name ? decodeURIComponent(name) : "";
+    const { name } = await params;
+    const decodedName = name || "";
+    const tag = decodedName ? decodeURIComponent(decodedName) : "";
 
     return {
       title: `AI Tools tagged [${tag}] | Crawlers`,
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       openGraph: {
         title: `AI Tools Tagged [${tag}] | Crawlers`,
         description: `Browse all curated AI platforms and bots tagged under [${tag}] in our monospace directory.`,
-        url: `https://crawlers.dpdns.org/tag/${name}`,
+        url: `https://crawlers.dpdns.org/tag/${decodedName}`,
         type: "website",
       },
       twitter: {
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: `Browse all curated AI platforms and bots tagged under [${tag}] in our monospace directory.`,
       },
       alternates: {
-        canonical: `https://crawlers.dpdns.org/tag/${name}`,
+        canonical: `https://crawlers.dpdns.org/tag/${decodedName}`,
       },
     };
   } catch (err) {
@@ -40,11 +40,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function TagPage({ params }: PageProps) {
+export default async function TagPage({
+  params,
+}: {
+  params: Promise<{ name: string }>;
+}) {
   let name = "";
   try {
-    const resolvedParams = params ? await params : null;
-    name = resolvedParams?.name || "";
+    const resolvedParams = await params;
+    name = resolvedParams.name || "";
   } catch (err) {
     console.error("Error in TagPage server component:", err);
   }

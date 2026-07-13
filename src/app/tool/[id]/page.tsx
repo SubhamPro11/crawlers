@@ -5,14 +5,13 @@ import ToolDetailPageClient from "./ToolDetailPageClient";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-interface PageProps {
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ id: string }>;
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+}): Promise<Metadata> {
   try {
-    const resolvedParams = params ? await params : null;
-    const id = resolvedParams?.id;
+    const { id } = await params;
     if (!id) {
       return {
         title: "Tool Not Found",
@@ -57,12 +56,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function ToolDetailPage({ params }: PageProps) {
+export default async function ToolDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   let id = "";
   let jsonLd = null;
   try {
-    const resolvedParams = params ? await params : null;
-    id = resolvedParams?.id || "";
+    const resolvedParams = await params;
+    id = resolvedParams.id;
     const tool = id ? await mockDb.getToolById(id) : undefined;
 
     if (tool) {
