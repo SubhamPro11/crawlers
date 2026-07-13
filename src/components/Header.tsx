@@ -117,6 +117,12 @@ export default function Header() {
             >
               Compare
             </Link>
+            <Link 
+              href="/api" 
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            >
+              API
+            </Link>
           </nav>
         </div>
 
@@ -285,6 +291,13 @@ export default function Header() {
               className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
             >
               Compare
+            </Link>
+            <Link 
+              href="/api" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+            >
+              API
             </Link>
           </div>
 
