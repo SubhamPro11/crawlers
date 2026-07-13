@@ -108,18 +108,66 @@ const SEED_APIS: Omit<ApiBot, "id" | "click_count">[] = [
   {
     name: "NVIDIA NIM APIs",
     url: "https://build.nvidia.com/explore/discover",
-    short_description: "GPU-accelerated inference endpoints for frontier models including Nemotron-3 550B, Llama NIMs, and agentic AI blueprints.",
+    short_description: "NVIDIA's centralized catalog of accelerated inference endpoints for foundation models and enterprise AI blueprints.",
     provider: "NVIDIA",
     pricing_model: "freemium",
     tags: ["inference", "llm", "agentic-ai", "gpu-accelerated"]
   },
   {
-    name: "NVIDIA Cosmos Vision",
-    url: "https://build.nvidia.com/nvidia/cosmos-dataset-search",
-    short_description: "NVIDIA's physical AI and autonomous vehicle vision models optimized for video search and dataset preparation.",
+    name: "NVIDIA Nemotron OCR",
+    url: "https://build.nvidia.com/nvidia/nemotron-ocr-v2",
+    short_description: "State-of-the-art multilingual OCR model for text, document layout, and table extraction from complex images.",
     provider: "NVIDIA",
-    pricing_model: "free",
-    tags: ["vision", "physical-ai", "autonomous-vehicles"]
+    pricing_model: "freemium",
+    tags: ["ocr", "vision", "document-layout"]
+  },
+  {
+    name: "NVIDIA Nemotron-3 Ultra (550B)",
+    url: "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b",
+    short_description: "Hybrid Mamba-Transformer MoE model with 1M context, excelling in agentic reasoning, coding, and planning.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["reasoning", "llm", "moe"]
+  },
+  {
+    name: "NVIDIA Cosmos Video & Reasoner",
+    url: "https://build.nvidia.com/nvidia/cosmos3-nano-reasoner",
+    short_description: "Physics-aware video generation and advanced vision-language understanding models for physical AI.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["vision", "video-generation", "physical-ai"]
+  },
+  {
+    name: "NVIDIA Content Safety",
+    url: "https://build.nvidia.com/nvidia/nemotron-3.5-content-safety",
+    short_description: "Multilingual and multimodal moderation API for detecting toxic, unsafe, or harmful inputs.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["safety", "moderation", "multimodal"]
+  },
+  {
+    name: "NVIDIA Reranking",
+    url: "https://build.nvidia.com/nvidia/llama-nemotron-rerank-1b-v2",
+    short_description: "GPU-accelerated RAG retrieval reranker providing search answer relevancy probabilities.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["rerank", "retrieval", "rag"]
+  },
+  {
+    name: "NVIDIA Synthetic Video Detector",
+    url: "https://build.nvidia.com/nvidia/synthetic-video-detector",
+    short_description: "Deepfake and AI-generated video detection API designed for safety and verification flows.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["media-verification", "deepfake-detection"]
+  },
+  {
+    name: "NVIDIA LipSync & Speaker Tracker",
+    url: "https://build.nvidia.com/nvidia/lipsync",
+    short_description: "Voice and audio-visual analytics API for automated dubbing, active speaker tracking, and lip syncing.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["lipsync", "audio-visual", "broadcast"]
   }
 ];
 
