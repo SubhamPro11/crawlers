@@ -32,6 +32,13 @@ export default function AdminPage() {
   const [skippedCount, setSkippedCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
 
+  const [dbStats, setDbStats] = useState({
+    totalTools: 0,
+    totalModels: 0,
+    totalApis: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(false);
+
   const router = useRouter();
   const ADMIN_EMAIL = "subhamkr11012004@gmail.com";
 
@@ -55,10 +62,11 @@ export default function AdminPage() {
     };
   }, []);
 
-  // Fetch pending review tools when authenticated
+  // Fetch pending review tools and stats when authenticated
   useEffect(() => {
     if (user && user.email === ADMIN_EMAIL) {
       loadPendingTools();
+      loadStats();
     }
   }, [user]);
 
@@ -67,6 +75,37 @@ export default function AdminPage() {
     const pending = await mockDb.getPendingTools();
     setPendingTools(pending);
     setLoadingPending(false);
+  };
+
+  const loadStats = async () => {
+    try {
+      setLoadingStats(true);
+      const tools = await mockDb.getTools();
+      
+      const totalTools = tools.length;
+      
+      const totalModels = tools.filter(tool => {
+        const catSlug = tool.categories?.slug || "";
+        const tagsLower = tool.tags.map(t => t.toLowerCase());
+        return catSlug === "models" || tagsLower.includes("model") || tagsLower.includes("llm") || tagsLower.includes("nim");
+      }).length;
+      
+      const totalApis = tools.filter(tool => {
+        const catSlug = tool.categories?.slug || "";
+        const tagsLower = tool.tags.map(t => t.toLowerCase());
+        return catSlug === "api-tools" || tagsLower.includes("api") || tagsLower.includes("inference") || tagsLower.includes("sdk");
+      }).length;
+
+      setDbStats({
+        totalTools,
+        totalModels,
+        totalApis
+      });
+    } catch (err) {
+      console.error("Error loading stats:", err);
+    } finally {
+      setLoadingStats(false);
+    }
   };
 
   const handleSignIn = async () => {
@@ -279,6 +318,7 @@ export default function AdminPage() {
         { type: "info", message: `[complete] Process complete. Imported: ${success}, Skipped: ${skipped}, Failed: ${error}` }
       ]);
       setImporting(false);
+      loadStats();
     };
 
     reader.readAsText(csvFile);
@@ -289,6 +329,7 @@ export default function AdminPage() {
     if (ok) {
       setPendingTools(prev => prev.filter(t => t.id !== id));
       alert(`Approved "${name}" successfully!`);
+      loadStats();
     } else {
       alert(`Failed to approve "${name}".`);
     }
@@ -300,6 +341,7 @@ export default function AdminPage() {
       if (ok) {
         setPendingTools(prev => prev.filter(t => t.id !== id));
         alert(`Rejected "${name}" successfully.`);
+        loadStats();
       } else {
         alert(`Failed to reject "${name}".`);
       }
@@ -406,6 +448,51 @@ export default function AdminPage() {
             >
               <LogOut className="w-3.5 h-3.5" /> Disconnect
             </button>
+          </div>
+        </div>
+
+        {/* Real-time Statistics Panel */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 font-mono">
+          <div className="border border-[#00ff66]/30 bg-black/60 rounded-lg p-5 flex flex-col relative overflow-hidden backdrop-blur shadow-[0_0_15px_rgba(0,255,102,0.02)]">
+            <span className="text-[10px] text-[#00ff66]/60 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Terminal className="w-3.5 h-3.5" /> Total Index Count
+            </span>
+            <div className="text-3xl font-extrabold text-white">
+              {loadingStats ? (
+                <span className="text-slate-500 animate-pulse">...</span>
+              ) : (
+                dbStats.totalTools
+              )}
+            </div>
+            <span className="text-[9px] text-slate-500 mt-1">Total active directory tools</span>
+          </div>
+
+          <div className="border border-[#00ff66]/30 bg-black/60 rounded-lg p-5 flex flex-col relative overflow-hidden backdrop-blur shadow-[0_0_15px_rgba(0,255,102,0.02)]">
+            <span className="text-[10px] text-[#00ff66]/60 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Play className="w-3.5 h-3.5 rotate-90" /> AI Models Listed
+            </span>
+            <div className="text-3xl font-extrabold text-[#00ff66]">
+              {loadingStats ? (
+                <span className="text-slate-500 animate-pulse">...</span>
+              ) : (
+                dbStats.totalModels
+              )}
+            </div>
+            <span className="text-[9px] text-slate-500 mt-1">Models category & tagged records</span>
+          </div>
+
+          <div className="border border-[#00ff66]/30 bg-black/60 rounded-lg p-5 flex flex-col relative overflow-hidden backdrop-blur shadow-[0_0_15px_rgba(0,255,102,0.02)]">
+            <span className="text-[10px] text-[#00ff66]/60 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" /> API Keys Listed
+            </span>
+            <div className="text-3xl font-extrabold text-[#00ff66]">
+              {loadingStats ? (
+                <span className="text-slate-500 animate-pulse">...</span>
+              ) : (
+                dbStats.totalApis
+              )}
+            </div>
+            <span className="text-[9px] text-slate-500 mt-1">API Tools category & tagged records</span>
           </div>
         </div>
 
