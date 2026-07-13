@@ -1,2 +1,3 @@
-# Force HTTPS redirect at the edge
-http://* https://crawlers.dpdns.org/:splat 301
+/category/* /category 200
+/tag/* /tag 200
+/tool/* /tool 200
