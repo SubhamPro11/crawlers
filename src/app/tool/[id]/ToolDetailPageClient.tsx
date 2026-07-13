@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
-export default function ToolDetailPageClient({ id }: { id: string }) {
+export default function ToolDetailPageClient() {
+  const params = useParams();
+  const id = (params?.id as string) || "";
   const [tool, setTool] = useState<Tool | null>(null);
   const [categoryName, setCategoryName] = useState("");
   const [categorySlug, setCategorySlug] = useState("");

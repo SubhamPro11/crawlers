@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
-export default function TagPageClient({ name }: { name: string }) {
+export default function TagPageClient() {
+  const params = useParams();
+  const name = (params?.name as string) || "";
   const tag = decodeURIComponent(name);
   const [tools, setTools] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);

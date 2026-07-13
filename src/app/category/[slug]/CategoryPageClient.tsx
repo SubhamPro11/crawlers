@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { mockDb, Category, Tool, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
-export default function CategoryPageClient({ slug }: { slug: string }) {
+export default function CategoryPageClient() {
+  const params = useParams();
+  const slug = (params?.slug as string) || "";
   const [category, setCategory] = useState<Category | null>(null);
   const [tools, setTools] = useState<Tool[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("all");
