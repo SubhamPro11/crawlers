@@ -2,13 +2,10 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { mockDb, Category, Tool, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
-export default function CategoryPageClient() {
-  const params = useParams();
-  const slug = (params?.slug as string) || "";
+export default function CategoryPageClient({ slug }: { slug: string }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [tools, setTools] = useState<Tool[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("all");
@@ -31,6 +28,7 @@ export default function CategoryPageClient() {
 
   // Load from local storage cache instantly on mount/slug change
   useEffect(() => {
+    if (!slug) return;
     try {
       const cached = localStorage.getItem(`crawlers_cached_cat_${slug}`);
       if (cached) {
@@ -46,6 +44,10 @@ export default function CategoryPageClient() {
   }, [slug]);
 
   const fetchCategoryData = useCallback(async () => {
+    if (!slug) {
+      setIsLoading(false);
+      return;
+    }
     const cat = await mockDb.getCategoryBySlug(slug);
     if (cat) {
       setCategory(cat);
@@ -152,73 +154,57 @@ export default function CategoryPageClient() {
                 onClick={() => setActiveFilter(filter.value)}
                 className={`rounded-full px-4 py-2.5 text-xs font-bold transition-all duration-200 font-sans ${
                   activeFilter === filter.value
-                    ? "bg-[#8FBF3F] text-slate-950 shadow-md shadow-[#8FBF3F]/15"
-                    : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white hover:border-slate-700"
+                    ? "bg-[#8FBF3F] text-slate-950"
+                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/30"
                 }`}
               >
                 {filter.label}
               </button>
             ))}
           </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider font-mono">Sort:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "name" | "recent")}
-              className="rounded-lg bg-slate-900 border border-slate-800 text-slate-300 px-3 py-2 text-xs font-bold outline-none focus:border-[#8FBF3F] transition-all font-sans cursor-pointer"
-            >
-              <option value="name">Name (A-Z)</option>
-              <option value="recent">Recently Indexed</option>
-            </select>
-          </div>
         </div>
 
-        <span className="text-xs text-slate-500 font-medium font-sans">
-          Showing {sortedAndFilteredTools.length} of {tools.length} platforms
-        </span>
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 font-mono">
+          <span>SORT BY:</span>
+          <button
+            onClick={() => setSortBy("name")}
+            className={`transition-colors ${sortBy === "name" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+          >
+            A-Z
+          </button>
+          <span>|</span>
+          <button
+            onClick={() => setSortBy("recent")}
+            className={`transition-colors ${sortBy === "recent" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+          >
+            NEWEST
+          </button>
+        </div>
       </div>
 
-      {/* Cards Grid */}
+      {/* Tools Grid */}
       {sortedAndFilteredTools.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {sortedAndFilteredTools.map((tool) => (
-              <ToolCard 
-                key={tool.id} 
-                tool={tool} 
-                onRefresh={fetchCategoryData}
-              />
-            ))}
-          </div>
-          {sortedAndFilteredTools.length < 3 && (
-            <div className="mt-12 rounded-xl border border-dashed border-[#212623] bg-[#131615]/20 p-8 text-center font-sans">
-              <p className="text-slate-400 text-xs mb-3">
-                Know a tool that belongs in {category.name}?
-              </p>
-              <Link
-                href="/submit"
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-xs font-bold text-slate-950 hover:bg-[#7ba235] transition-colors"
-              >
-                Submit Entry &rarr;
-              </Link>
-            </div>
-          )}
-        </>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {sortedAndFilteredTools.map((tool) => (
+            <ToolCard
+              key={tool.id}
+              tool={tool}
+              categoryName={category.name}
+              onRefresh={fetchCategoryData}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-slate-800 bg-[#131B2E]/20 p-12 text-center">
-          <svg className="mx-auto h-12 w-12 text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div className="rounded-xl border border-dashed border-[#212623] bg-[#131615]/20 p-12 text-center font-sans">
           <h3 className="text-base font-bold text-white mb-2">No tools found</h3>
           <p className="text-slate-400 text-xs max-w-xs mx-auto mb-6">
-            There are currently no {activeFilter !== "all" ? `${activeFilter} ` : ""}tools indexed in this category.
+            There are no tools listed under this category matching the active filter.
           </p>
           <Link
-            href="/submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
+            href="/"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
           >
-            Submit Bot
+            Back to Directory
           </Link>
         </div>
       )}

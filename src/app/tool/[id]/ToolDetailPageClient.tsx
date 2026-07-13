@@ -2,13 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
-export default function ToolDetailPageClient() {
-  const params = useParams();
-  const id = (params?.id as string) || "";
+export default function ToolDetailPageClient({ id }: { id: string }) {
   const [tool, setTool] = useState<Tool | null>(null);
   const [categoryName, setCategoryName] = useState("");
   const [categorySlug, setCategorySlug] = useState("");
@@ -17,6 +14,10 @@ export default function ToolDetailPageClient() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const fetchToolData = useCallback(async () => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
     const t = await mockDb.getToolById(id);
     if (t) {
       setTool(t);
@@ -30,18 +31,26 @@ export default function ToolDetailPageClient() {
       }
 
       // Log Recently Viewed
-      const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
-      const filtered = items.filter((i: { id: string }) => i.id !== t.id);
-      const updated = [
-        { id: t.id, name: t.name, type: "tool", slugOrUrl: t.id, timestamp: Date.now() },
-        ...filtered
-      ].slice(0, 10);
-      localStorage.setItem("crawlers_recent_items", JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent("recent-items-updated"));
+      try {
+        const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+        const filtered = items.filter((i: { id: string }) => i.id !== t.id);
+        const updated = [
+          { id: t.id, name: t.name, type: "tool", slugOrUrl: t.id, timestamp: Date.now() },
+          ...filtered
+        ].slice(0, 10);
+        localStorage.setItem("crawlers_recent_items", JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent("recent-items-updated"));
+      } catch (e) {
+        console.error("Error writing recent items:", e);
+      }
 
       // Load Favorite Status
-      const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
-      setIsFavorite(favs.includes(t.id));
+      try {
+        const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
+        setIsFavorite(favs.includes(t.id));
+      } catch (e) {
+        console.error("Error reading favorites:", e);
+      }
     }
     setIsLoading(false);
   }, [id]);
@@ -60,23 +69,27 @@ export default function ToolDetailPageClient() {
 
   const toggleFavorite = () => {
     if (!tool) return;
-    const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
-    let nextFavs;
-    if (favs.includes(tool.id)) {
-      nextFavs = favs.filter((i: string) => i !== tool.id);
-      setIsFavorite(false);
-      window.dispatchEvent(new CustomEvent("toast", { 
-        detail: { message: `Removed "${tool.name}" from bookmarks`, type: "info" } 
-      }));
-    } else {
-      nextFavs = [...favs, tool.id];
-      setIsFavorite(true);
-      window.dispatchEvent(new CustomEvent("toast", { 
-        detail: { message: `Added "${tool.name}" to bookmarks`, type: "success" } 
-      }));
+    try {
+      const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
+      let nextFavs;
+      if (favs.includes(tool.id)) {
+        nextFavs = favs.filter((i: string) => i !== tool.id);
+        setIsFavorite(false);
+        window.dispatchEvent(new CustomEvent("toast", { 
+          detail: { message: `Removed "${tool.name}" from bookmarks`, type: "info" } 
+        }));
+      } else {
+        nextFavs = [...favs, tool.id];
+        setIsFavorite(true);
+        window.dispatchEvent(new CustomEvent("toast", { 
+          detail: { message: `Added "${tool.name}" to bookmarks`, type: "success" } 
+        }));
+      }
+      localStorage.setItem("crawlers_favorites", JSON.stringify(nextFavs));
+      window.dispatchEvent(new CustomEvent("favorites-updated"));
+    } catch (e) {
+      console.error("Error toggling favorite:", e);
     }
-    localStorage.setItem("crawlers_favorites", JSON.stringify(nextFavs));
-    window.dispatchEvent(new CustomEvent("favorites-updated"));
   };
 
   const handleShare = async () => {
@@ -97,8 +110,12 @@ export default function ToolDetailPageClient() {
       }
     }
 
-    navigator.clipboard.writeText(window.location.href);
-    window.dispatchEvent(new CustomEvent("toast", { detail: { message: "Link copied to clipboard!", type: "success" } }));
+    try {
+      navigator.clipboard.writeText(window.location.href);
+      window.dispatchEvent(new CustomEvent("toast", { detail: { message: "Link copied to clipboard!", type: "success" } }));
+    } catch (e) {
+      console.error("Error sharing:", e);
+    }
   };
 
   if (isLoading) {
