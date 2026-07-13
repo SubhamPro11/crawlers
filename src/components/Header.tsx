@@ -179,11 +179,20 @@ export default function Header() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-[#8FBF3F] to-[#7ba235] text-[#0D0F0E] font-bold text-xs shadow-md border border-[#8FBF3F]/35 hover:scale-105 transition-transform"
+                  className="flex items-center justify-center h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-[#8FBF3F] to-[#7ba235] text-[#0D0F0E] font-bold text-xs shadow-md border border-[#8FBF3F]/35 hover:scale-105 transition-transform"
                   title={user.email}
                   aria-label="User account dropdown"
                 >
-                  {user.email?.charAt(0).toUpperCase()}
+                  {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                    <img 
+                      src={user.user_metadata.avatar_url || user.user_metadata.picture} 
+                      alt="Profile" 
+                      referrerPolicy="no-referrer"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    user.email?.charAt(0).toUpperCase()
+                  )}
                 </button>
 
                 {dropdownOpen && (
@@ -305,8 +314,20 @@ export default function Header() {
           <div className="pt-3 border-t border-[#212623]/60 flex flex-col space-y-3">
             {user ? (
               <div className="flex flex-col space-y-2">
-                <div className="px-3 py-1 font-mono text-[10px] text-slate-500 truncate">
-                  Logged in as: {user.email}
+                <div className="px-3 py-1 flex items-center gap-2 font-mono text-[10px] text-slate-500">
+                  {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                    <img 
+                      src={user.user_metadata.avatar_url || user.user_metadata.picture} 
+                      alt="Profile" 
+                      referrerPolicy="no-referrer"
+                      className="h-5 w-5 rounded-full object-cover border border-[#8FBF3F]/30"
+                    />
+                  ) : (
+                    <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#8FBF3F] to-[#7ba235] text-[#0D0F0E] font-bold flex items-center justify-center text-[9px]">
+                      {user.email?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="truncate max-w-[180px]">{user.email}</span>
                 </div>
                 <button
                   onClick={() => {
