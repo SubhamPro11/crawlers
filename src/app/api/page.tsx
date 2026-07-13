@@ -104,6 +104,22 @@ const SEED_APIS: Omit<ApiBot, "id" | "click_count">[] = [
     provider: "Others",
     pricing_model: "paid",
     tags: ["inference", "llm", "fast"]
+  },
+  {
+    name: "NVIDIA NIM APIs",
+    url: "https://build.nvidia.com/explore/discover",
+    short_description: "GPU-accelerated inference endpoints for frontier models including Nemotron-3 550B, Llama NIMs, and agentic AI blueprints.",
+    provider: "NVIDIA",
+    pricing_model: "freemium",
+    tags: ["inference", "llm", "agentic-ai", "gpu-accelerated"]
+  },
+  {
+    name: "NVIDIA Cosmos Vision",
+    url: "https://build.nvidia.com/nvidia/cosmos-dataset-search",
+    short_description: "NVIDIA's physical AI and autonomous vehicle vision models optimized for video search and dataset preparation.",
+    provider: "NVIDIA",
+    pricing_model: "free",
+    tags: ["vision", "physical-ai", "autonomous-vehicles"]
   }
 ];
 
@@ -131,6 +147,7 @@ export default function ApiKeysDirectoryPage() {
     if (text.includes("openai") || text.includes("gpt-") || text.includes("dall-e")) return "OpenAI";
     if (text.includes("anthropic") || text.includes("claude")) return "Anthropic";
     if (text.includes("google") || text.includes("gemini") || text.includes("vertex")) return "Google";
+    if (text.includes("nvidia") || text.includes("nemotron") || text.includes("nim")) return "NVIDIA";
     if (text.includes("deepseek")) return "DeepSeek";
     if (text.includes("mistral") || text.includes("mixtral") || text.includes("codestral")) return "Mistral";
     if (text.includes("groq")) return "Groq";
@@ -203,7 +220,7 @@ export default function ApiKeysDirectoryPage() {
   const providers = useMemo(() => {
     const list = new Set(apiBots.map(b => b.provider));
     // Sort logically with top providers first
-    const ordered = ["OpenAI", "Anthropic", "Google", "DeepSeek", "Mistral", "Groq", "Cohere", "Replicate"];
+    const ordered = ["OpenAI", "Anthropic", "Google", "NVIDIA", "DeepSeek", "Mistral", "Groq", "Cohere", "Replicate"];
     const final: string[] = [];
     ordered.forEach(p => {
       if (list.has(p)) {
