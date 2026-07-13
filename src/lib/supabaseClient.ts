@@ -49,6 +49,7 @@ const createMockSupabase = (): SupabaseClient => {
       getSession: () => Promise.resolve({ data: { session: null }, error: null }),
       getUser: () => Promise.resolve({ data: { user: null }, error: null }),
       signInWithOtp: () => Promise.resolve({ error: null }),
+      signInWithOAuth: () => Promise.resolve({ data: { provider: "", url: "" }, error: null }),
       signOut: () => Promise.resolve({ error: null })
     }
   } as unknown as SupabaseClient;

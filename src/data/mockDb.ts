@@ -300,7 +300,7 @@ class MockDb {
       const newTool = {
         ...tool,
         click_count: 0,
-        status: 'needs_review',
+        status: 'active',
         source: 'manual_submission',
         last_crawled_at: new Date().toISOString()
       };

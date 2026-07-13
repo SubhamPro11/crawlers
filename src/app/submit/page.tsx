@@ -78,9 +78,9 @@ export default function SubmitPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white mb-4">Submission Received!</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-white mb-4">Bot Published!</h1>
         <p className="text-slate-400 text-sm leading-relaxed mb-8">
-          Thank you for submitting <strong className="text-white">{name}</strong>. Our moderators will verify the link and compliance criteria before approving.
+          <strong className="text-white">{name}</strong> is now live in the directory. It will appear on the homepage and its category page immediately.
         </p>
         <div className="flex justify-center gap-4">
           <button 
@@ -122,7 +122,7 @@ export default function SubmitPage() {
           Submit an AI Platform
         </h1>
         <p className="text-slate-400 text-sm mt-2 font-sans">
-          Suggest a bot or utility for indexing. All submittals undergo a manual compliance review.
+          Suggest a bot or utility for indexing. Submissions go live instantly.
         </p>
       </div>
 
