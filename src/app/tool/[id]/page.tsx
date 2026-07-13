@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ToolDetailPageClient from "./ToolDetailPageClient";
 
+export const runtime = "edge";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {

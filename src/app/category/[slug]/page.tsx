@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CategoryPageClient from "./CategoryPageClient";
 
+export const runtime = "edge";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
