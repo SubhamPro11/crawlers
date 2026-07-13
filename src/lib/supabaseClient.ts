@@ -54,5 +54,9 @@ const createMockSupabase = (): SupabaseClient => {
 };
 
 export const supabase: SupabaseClient = isValidJwt(supabaseAnonKey) && supabaseUrl.startsWith("http")
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+      },
+    })
   : createMockSupabase();

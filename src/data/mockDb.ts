@@ -162,7 +162,7 @@ class MockDb {
         console.error("Error fetching categories:", error.message);
         return CATEGORIES;
       }
-      return data || [];
+      return data && data.length > 0 ? data : CATEGORIES;
     } catch (err) {
       console.error("Uncaught exception in getCategories:", err);
       return CATEGORIES;
