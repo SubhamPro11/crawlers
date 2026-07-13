@@ -8,6 +8,10 @@
   "assets": {
     "directory": ".vercel/output/static"
   },
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://emgazoulumtcwzbnzzyy.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TNzSRWsjaoqOv0cW8gMF6g_BtI0Fhku"
+  },
   "observability": {
     "logs": {
       "enabled": true,
