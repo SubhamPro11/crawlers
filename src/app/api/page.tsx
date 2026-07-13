@@ -610,17 +610,38 @@ export default function ApiKeysDirectoryPage() {
       {/* Toolbar (Search & Tabs) */}
       <div className="space-y-6 mb-10">
         {/* Search */}
-        <div className="relative max-w-md font-mono">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#8FBF3F] pointer-events-none text-xs font-bold">
+        <div className="relative w-full max-w-md font-mono group">
+          {/* Desktop prefix */}
+          <span className="hidden sm:flex absolute inset-y-0 left-3 items-center text-[#8FBF3F] pointer-events-none text-xs font-bold select-none">
             &gt; search_api //
+          </span>
+          {/* Mobile prefix */}
+          <span className="flex sm:hidden absolute inset-y-0 left-3 items-center text-[#8FBF3F] pointer-events-none text-xs font-bold select-none">
+            &gt;
           </span>
           <input
             type="text"
             placeholder="Search keys, models, or tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] pl-36 pr-4 py-2.5 text-xs text-white placeholder-slate-700 outline-none focus:border-[#8FBF3F] transition-all font-mono"
+            className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] pl-8 sm:pl-36 pr-10 py-2.5 text-xs text-white placeholder-slate-700 outline-none focus:border-[#8FBF3F] focus:shadow-[0_0_12px_rgba(143,191,63,0.15)] hover:border-slate-800 transition-all font-mono"
           />
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          ) : (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-700">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* Provider Tabs */}
