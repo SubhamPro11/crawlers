@@ -10,8 +10,9 @@ const getEnv = (key: string): string => {
 const supabaseUrl = getEnv("NEXT_PUBLIC_SUPABASE_URL") || "https://placeholder-project-url.supabase.co";
 const supabaseAnonKey = getEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") || "placeholder-anon-key-string";
 
-const isValidJwt = (token: string): boolean => {
-  return typeof token === "string" && token.split(".").length === 3;
+const isValidKey = (token: string): boolean => {
+  if (typeof token !== "string") return false;
+  return token.startsWith("sb_publishable_") || token.split(".").length === 3;
 };
 
 interface MockQueryBuilder {
@@ -53,7 +54,7 @@ const createMockSupabase = (): SupabaseClient => {
   } as unknown as SupabaseClient;
 };
 
-export const supabase: SupabaseClient = isValidJwt(supabaseAnonKey) && supabaseUrl.startsWith("http")
+export const supabase: SupabaseClient = isValidKey(supabaseAnonKey) && supabaseUrl.startsWith("http")
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         persistSession: false,
