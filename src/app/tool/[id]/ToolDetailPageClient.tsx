@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { mockDb, Tool } from "@/data/mockDb";
+import { mockDb, Tool, slugify } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 
 export default function ToolDetailPageClient({ id }: { id: string }) {
@@ -24,11 +24,9 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
       setCategoryName(t.categories?.name || "");
       setCategorySlug(t.categories?.slug || "");
       
-      // Load similar tools (same category)
-      if (t.category_id) {
-        const res = await mockDb.getToolsByCategory(t.category_id);
-        setSimilarTools(res.filter((item) => item.id !== t.id).slice(0, 3));
-      }
+      // Load similar tools (same category + overlapping tags fallback)
+      const res = await mockDb.getSimilarTools(t.id, t.category_id, t.tags);
+      setSimilarTools(res.slice(0, 4));
 
       // Log Recently Viewed
       try {
@@ -273,7 +271,7 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
                   {tool.tags.map((tag, idx) => (
                     <Link 
                       key={`${tag}-${idx}`}
-                      href={`/tag/${encodeURIComponent(tag)}`}
+                      href={`/tags/${slugify(tag)}`}
                       className="rounded-lg bg-[#131615] border border-[#212623] hover:border-[#8FBF3F]/40 px-3 py-1.5 text-xs text-slate-300 font-mono hover:text-[#8FBF3F] transition-all"
                     >
                       [{tag}]
@@ -290,20 +288,6 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
               </p>
             </div>
           </div>
-
-          {/* Similar Tools Section */}
-          {similarTools.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="font-serif text-xl font-medium tracking-tight text-white">
-                You May Also Like
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {similarTools.map((t) => (
-                  <ToolCard key={t.id} tool={t} categoryName={categoryName} />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right 1 Column: Sticky Metadata Sidebar */}
@@ -357,6 +341,25 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
         </div>
         
       </div>
+
+      {/* Similar Tools Section */}
+      {similarTools.length >= 2 && (
+        <div className="space-y-6 mt-12 border-t border-[#212623] pt-12">
+          <div className="font-sans">
+            <h2 className="font-serif text-2xl font-medium text-white tracking-tight">
+              Similar Tools
+            </h2>
+            <p className="text-slate-500 text-xs mt-1 font-mono">
+              &gt; similar_tools
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {similarTools.map((t) => (
+              <ToolCard key={t.id} tool={t} categoryName={t.categories?.name} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -41,6 +41,14 @@ export default function Home() {
   const [totalToolsCount, setTotalToolsCount] = useState<number>(0);
   const [lastUpdatedStr, setLastUpdatedStr] = useState<string>("today");
 
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [popularQueries, setPopularQueries] = useState<string[]>([]);
+  
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchFormRef = useRef<HTMLFormElement>(null);
+
   const updateLastUpdatedDate = useCallback((toolsList: Tool[]) => {
     if (!toolsList || toolsList.length === 0) return;
     const dates = toolsList
@@ -122,6 +130,8 @@ export default function Home() {
         const cats = JSON.parse(cachedCats) as Category[];
         
         // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTools(tools);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCategories(cats);
         setTotalToolsCount(tools.length);
         updateLastUpdatedDate(tools);
@@ -161,12 +171,15 @@ export default function Home() {
   }, [updateLastUpdatedDate]);
 
   const loadData = useCallback(async () => {
-    const [allTools, dbCategories] = await Promise.all([
+    const [allTools, dbCategories, queries] = await Promise.all([
       mockDb.getTools(),
-      mockDb.getCategories()
+      mockDb.getCategories(),
+      mockDb.getPopularQueries()
     ]);
     
+    setTools(allTools);
     setCategories(dbCategories);
+    setPopularQueries(queries);
     setTotalToolsCount(allTools.length);
     updateLastUpdatedDate(allTools);
 
@@ -231,6 +244,91 @@ export default function Home() {
   const refreshRecent = async () => {
     loadData();
   };
+
+  // Focus homepage search on Ctrl+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setIsDropdownOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Click outside to close suggestion dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchFormRef.current && !searchFormRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 150);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Autocomplete matching logic
+  const suggestions = useMemo(() => {
+    const query = debouncedQuery.trim().toLowerCase();
+    if (!query) return [];
+
+    interface SuggestionItem {
+      id: string;
+      name: string;
+      type: "tool" | "category";
+      slugOrUrl: string;
+      description?: string;
+      score: number;
+    }
+
+    const list: SuggestionItem[] = [];
+
+    // 1. Categories matches
+    categories.forEach(cat => {
+      const name = cat.name.toLowerCase();
+      const desc = cat.description?.toLowerCase() || "";
+      if (name.startsWith(query)) {
+        list.push({ id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, description: cat.description, score: 1 });
+      } else if (name.includes(query)) {
+        list.push({ id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, description: cat.description, score: 2 });
+      } else if (desc.includes(query)) {
+        list.push({ id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, description: cat.description, score: 3 });
+      }
+    });
+
+    // 2. Tools matches
+    tools.forEach(tool => {
+      const name = tool.name.toLowerCase();
+      const desc = tool.short_description.toLowerCase();
+      const matchesTag = tool.tags?.some(t => t.toLowerCase().includes(query)) || false;
+
+      if (name.startsWith(query)) {
+        list.push({ id: tool.id, name: tool.name, type: "tool", slugOrUrl: tool.id, description: tool.short_description, score: 1 });
+      } else if (name.includes(query)) {
+        list.push({ id: tool.id, name: tool.name, type: "tool", slugOrUrl: tool.id, description: tool.short_description, score: 2 });
+      } else if (desc.includes(query) || matchesTag) {
+        list.push({ id: tool.id, name: tool.name, type: "tool", slugOrUrl: tool.id, description: tool.short_description, score: 3 });
+      }
+    });
+
+    // Sort by relevance (prefix matches first, then substring, then description)
+    list.sort((a, b) => {
+      if (a.score !== b.score) return a.score - b.score;
+      return a.name.localeCompare(b.name);
+    });
+
+    return list.slice(0, 5);
+  }, [debouncedQuery, categories, tools]);
 
   // Explicit mapping of category slugs to unique, hand-picked Lucide icons
   const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
@@ -430,7 +528,7 @@ export default function Home() {
           </p>
 
           {/* Large Use-case Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
+          <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
             <div className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300">
               <div className="pl-3 text-slate-500">
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -438,13 +536,41 @@ export default function Home() {
                 </svg>
               </div>
               <input
+                ref={searchInputRef}
                 type="text"
                 aria-label="Search directory by task"
                 placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans"
+                onFocus={() => setIsDropdownOpen(true)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans font-mono"
               />
+
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    searchInputRef.current?.focus();
+                  }}
+                  className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-2"
+                  aria-label="Clear search"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+
+              {!searchQuery && (
+                <span className="hidden sm:inline-block rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] text-slate-500 font-mono select-none mr-3 shrink-0">
+                  Ctrl K
+                </span>
+              )}
+
               <button
                 type="submit"
                 className="shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
@@ -452,7 +578,81 @@ export default function Home() {
                 Search
               </button>
             </div>
+
+            {/* Suggestions Dropdown */}
+            {isDropdownOpen && searchQuery.trim() && (
+              <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left">
+                {suggestions.length === 0 ? (
+                  <div className="px-4 py-4 text-xs text-slate-500 flex flex-col gap-1.5">
+                    <span>No matches found.</span>
+                    <button
+                      type="submit"
+                      className="text-[#8FBF3F] hover:text-[#7ba235] text-[10px] text-left underline font-mono cursor-pointer"
+                    >
+                      Press Enter to search the full index &gt;_
+                    </button>
+                  </div>
+                ) : (
+                  <div className="py-2 bg-[#0E100F]">
+                    {suggestions.map((item) => {
+                      const isTool = item.type === "tool";
+                      return (
+                        <div
+                          key={`${item.type}-${item.id}`}
+                          onClick={() => {
+                            if (item.type === "category") {
+                              router.push(`/category/${item.slugOrUrl}`);
+                            } else {
+                              router.push(`/tool/${item.slugOrUrl}`);
+                            }
+                          }}
+                          className="flex items-center justify-between mx-2 my-1 px-3 py-2 text-xs text-[#EDEEEA] border border-transparent hover:border-[#8FBF3F]/35 hover:bg-[#8FBF3F]/5 rounded-lg cursor-pointer transition-all duration-150 group"
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            {isTool ? (
+                              <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">🤖</span>
+                            ) : (
+                              <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">&gt;</span>
+                            )}
+                            <span className="font-semibold truncate">{item.name}</span>
+                            {item.description && (
+                              <span className="text-[10px] text-slate-500 truncate max-w-[200px] sm:max-w-xs group-hover:text-[#8A8F87]">
+                                — {item.description}
+                              </span>
+                            )}
+                          </div>
+                          <span className="shrink-0 rounded bg-[#131615] border border-[#212623] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#8A8F87] group-hover:border-[#8FBF3F]/30 group-hover:text-[#8FBF3F] font-mono">
+                            {item.type}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </form>
+
+          {/* Quick Filter Chips */}
+          {popularQueries.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-5 font-mono text-[10px] text-[#8A8F87]">
+              <span className="text-[9px] uppercase font-bold text-slate-500">popular:</span>
+              {popularQueries.map((queryText, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(queryText);
+                    setIsDropdownOpen(false);
+                    router.push(`/search?q=${encodeURIComponent(queryText)}`);
+                  }}
+                  className="rounded-lg bg-[#131615] border border-[#212623] hover:border-[#8FBF3F]/35 hover:text-[#8FBF3F] px-2.5 py-1 transition-all cursor-pointer"
+                >
+                  {queryText}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

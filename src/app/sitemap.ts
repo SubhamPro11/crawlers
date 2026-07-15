@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { mockDb } from "@/data/mockDb";
+import { mockDb, slugify } from "@/data/mockDb";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://crawlers.dpdns.org";
@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const tagUrls = Array.from(tagSet).map((tag) => ({
-    url: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
+    url: `${baseUrl}/tags/${slugify(tag)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.4,

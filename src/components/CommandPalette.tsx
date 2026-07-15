@@ -30,6 +30,9 @@ export default function CommandPalette() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        if (typeof window !== "undefined" && window.location.pathname === "/") {
+          return;
+        }
         e.preventDefault();
         setIsOpen((prev) => {
           const next = !prev;

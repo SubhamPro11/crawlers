@@ -447,6 +447,116 @@ class MockDb {
       return [];
     }
   }
+
+  async getSimilarTools(currentToolId: string, categoryId: string, tags: string[]): Promise<Tool[]> {
+    try {
+      let results: Tool[] = [];
+
+      // 1. Same category first
+      if (categoryId) {
+        const { data: catTools, error: catError } = await supabase
+          .from("tools")
+          .select("*, categories(name, slug)")
+          .eq("category_id", categoryId)
+          .eq("status", "active");
+
+        if (catError) {
+          console.error("Error fetching similar tools by category:", catError.message);
+        } else if (catTools) {
+          results = catTools.filter((item) => item.id !== currentToolId);
+        }
+      }
+
+      // 2. If fewer than 3 results, backfill with tools sharing at least one overlapping tag
+      if (results.length < 3 && tags && tags.length > 0) {
+        const { data: tagTools, error: tagError } = await supabase
+          .from("tools")
+          .select("*, categories(name, slug)")
+          .overlaps("tags", tags)
+          .eq("status", "active");
+
+        if (tagError) {
+          console.error("Error fetching similar tools by tags:", tagError.message);
+        } else if (tagTools) {
+          const existingIds = new Set(results.map((r) => r.id));
+          const tagFiltered = tagTools.filter(
+            (item) => item.id !== currentToolId && !existingIds.has(item.id)
+          );
+          results = [...results, ...tagFiltered];
+        }
+      }
+
+      return results;
+    } catch (err) {
+      console.error("Uncaught exception in getSimilarTools:", err);
+      return [];
+    }
+  }
+
+  async getPopularQueries(): Promise<string[]> {
+    try {
+      // Future-proofing: this will pull from a query logging table.
+      // For now, it returns the seed list of top searches.
+      return [
+        "generate an image",
+        "summarize a video",
+        "code assistant",
+        "transcribe audio",
+        "translate text"
+      ];
+    } catch (err) {
+      console.error("Error in getPopularQueries:", err);
+      return [];
+    }
+  }
+
+  async getToolsByTagSlug(slug: string): Promise<{ tools: Tool[]; tagName: string }> {
+    try {
+      const allTools = await this.getTools();
+      const uniqueTags = new Set<string>();
+      allTools.forEach((t) => {
+        if (t.tags) {
+          t.tags.forEach((tag) => uniqueTags.add(tag.trim()));
+        }
+      });
+
+      let matchedTagName = "";
+      for (const tag of uniqueTags) {
+        if (slugify(tag) === slug) {
+          matchedTagName = tag;
+          break;
+        }
+      }
+
+      if (!matchedTagName) {
+        matchedTagName = slug.replace(/-/g, " ");
+      }
+
+      const matchedTools = allTools.filter((t) =>
+        t.tags && t.tags.some((tag) => tag.trim().toLowerCase() === matchedTagName.toLowerCase())
+      );
+
+      return {
+        tools: matchedTools,
+        tagName: matchedTagName
+      };
+    } catch (err) {
+      console.error("Error in getToolsByTagSlug:", err);
+      return { tools: [], tagName: slug.replace(/-/g, " ") };
+    }
+  }
+}
+
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 }
 
 export const mockDb = new MockDb();

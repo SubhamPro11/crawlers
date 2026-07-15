@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Tool, mockDb } from "@/data/mockDb";
+import { Tool, mockDb, slugify } from "@/data/mockDb";
 
 interface ToolCardProps {
   tool: Tool;
@@ -118,7 +118,7 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
           {tool.tags.slice(0, 3).map((tag, idx) => (
             <Link
               key={`${tag}-${idx}`}
-              href={`/tag/${encodeURIComponent(tag)}`}
+              href={`/tags/${slugify(tag)}`}
               className="before:content-['['] after:content-[']'] hover:text-[#8FBF3F] transition-colors"
             >
               {tag}
