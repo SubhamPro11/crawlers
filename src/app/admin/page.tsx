@@ -71,6 +71,10 @@ export default function AdminPage() {
   }, [user]);
 
   const loadPendingTools = async () => {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      console.error("Unauthorized access to pending tools");
+      return;
+    }
     setLoadingPending(true);
     const pending = await mockDb.getPendingTools();
     setPendingTools(pending);
@@ -78,6 +82,10 @@ export default function AdminPage() {
   };
 
   const loadStats = async () => {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      console.error("Unauthorized access to database statistics");
+      return;
+    }
     try {
       setLoadingStats(true);
       const tools = await mockDb.getTools();
@@ -171,6 +179,10 @@ export default function AdminPage() {
   };
 
   const handleImportCSV = async () => {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      alert("Unauthorized access");
+      return;
+    }
     if (!csvFile) return;
 
     setImporting(true);
@@ -325,6 +337,10 @@ export default function AdminPage() {
   };
 
   const handleApprove = async (id: string, name: string) => {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      alert("Unauthorized action");
+      return;
+    }
     const ok = await mockDb.approveTool(id);
     if (ok) {
       setPendingTools(prev => prev.filter(t => t.id !== id));
@@ -336,6 +352,10 @@ export default function AdminPage() {
   };
 
   const handleReject = async (id: string, name: string) => {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      alert("Unauthorized action");
+      return;
+    }
     if (confirm(`Are you sure you want to reject and delete "${name}"?`)) {
       const ok = await mockDb.rejectTool(id);
       if (ok) {

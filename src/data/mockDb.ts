@@ -244,6 +244,30 @@ class MockDb {
     }
   }
 
+  async getActiveToolById(id: string): Promise<Tool | undefined> {
+    try {
+      const { data, error } = await supabase
+        .from("tools")
+        .select("*, categories(name, slug)")
+        .eq("id", id)
+        .eq("status", "active")
+        .single();
+
+      if (error) {
+        console.error("Error fetching active tool by ID:", error.message);
+        return undefined;
+      }
+      return data || undefined;
+    } catch (err) {
+      console.error("Uncaught exception in getActiveToolById:", err);
+      return undefined;
+    }
+  }
+
+  async getToolByIdForAdmin(id: string): Promise<Tool | undefined> {
+    return this.getToolById(id);
+  }
+
   async searchTools(query: string): Promise<Tool[]> {
     try {
       const lc = query.toLowerCase().trim();

@@ -19,7 +19,7 @@ export async function generateMetadata({
       };
     }
 
-    const tool = await mockDb.getToolById(id);
+    const tool = await mockDb.getActiveToolById(id);
 
     if (!tool) {
       return {
@@ -66,7 +66,7 @@ export default async function ToolDetailPage({
   try {
     const resolvedParams = await params;
     id = resolvedParams.id;
-    const tool = id ? await mockDb.getToolById(id) : undefined;
+    const tool = id ? await mockDb.getActiveToolById(id) : undefined;
 
     if (tool) {
       // Schema.org SoftwareApplication JSON-LD Structured Data

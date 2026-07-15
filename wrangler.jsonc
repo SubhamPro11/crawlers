@@ -9,8 +9,8 @@
     "directory": ".vercel/output/static"
   },
   "vars": {
-    "NEXT_PUBLIC_SUPABASE_URL": "https://emgazoulumtcwzbnzzyy.supabase.co",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TNzSRWsjaoqOv0cW8gMF6g_BtI0Fhku"
+    "NEXT_PUBLIC_SUPABASE_URL": "env(NEXT_PUBLIC_SUPABASE_URL)",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "env(NEXT_PUBLIC_SUPABASE_ANON_KEY)"
   },
   "observability": {
     "logs": {

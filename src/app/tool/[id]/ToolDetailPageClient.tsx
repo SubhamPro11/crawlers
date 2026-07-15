@@ -19,7 +19,7 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
       setIsLoading(false);
       return;
     }
-    const t = await mockDb.getToolById(id);
+    const t = await mockDb.getActiveToolById(id);
     if (t) {
       setTool(t);
       setCategoryName(t.categories?.name || "");
