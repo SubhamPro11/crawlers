@@ -583,7 +583,7 @@ export default function ApiKeysDirectoryPage() {
         onClick={() => handleCardClick(bot.id, bot.name)}
         className="w-full flex h-10 items-center justify-center rounded-lg bg-slate-900 border border-slate-800 text-xs font-bold text-slate-200 hover:bg-[#8FBF3F] hover:text-slate-950 hover:border-transparent transition-all duration-200 uppercase tracking-wider font-mono"
       >
-        Get API Key &rarr;
+        {bot.tags.map(t => t.toLowerCase()).includes("nim") || bot.url.includes("nvidia.com") ? "run_bot \u2192" : "Get API Key \u2192"}
       </Link>
     </div>
   );
