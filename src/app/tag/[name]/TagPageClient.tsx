@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import { TerminalLoader } from "@/components/TerminalLoader";
 
 export default function TagPageClient({ name }: { name: string }) {
   const tag = decodeURIComponent(name);
@@ -26,11 +27,7 @@ export default function TagPageClient({ name }: { name: string }) {
   }, [tag]);
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
-      </div>
-    );
+    return <TerminalLoader message="loading_tag_data" />;
   }
 
   return (

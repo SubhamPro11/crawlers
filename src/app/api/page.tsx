@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { mockDb, Tool } from "@/data/mockDb";
+import { TerminalLoader } from "@/components/TerminalLoader";
 
 interface ApiBot {
   id: string;
@@ -525,7 +526,7 @@ export default function ApiKeysDirectoryPage() {
     return groups;
   }, [filteredBots, selectedProvider]);
 
-  const handleCardClick = (id: string, name: string) => {
+  const handleCardClick = (id: string) => {
     if (!id.startsWith("seed-api-")) {
       mockDb.incrementClickCount(id).catch(console.error);
     }
@@ -534,7 +535,7 @@ export default function ApiKeysDirectoryPage() {
   const renderCard = (bot: ApiBot) => (
     <div
       key={bot.id}
-      className="flex flex-col rounded-xl border border-slate-800 bg-[#131B2E] p-6 shadow-lg shadow-black/25 hover:border-[#8FBF3F]/40 hover:-translate-y-0.5 transition-all duration-300 relative group"
+      className="flex flex-col rounded-xl border border-slate-800 bg-[#131B2E] p-6 hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] relative group"
     >
       {/* Header Details */}
       <div className="flex justify-between items-start gap-4 mb-4">
@@ -580,7 +581,7 @@ export default function ApiKeysDirectoryPage() {
       <Link
         href={bot.url}
         target="_blank"
-        onClick={() => handleCardClick(bot.id, bot.name)}
+        onClick={() => handleCardClick(bot.id)}
         className="w-full flex h-10 items-center justify-center rounded-lg bg-slate-900 border border-slate-800 text-xs font-bold text-slate-200 hover:bg-[#8FBF3F] hover:text-slate-950 hover:border-transparent transition-all duration-200 uppercase tracking-wider font-mono"
       >
         {bot.tags.map(t => t.toLowerCase()).includes("nim") || bot.url.includes("nvidia.com") ? "run_bot \u2192" : "Get API Key \u2192"}
@@ -674,9 +675,7 @@ export default function ApiKeysDirectoryPage() {
 
       {/* Content Rendering */}
       {isLoading ? (
-        <div className="flex justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
-        </div>
+        <TerminalLoader message="loading_api_index" />
       ) : filteredBots.length === 0 ? (
         <div className="text-center py-20 border border-dashed border-slate-800 rounded-xl bg-[#0F1423]/30 font-mono">
           <p className="text-slate-500 text-xs">No developer APIs found matching search parameters.</p>

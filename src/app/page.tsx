@@ -27,7 +27,108 @@ import {
   Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy
 } from "lucide-react";
 
+interface CategoryGroupSectionProps {
+  group: { id: string; name: string };
+  groupCategories: Category[];
+  sortedGroupCategories: Category[];
+  toolCounts: Record<string, number>;
+  getCategoryIcon: (slug: string) => React.ReactNode;
+}
 
+function CategoryGroupSection({
+  group,
+  groupCategories,
+  sortedGroupCategories,
+  toolCounts,
+  getCategoryIcon
+}: CategoryGroupSectionProps) {
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+    const timeout = setTimeout(() => {
+      setIsVisible(false);
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced || isVisible) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.05 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, [isVisible]);
+
+  return (
+    <div
+      ref={containerRef}
+      id={`group-${group.id}`}
+      className={`scroll-mt-28 transition-opacity duration-500 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
+        <div className="flex items-center gap-3">
+          <h2 className="font-serif text-lg font-medium text-white sm:text-xl">
+            {group.name}
+          </h2>
+          <span className="rounded-full bg-slate-900/80 border border-slate-800 px-2.5 py-0.5 text-xs text-slate-400 font-mono font-bold">
+            {groupCategories.length}
+          </span>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {sortedGroupCategories.map((cat) => {
+          const count = toolCounts[cat.id] || 0;
+          const isZero = count === 0;
+          return (
+            <Link
+              key={cat.id}
+              href={`/category/${cat.slug}`}
+              className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
+                isZero ? "opacity-50 hover:opacity-85" : ""
+              }`}
+            >
+              <div>
+                <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
+                  {getCategoryIcon(cat.slug)}
+                </div>
+                <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
+                  {cat.name}
+                </h3>
+                <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                  {cat.description || "Browse curated tools for this domain."}
+                </p>
+              </div>
+              <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
+                <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
+                  {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
+                </span>
+                {!isZero && (
+                  <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Explore &rarr;
+                  </span>
+                )}
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,6 +149,93 @@ export default function Home() {
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchFormRef = useRef<HTMLFormElement>(null);
+
+  // Hero headline typing animation state
+  const textPart1 = "Find the exact ";
+  const textPart2 = "AI tool";
+  const textPart3 = " by use case";
+  const totalLength = textPart1.length + textPart2.length + textPart3.length;
+  
+  const [visibleChars, setVisibleChars] = useState(totalLength);
+  const [isTypingComplete, setIsTypingComplete] = useState(true);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | number | null = null;
+    const timer = setTimeout(() => {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setPrefersReducedMotion(prefersReduced);
+      
+      const hasPlayed = sessionStorage.getItem("hero-typed-v1") === "true";
+      if (hasPlayed || prefersReduced) {
+        setVisibleChars(totalLength);
+        setIsTypingComplete(true);
+        return;
+      }
+
+      // Set to 0 and false on mount to play the animation on client side
+      setVisibleChars(0);
+      setIsTypingComplete(false);
+
+      let current = 0;
+      interval = setInterval(() => {
+        current += 1;
+        if (current >= totalLength) {
+          setVisibleChars(totalLength);
+          setIsTypingComplete(true);
+          sessionStorage.setItem("hero-typed-v1", "true");
+          if (interval) clearInterval(interval);
+        } else {
+          setVisibleChars(current);
+        }
+      }, 30); // ~30ms per character
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
+  }, [totalLength]);
+
+  const renderTypedHeading = () => {
+    if (isTypingComplete) {
+      return (
+        <>
+          Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> by use case
+          {!prefersReducedMotion && (
+            <span className="text-[#8FBF3F] terminal-cursor select-none ml-1">▍</span>
+          )}
+        </>
+      );
+    }
+
+    // Still typing
+    if (visibleChars <= textPart1.length) {
+      return (
+        <>
+          {textPart1.substring(0, visibleChars)}
+          <span className="text-[#8FBF3F] select-none">▍</span>
+        </>
+      );
+    } else if (visibleChars <= textPart1.length + textPart2.length) {
+      return (
+        <>
+          {textPart1}
+          <span className="italic text-[#8FBF3F]">{textPart2.substring(0, visibleChars - textPart1.length)}</span>
+          <span className="text-[#8FBF3F] select-none">▍</span>
+        </>
+      );
+    } else {
+      return (
+        <>
+          {textPart1}
+          <span className="italic text-[#8FBF3F]">{textPart2}</span>
+          {textPart3.substring(0, visibleChars - textPart1.length - textPart2.length)}
+          <span className="text-[#8FBF3F] select-none">▍</span>
+        </>
+      );
+    }
+  };
 
   const updateLastUpdatedDate = useCallback((toolsList: Tool[]) => {
     if (!toolsList || toolsList.length === 0) return;
@@ -122,52 +310,53 @@ export default function Home() {
 
   // Load from local storage cache instantly on mount
   useEffect(() => {
-    try {
-      const cachedTools = localStorage.getItem("crawlers_cached_tools");
-      const cachedCats = localStorage.getItem("crawlers_cached_categories");
-      if (cachedTools && cachedCats) {
-        const tools = JSON.parse(cachedTools) as Tool[];
-        const cats = JSON.parse(cachedCats) as Category[];
-        
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTools(tools);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setCategories(cats);
-        setTotalToolsCount(tools.length);
-        updateLastUpdatedDate(tools);
+    const timeout = setTimeout(() => {
+      try {
+        const cachedTools = localStorage.getItem("crawlers_cached_tools");
+        const cachedCats = localStorage.getItem("crawlers_cached_categories");
+        if (cachedTools && cachedCats) {
+          const tools = JSON.parse(cachedTools) as Tool[];
+          const cats = JSON.parse(cachedCats) as Category[];
+          
+          setTools(tools);
+          setCategories(cats);
+          setTotalToolsCount(tools.length);
+          updateLastUpdatedDate(tools);
 
-        const counts: Record<string, number> = {};
-        tools.forEach(tool => {
-          counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
-        });
-        setToolCounts(counts);
+          const counts: Record<string, number> = {};
+          tools.forEach(tool => {
+            counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
+          });
+          setToolCounts(counts);
 
-        const sorted = [...tools]
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 6);
-        setRecentTools(sorted);
+          const sorted = [...tools]
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .slice(0, 6);
+          setRecentTools(sorted);
 
-        // TODO: reinstate real view-count sort once analytics tracking is wired up
-        const trending = [...tools]
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 8);
-        setTrendingTools(trending);
+          // TODO: reinstate real view-count sort once analytics tracking is wired up
+          const trending = [...tools]
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .slice(0, 8);
+          setTrendingTools(trending);
 
-        const favIds: string[] = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
-        const recItems: Array<{ id: string; type: string }> = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+          const favIds: string[] = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
+          const recItems: Array<{ id: string; type: string }> = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
 
-        const favTools = tools.filter(t => favIds.includes(t.id));
-        setFavoriteTools(favTools);
+          const favTools = tools.filter(t => favIds.includes(t.id));
+          setFavoriteTools(favTools);
 
-        const recentIds = recItems.filter(i => i.type === "tool").map(i => i.id);
-        const recTools = recentIds
-          .map(id => tools.find(t => t.id === id))
-          .filter((t): t is Tool => !!t);
-        setRecentToolsList(recTools);
+          const recentIds = recItems.filter(i => i.type === "tool").map(i => i.id);
+          const recTools = recentIds
+            .map(id => tools.find(t => t.id === id))
+            .filter((t): t is Tool => !!t);
+          setRecentToolsList(recTools);
+        }
+      } catch (e) {
+        console.error("Error reading tools cache on mount:", e);
       }
-    } catch (e) {
-      console.error("Error reading tools cache on mount:", e);
-    }
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [updateLastUpdatedDate]);
 
   const loadData = useCallback(async () => {
@@ -519,140 +708,150 @@ export default function Home() {
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
-          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6">
-            Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> by use case
+          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6 min-h-[1.2em]">
+            {renderTypedHeading()}
           </h1>
           
-          <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
-            A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
-          </p>
+          <div className={`transition-opacity duration-[200ms] ${
+            isTypingComplete ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}>
+            <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
+              A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
+            </p>
 
-          {/* Large Use-case Search Bar */}
-          <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
-            <div className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300">
-              <div className="pl-3 text-slate-500">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                ref={searchInputRef}
-                type="text"
-                aria-label="Search directory by task"
-                placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
-                value={searchQuery}
-                onFocus={() => setIsDropdownOpen(true)}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setIsDropdownOpen(true);
-                }}
-                className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans font-mono"
-              />
-
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery("");
-                    searchInputRef.current?.focus();
-                  }}
-                  className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-2"
-                  aria-label="Clear search"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            {/* Large Use-case Search Bar */}
+            <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
+              <div className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300">
+                <div className="pl-3 text-slate-500">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                </button>
-              )}
+                </div>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  aria-label="Search directory by task"
+                  placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
+                  value={searchQuery}
+                  onFocus={() => setIsDropdownOpen(true)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setIsDropdownOpen(true);
+                  }}
+                  className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans font-mono"
+                />
 
-              {!searchQuery && (
-                <span className="hidden sm:inline-block rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] text-slate-500 font-mono select-none mr-3 shrink-0">
-                  Ctrl K
-                </span>
-              )}
-
-              <button
-                type="submit"
-                className="shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] text-slate-950 font-bold px-6 py-3 transition-colors duration-200 font-sans"
-              >
-                Search
-              </button>
-            </div>
-
-            {/* Suggestions Dropdown */}
-            {isDropdownOpen && searchQuery.trim() && (
-              <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left">
-                {suggestions.length === 0 ? (
-                  <div className="px-4 py-4 text-xs text-slate-500 flex flex-col gap-1.5">
-                    <span>No matches found.</span>
-                    <button
-                      type="submit"
-                      className="text-[#8FBF3F] hover:text-[#7ba235] text-[10px] text-left underline font-mono cursor-pointer"
-                    >
-                      Press Enter to search the full index &gt;_
-                    </button>
-                  </div>
-                ) : (
-                  <div className="py-2 bg-[#0E100F]">
-                    {suggestions.map((item) => {
-                      const isTool = item.type === "tool";
-                      return (
-                        <div
-                          key={`${item.type}-${item.id}`}
-                          onClick={() => {
-                            if (item.type === "category") {
-                              router.push(`/category/${item.slugOrUrl}`);
-                            } else {
-                              router.push(`/tool/${item.slugOrUrl}`);
-                            }
-                          }}
-                          className="flex items-center justify-between mx-2 my-1 px-3 py-2 text-xs text-[#EDEEEA] border border-transparent hover:border-[#8FBF3F]/35 hover:bg-[#8FBF3F]/5 rounded-lg cursor-pointer transition-all duration-150 group"
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            {isTool ? (
-                              <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">🤖</span>
-                            ) : (
-                              <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">&gt;</span>
-                            )}
-                            <span className="font-semibold truncate">{item.name}</span>
-                            {item.description && (
-                              <span className="text-[10px] text-slate-500 truncate max-w-[200px] sm:max-w-xs group-hover:text-[#8A8F87]">
-                                — {item.description}
-                              </span>
-                            )}
-                          </div>
-                          <span className="shrink-0 rounded bg-[#131615] border border-[#212623] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#8A8F87] group-hover:border-[#8FBF3F]/30 group-hover:text-[#8FBF3F] font-mono">
-                            {item.type}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("");
+                      searchInputRef.current?.focus();
+                    }}
+                    className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-2"
+                    aria-label="Clear search"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 )}
+
+                {!searchQuery && (
+                  <span className="hidden sm:inline-block rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] text-slate-500 font-mono select-none mr-3 shrink-0">
+                    Ctrl K
+                  </span>
+                )}
+
+                <button
+                  type="submit"
+                  className="shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-3 transition-colors duration-[100ms] font-sans"
+                >
+                  Search
+                </button>
+              </div>
+
+              {/* Suggestions Dropdown */}
+              {isDropdownOpen && searchQuery.trim() && (
+                <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left">
+                  {searchQuery.trim() !== debouncedQuery.trim() ? (
+                    <div className="px-4 py-4 text-xs text-slate-500 font-mono flex items-center gap-1">
+                      <span>querying_index</span>
+                      <span className="terminal-dots text-[#8FBF3F]"></span>
+                    </div>
+                  ) : suggestions.length === 0 ? (
+                    <div className="px-4 py-4 text-xs text-slate-500 flex flex-col gap-1.5">
+                      <span>No matches found.</span>
+                      <button
+                        type="submit"
+                        className="text-[#8FBF3F] hover:text-[#7ba235] text-[10px] text-left underline font-mono cursor-pointer"
+                      >
+                        Press Enter to search the full index &gt;_
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="py-2 bg-[#0E100F]">
+                      {suggestions.map((item, index) => {
+                        const isTool = item.type === "tool";
+                        return (
+                          <div
+                            key={`${item.type}-${item.id}`}
+                            onClick={() => {
+                              if (item.type === "category") {
+                                router.push(`/category/${item.slugOrUrl}`);
+                              } else {
+                                router.push(`/tool/${item.slugOrUrl}`);
+                              }
+                            }}
+                            className="suggestion-row flex items-center justify-between mx-2 my-1 px-3 py-2 text-xs text-[#EDEEEA] border border-transparent hover:border-[#8FBF3F]/35 hover:bg-[#8FBF3F]/5 rounded-lg cursor-pointer transition-colors duration-[100ms] group"
+                            style={{ animationDelay: `${index * 20}ms` }}
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              {isTool ? (
+                                <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">🤖</span>
+                              ) : (
+                                <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">&gt;</span>
+                              )}
+                              <span className="font-semibold truncate">{item.name}</span>
+                              {item.description && (
+                                <span className="text-[10px] text-slate-500 truncate max-w-[200px] sm:max-w-xs group-hover:text-[#8A8F87]">
+                                  — {item.description}
+                                </span>
+                              )}
+                            </div>
+                            <span className="shrink-0 rounded bg-[#131615] border border-[#212623] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#8A8F87] group-hover:border-[#8FBF3F]/30 group-hover:text-[#8FBF3F] font-mono">
+                              {item.type}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </form>
+
+            {/* Quick Filter Chips */}
+            {popularQueries.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-5 font-mono text-[10px] text-[#8A8F87]">
+                <span className="text-[9px] uppercase font-bold text-slate-500">popular:</span>
+                {popularQueries.map((queryText, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery(queryText);
+                      setIsDropdownOpen(false);
+                      router.push(`/search?q=${encodeURIComponent(queryText)}`);
+                    }}
+                    className="rounded-lg bg-[#131615] border border-[#212623] hover:border-[#8FBF3F]/35 hover:text-[#8FBF3F] active:bg-[#0e100f] active:border-[#8FBF3F]/50 px-2.5 py-1 transition-colors duration-[100ms] cursor-pointer"
+                  >
+                    {queryText}
+                  </button>
+                ))}
               </div>
             )}
-          </form>
-
-          {/* Quick Filter Chips */}
-          {popularQueries.length > 0 && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-5 font-mono text-[10px] text-[#8A8F87]">
-              <span className="text-[9px] uppercase font-bold text-slate-500">popular:</span>
-              {popularQueries.map((queryText, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery(queryText);
-                    setIsDropdownOpen(false);
-                    router.push(`/search?q=${encodeURIComponent(queryText)}`);
-                  }}
-                  className="rounded-lg bg-[#131615] border border-[#212623] hover:border-[#8FBF3F]/35 hover:text-[#8FBF3F] px-2.5 py-1 transition-all cursor-pointer"
-                >
-                  {queryText}
-                </button>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
 
@@ -923,55 +1122,14 @@ export default function Home() {
               });
               
               return (
-                <div key={group.id} id={`group-${group.id}`} className="scroll-mt-28">
-                  <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
-                    <div className="flex items-center gap-3">
-                      <h2 className="font-serif text-lg font-medium text-white sm:text-xl">
-                        {group.name}
-                      </h2>
-                      <span className="rounded-full bg-slate-900/80 border border-slate-800 px-2.5 py-0.5 text-xs text-slate-400 font-mono font-bold">
-                        {groupCategories.length}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {sortedGroupCategories.map((cat) => {
-                      const count = toolCounts[cat.id] || 0;
-                      const isZero = count === 0;
-                      return (
-                        <Link 
-                          key={cat.id} 
-                          href={`/category/${cat.slug}`}
-                          className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:-translate-y-1 hover:bg-[#131615] hover:border-[#8FBF3F]/40 hover:shadow-lg hover:shadow-black/50 transition-all duration-300 ${
-                            isZero ? "opacity-50 hover:opacity-85" : ""
-                          }`}
-                        >
-                          <div>
-                            <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
-                              {getCategoryIcon(cat.slug)}
-                            </div>
-                            <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
-                              {cat.name}
-                            </h3>
-                            <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
-                              {cat.description || "Browse curated tools for this domain."}
-                            </p>
-                          </div>
-                          <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
-                            <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
-                              {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
-                            </span>
-                            {!isZero && (
-                              <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                Explore &rarr;
-                              </span>
-                            )}
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
+                <CategoryGroupSection
+                  key={group.id}
+                  group={group}
+                  groupCategories={groupCategories}
+                  sortedGroupCategories={sortedGroupCategories}
+                  toolCounts={toolCounts}
+                  getCategoryIcon={getCategoryIcon}
+                />
               );
             })}
           </div>

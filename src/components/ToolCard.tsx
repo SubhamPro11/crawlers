@@ -62,16 +62,16 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
   };
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5">
+    <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 transition-colors duration-[120ms] hover:border-[#8FBF3F]/35">
       
       {/* Favorite Toggle Button */}
       <button
         onClick={toggleFavorite}
-        className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 hover:scale-105 active:scale-95 transition-all duration-200"
+        className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
         aria-label="Toggle Bookmark"
       >
         <svg
-          className={`h-4.5 w-4.5 transition-transform duration-300 ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F] scale-110" : "fill-none stroke-current"}`}
+          className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
           viewBox="0 0 24 24"
           strokeWidth={2}
         >
@@ -139,10 +139,10 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleVisit}
-          className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] transition-all group/btn"
+          className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
         >
           <span>run_bot</span>
-          <span className="text-[#8A8F87]/60 font-normal transition-transform group-hover/btn:translate-x-0.5">→</span>
+          <span className="text-[#8A8F87]/60 font-normal">→</span>
         </a>
       </div>
     </div>

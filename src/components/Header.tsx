@@ -223,7 +223,7 @@ export default function Header() {
 
             <Link
               href="/submit"
-              className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] transition-all duration-200"
+              className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] active:bg-[#6c9130] transition-colors duration-[100ms]"
             >
               Submit Bot
             </Link>
@@ -357,7 +357,7 @@ export default function Header() {
             <Link
               href="/submit"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex h-11 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] transition-colors"
+              className="flex h-11 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] active:bg-[#6c9130] transition-colors duration-[100ms]"
             >
               Submit Bot
             </Link>

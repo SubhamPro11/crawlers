@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { mockDb, Tool, Category } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import { ToolCardSkeleton } from "@/components/ToolCardSkeleton";
 
 export default function FavoritesPage() {
   const [favoriteTools, setFavoriteTools] = useState<Tool[]>([]);
@@ -65,17 +66,7 @@ export default function FavoritesPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="animate-pulse rounded-xl border border-[#212623] bg-[#131615]/30 p-5 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded bg-slate-800" />
-                <div className="space-y-2 flex-1">
-                  <div className="h-4 bg-slate-850 rounded w-2/3" />
-                  <div className="h-3 bg-slate-850 rounded w-1/3" />
-                </div>
-              </div>
-              <div className="h-16 bg-slate-850 rounded w-full" />
-              <div className="h-4 bg-slate-850 rounded w-1/4 pt-2" />
-            </div>
+            <ToolCardSkeleton key={i} />
           ))}
         </div>
       ) : favoriteTools.length > 0 ? (

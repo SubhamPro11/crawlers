@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { mockDb, Tool, slugify } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import { TerminalLoader } from "@/components/TerminalLoader";
 
 export default function TagPageClient({ slug }: { slug: string }) {
   const [tagName, setTagName] = useState<string>("");
@@ -45,7 +46,7 @@ export default function TagPageClient({ slug }: { slug: string }) {
 
   const fetchTagData = useCallback(async () => {
     if (!slug) {
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 0);
       return;
     }
     const res = await mockDb.getToolsByTagSlug(slug);
@@ -55,15 +56,14 @@ export default function TagPageClient({ slug }: { slug: string }) {
   }, [slug]);
 
   useEffect(() => {
-    fetchTagData();
+    const timeout = setTimeout(() => {
+      fetchTagData();
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [fetchTagData]);
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
-      </div>
-    );
+    return <TerminalLoader message="loading_tag_data" />;
   }
 
   const pricingFilters = [
@@ -121,10 +121,10 @@ export default function TagPageClient({ slug }: { slug: string }) {
               <button
                 key={filter.value}
                 onClick={() => setActiveFilter(filter.value)}
-                className={`rounded-full px-4 py-2.5 text-xs font-bold transition-all duration-200 font-sans ${
+                className={`rounded-full px-4 py-2.5 text-xs font-bold transition-colors duration-[100ms] font-sans cursor-pointer ${
                   activeFilter === filter.value
-                    ? "bg-[#8FBF3F] text-slate-950"
-                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/30"
+                    ? "bg-[#8FBF3F] text-slate-950 active:bg-[#7ba235]"
+                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/30 active:bg-[#0c0d0c] active:border-[#8FBF3F]/50"
                 }`}
               >
                 {filter.label}
@@ -137,14 +137,14 @@ export default function TagPageClient({ slug }: { slug: string }) {
           <span>SORT BY:</span>
           <button
             onClick={() => setSortBy("name")}
-            className={`transition-colors ${sortBy === "name" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "name" ? "text-[#8FBF3F]" : "hover:text-white"}`}
           >
             A-Z
           </button>
           <span>|</span>
           <button
             onClick={() => setSortBy("recent")}
-            className={`transition-colors ${sortBy === "recent" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "recent" ? "text-[#8FBF3F]" : "hover:text-white"}`}
           >
             NEWEST
           </button>

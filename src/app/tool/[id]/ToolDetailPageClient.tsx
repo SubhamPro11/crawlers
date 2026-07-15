@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { mockDb, Tool, slugify } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import { TerminalLoader } from "@/components/TerminalLoader";
 
 export default function ToolDetailPageClient({ id }: { id: string }) {
   const [tool, setTool] = useState<Tool | null>(null);
@@ -117,11 +118,7 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
-      </div>
-    );
+    return <TerminalLoader message="loading_tool_data" />;
   }
 
   if (!tool) {

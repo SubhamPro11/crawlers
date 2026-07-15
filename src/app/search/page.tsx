@@ -5,6 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
+import { TerminalLoader } from "@/components/TerminalLoader";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -117,11 +118,7 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
-      </div>
-    }>
+    <Suspense fallback={<TerminalLoader message="querying_index" />}>
       <SearchContent />
     </Suspense>
   );

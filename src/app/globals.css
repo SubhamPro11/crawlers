@@ -14,6 +14,90 @@
   --color-muted: #8A8F87;
 }
 
+/* Prefers Reduced Motion Reset */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .terminal-cursor {
+    display: none !important;
+  }
+  .terminal-dots::after {
+    content: "..." !important;
+    animation: none !important;
+  }
+  .shimmer-bar {
+    animation: none !important;
+    background: rgba(143, 191, 63, 0.08) !important;
+  }
+}
+
+/* Terminal Cursor Blink Animation */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.terminal-cursor {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Search Dropdown Suggestion Row Fade-in + Shift-up staggered */
+@keyframes suggestion-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.suggestion-row {
+  animation: suggestion-fade-in 120ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(33, 38, 35, 0.6) 25%,
+    rgba(143, 191, 63, 0.15) 37%,
+    rgba(33, 38, 35, 0.6) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Monospace Debounce Dots */
+@keyframes ellipsis-cycle {
+  0%, 100% { content: "."; }
+  33% { content: ".."; }
+  66% { content: "..."; }
+}
+
+.terminal-dots::after {
+  content: ".";
+  animation: ellipsis-cycle 1s infinite steps(1);
+}
+
+
 :root {
   --background: #0D0F0E;
   --foreground: #EDEEEA;

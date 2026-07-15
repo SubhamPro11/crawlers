@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Tool, Category } from "@/data/mockDb";
 
@@ -10,11 +11,79 @@ interface HomepageExtensionsProps {
 }
 
 export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: HomepageExtensionsProps) {
+  const [displayTools, setDisplayTools] = useState(totalTools);
+  const [displayCategories, setDisplayCategories] = useState(totalCategories);
+  const [hasTriggered, setHasTriggered] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      // On client mount, reset to 0 to prepare for scroll-triggered animation
+      setDisplayTools(0);
+      setDisplayCategories(0);
+      setHasTriggered(false);
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (hasTriggered) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        // Start count-up animation
+        let startTimestamp: number | null = null;
+        const duration = 800; // 800ms
+
+        const step = (timestamp: number) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const elapsed = timestamp - startTimestamp;
+          const progress = Math.min(elapsed / duration, 1);
+
+          // Ease-out cubic: f(t) = 1 - (1-t)^3
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+
+          setDisplayTools(Math.floor(easeOut * totalTools));
+          setDisplayCategories(Math.floor(easeOut * totalCategories));
+
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          } else {
+            setDisplayTools(totalTools);
+            setDisplayCategories(totalCategories);
+            setHasTriggered(true);
+          }
+        };
+
+        window.requestAnimationFrame(step);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasTriggered, totalTools, totalCategories]);
+
   const stats = [
-    { value: totalTools > 0 ? totalTools.toLocaleString() : "...", label: "ai tools listed" },
-    { value: totalCategories > 0 ? totalCategories.toLocaleString() : "...", label: "use-case categories" },
-    { value: "Direct Link", label: "no embeds or iframes" },
-    { value: lastUpdated || "today", label: "last updated", isDate: true }
+    { 
+      value: hasTriggered ? (displayTools > 0 ? displayTools.toLocaleString() : "...") : "0", 
+      label: "ai tools listed",
+      isNumeric: true
+    },
+    { 
+      value: hasTriggered ? (displayCategories > 0 ? displayCategories.toLocaleString() : "...") : "0", 
+      label: "use-case categories",
+      isNumeric: true
+    },
+    { value: "Direct Link", label: "no embeds or iframes", isNumeric: false },
+    { value: lastUpdated || "today", label: "last updated", isDate: true, isNumeric: false }
   ];
 
   return (
@@ -56,9 +125,17 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
       </div>
 
       {/* Statistics Counters */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-xl border border-[#212623]/80 bg-[#131615]/40 text-center">
+      <div 
+        ref={containerRef}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-xl border border-[#212623]/80 bg-[#131615]/40 text-center"
+      >
         {stats.map((s, idx) => (
-          <div key={idx} className="space-y-1">
+          <div 
+            key={idx} 
+            className={`space-y-1 transition-opacity duration-500 ${
+              !s.isNumeric && !hasTriggered ? "opacity-0" : "opacity-100"
+            }`}
+          >
             <div className={`text-2xl sm:text-3xl font-bold font-serif ${s.isDate ? "text-white/80" : "text-[#8FBF3F]"}`}>
               {s.value}
             </div>

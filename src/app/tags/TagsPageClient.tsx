@@ -2,26 +2,23 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockDb, Tool, slugify } from "@/data/mockDb";
+import { mockDb, slugify } from "@/data/mockDb";
 import TagPageClient from "./[slug]/TagPageClient";
+import { TerminalLoader } from "@/components/TerminalLoader";
 
 export default function TagsPageClient() {
-  const [slug, setSlug] = useState<string>("");
+  const [slug] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const parts = window.location.pathname.split("/").filter(Boolean);
+      if (parts.length > 1 && parts[0] === "tags") {
+        return parts[1];
+      }
+    }
+    return "";
+  });
   const [allTags, setAllTags] = useState<string[]>([]);
   const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const parts = window.location.pathname.split("/").filter(Boolean);
-      // If path is /tags/[slug]
-      if (parts.length > 1 && parts[0] === "tags") {
-        setSlug(parts[1]);
-      } else {
-        setSlug("");
-      }
-    }
-  }, []);
 
   useEffect(() => {
     // Load all tools to compile tag counts and tags list for the index page
@@ -62,11 +59,7 @@ export default function TagsPageClient() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-[#8FBF3F]" />
-      </div>
-    );
+    return <TerminalLoader message="loading_tags" />;
   }
 
   return (
