@@ -5,18 +5,8 @@ export const runtime = "edge";
 
 export async function GET() {
   try {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "not set";
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "not set";
-    
-    return NextResponse.json({
-      urlExists: url !== "not set",
-      urlLength: url.length,
-      urlPrefix: url.substring(0, 15),
-      keyExists: key !== "not set",
-      keyLength: key.length,
-      keyPrefix: key.substring(0, 15),
-      processEnvKeys: typeof process !== "undefined" && process.env ? Object.keys(process.env).filter(k => k.startsWith("NEXT_PUBLIC_")) : [],
-    }, {
+    const categories = await mockDb.getCategories();
+    return NextResponse.json(categories, {
       status: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
