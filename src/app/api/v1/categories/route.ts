@@ -15,7 +15,7 @@ export async function GET() {
       keyExists: key !== "not set",
       keyLength: key.length,
       keyPrefix: key.substring(0, 15),
-      processEnvKeys: Object.keys(process.env).filter(k => k.startsWith("NEXT_PUBLIC_")),
+      processEnvKeys: typeof process !== "undefined" && process.env ? Object.keys(process.env).filter(k => k.startsWith("NEXT_PUBLIC_")) : [],
     }, {
       status: 200,
       headers: {

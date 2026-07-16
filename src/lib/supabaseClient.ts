@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = (typeof process !== "undefined" ? process.env.NEXT_PUBLIC_SUPABASE_URL : "") || "https://placeholder-project-url.supabase.co";
-const supabaseAnonKey = (typeof process !== "undefined" ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY : "") || "placeholder-anon-key-string";
+const supabaseUrl = (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_SUPABASE_URL : "") || "https://placeholder-project-url.supabase.co";
+const supabaseAnonKey = (typeof process !== "undefined" && process.env ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY : "") || "placeholder-anon-key-string";
 
 const isValidKey = (token: string): boolean => {
   if (typeof token !== "string") return false;
