@@ -21,14 +21,13 @@ function patch() {
 
   // Write new index.js wrapper
   const wrapperCode = `
-import original from './original_index.js';
-
 export default {
   async fetch(request, env, ctx) {
     try {
-      return await original.fetch(request, env, ctx);
+      const original = await import('./original_index.js');
+      return await original.default.fetch(request, env, ctx);
     } catch (e) {
-      const errorText = "WORKER RUNTIME ERROR:\\n" + (e.stack || e.message || String(e));
+      const errorText = "WORKER EVALUATION/RUNTIME ERROR:\\n" + (e.stack || e.message || String(e));
       console.error(errorText);
       return new Response(errorText, {
         status: 200,
