@@ -86,7 +86,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
-        {process.env.NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN && (
+        {typeof process !== "undefined" && process.env && process.env.NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN && (
           <script
             defer
             src="https://static.cloudflareinsights.com/beacon.min.js"
