@@ -251,6 +251,17 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
 
             {/* Description */}
             <div className="pt-8 space-y-6">
+              {tool.why_indexed && (
+                <div className="border border-[#212623] bg-[#8FBF3F]/5 rounded-xl p-5 mb-6">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#8FBF3F] mb-2 font-mono">
+                    &gt; editorial_note // why we indexed this
+                  </h4>
+                  <p className="text-slate-350 text-sm leading-relaxed font-sans">
+                    {tool.why_indexed}
+                  </p>
+                </div>
+              )}
+
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 font-mono">
                   &gt; description
@@ -297,9 +308,33 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
             {/* Pricing Model */}
             <div>
               <div className="text-[10px] uppercase font-bold text-slate-500 mb-1 font-mono">pricing_model</div>
-              <span className={`inline-block rounded px-2.5 py-0.5 text-xs font-semibold border ${getPricingColor(tool.pricing_model)} font-mono`}>
+              <span className={`inline-block rounded px-2.5 py-0.5 text-xs font-semibold border ${getPricingColor(tool.pricing_model)} font-mono mb-2`}>
                 {pricingLabels[tool.pricing_model]}
               </span>
+              {(tool.starting_price || tool.pricing_url) && (
+                <div className="mt-2 pl-3 border-l border-[#212623] space-y-1.5 font-mono text-xs text-slate-400">
+                  {tool.starting_price && (
+                    <div>
+                      <span className="text-slate-500">starting_at:</span> <span className="text-slate-200">{tool.starting_price}</span>
+                    </div>
+                  )}
+                  {tool.pricing_url && (
+                    <div>
+                      <a 
+                        href={tool.pricing_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-[#8FBF3F] hover:underline inline-flex items-center gap-1 mt-1 text-[11px]"
+                      >
+                        <span>[view_pricing_sheet]</span>
+                        <svg className="h-3 w-3 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Link Status */}
@@ -322,6 +357,20 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
               <div className="text-[10px] uppercase font-bold text-slate-500 mb-0.5 font-mono">indexing_source</div>
               <span className="text-xs text-[#8A8F87] font-mono capitalize">{tool.source.replace("_", " ")}</span>
             </div>
+
+            {/* Last Checked */}
+            {tool.last_checked_at && (
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-500 mb-0.5 font-mono">last_checked</div>
+                <span className="text-xs text-[#8A8F87] font-mono">
+                  {new Date(tool.last_checked_at).toLocaleDateString(undefined, { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+            )}
 
             {/* Last Crawled */}
             <div>

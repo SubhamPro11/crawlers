@@ -21,6 +21,10 @@ export interface Tool {
   click_count: number;
   last_crawled_at: string;
   created_at: string;
+  why_indexed?: string;
+  starting_price?: string;
+  pricing_url?: string;
+  last_checked_at?: string;
   categories?: {
     name: string;
     slug: string;
