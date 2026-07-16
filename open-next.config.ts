@@ -1,4 +1,10 @@
 import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 
-export default defineCloudflareConfig({
-});
+const config = defineCloudflareConfig({});
+
+const openNextConfig = {
+  ...config,
+  buildCommand: "npx next build --webpack",
+};
+
+export default openNextConfig;

@@ -10,9 +10,11 @@ const createMockSupabase = (): SupabaseClient => {
     order: () => Promise.resolve({ data: [], error: null }),
     single: () => Promise.resolve({ data: null, error: null }),
     or: () => Promise.resolve({ data: [], error: null }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     then: (onfulfilled: any) => onfulfilled({ data: [], error: null })
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mockQueryBuilder: any = new Proxy(mockQueryBuilderObj, {
     get: (target, prop) => {
       if (prop in target) {
@@ -57,8 +59,7 @@ const getSupabaseClient = (): SupabaseClient => {
         console.error("Browser Supabase init failed:", err);
       }
     }
-    supabaseInstance = createMockSupabase();
-    return supabaseInstance;
+    return createMockSupabase();
   }
 
   // Server/Edge environment
@@ -85,12 +86,12 @@ const getSupabaseClient = (): SupabaseClient => {
     }
   }
   
-  supabaseInstance = createMockSupabase();
-  return supabaseInstance;
+  return createMockSupabase();
 };
 
 export const supabase: SupabaseClient = new Proxy({} as unknown as SupabaseClient, {
   get: (target, prop) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const client = getSupabaseClient() as unknown as Record<string, any>;
     const value = client[prop as string];
     if (typeof value === "function") {
