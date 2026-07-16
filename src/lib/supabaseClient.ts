@@ -40,26 +40,52 @@ let supabaseInstance: SupabaseClient | null = null;
 const getSupabaseClient = (): SupabaseClient => {
   if (supabaseInstance) return supabaseInstance;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder-project-url.supabase.co";
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key-string";
-
-  const isPlaceholder = !isValidKey(key) || !url.startsWith("http");
-
-  if (isPlaceholder) {
+  // Browser environment - always try to use the build-time baked env variables
+  if (typeof window !== "undefined") {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    if (isValidKey(key) && url.startsWith("http")) {
+      try {
+        supabaseInstance = createClient(url, key, {
+          auth: {
+            persistSession: true,
+            detectSessionInUrl: false,
+          },
+        });
+        return supabaseInstance;
+      } catch (err) {
+        console.error("Browser Supabase init failed:", err);
+      }
+    }
     supabaseInstance = createMockSupabase();
-  } else {
+    return supabaseInstance;
+  }
+
+  // Server/Edge environment
+  // At startup/module evaluation, process is undefined. Return mock client to prevent crash.
+  if (typeof process === "undefined" || !process.env) {
+    return createMockSupabase();
+  }
+
+  // At request time, process is defined by Next.js edge runtime
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+  if (isValidKey(key) && url.startsWith("http")) {
     try {
       supabaseInstance = createClient(url, key, {
         auth: {
-          persistSession: typeof window !== "undefined",
-          detectSessionInUrl: false, // Prevent location-based auto-detect session crashes in edge workers
+          persistSession: false,
+          detectSessionInUrl: false,
         },
       });
+      return supabaseInstance;
     } catch (err) {
-      console.error("Failed to initialize Supabase client:", err);
-      supabaseInstance = createMockSupabase();
+      console.error("Server Supabase init failed:", err);
     }
   }
+  
+  supabaseInstance = createMockSupabase();
   return supabaseInstance;
 };
 
