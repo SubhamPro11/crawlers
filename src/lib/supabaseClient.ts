@@ -1,8 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder-project-url.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key-string";
-
 const isValidKey = (token: string): boolean => {
   if (typeof token !== "string") return false;
   return token.startsWith("sb_publishable_") || token.split(".").length === 3;
@@ -43,13 +40,16 @@ let supabaseInstance: SupabaseClient | null = null;
 const getSupabaseClient = (): SupabaseClient => {
   if (supabaseInstance) return supabaseInstance;
 
-  const isPlaceholder = !isValidKey(supabaseAnonKey) || !supabaseUrl.startsWith("http");
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder-project-url.supabase.co";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key-string";
+
+  const isPlaceholder = !isValidKey(key) || !url.startsWith("http");
 
   if (isPlaceholder) {
     supabaseInstance = createMockSupabase();
   } else {
     try {
-      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      supabaseInstance = createClient(url, key, {
         auth: {
           persistSession: typeof window !== "undefined",
           detectSessionInUrl: false, // Prevent location-based auto-detect session crashes in edge workers
