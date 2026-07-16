@@ -78,7 +78,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} h-full antialiased dark overflow-x-hidden`}
+      className={`${geistSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} h-full bg-[#0D0F0E] antialiased dark overflow-x-hidden`}
       suppressHydrationWarning
     >
       <head>
@@ -86,7 +86,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
-        {process.env.NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN && (
+        {typeof process !== "undefined" && process.env?.NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN && (
           <script
             defer
             src="https://static.cloudflareinsights.com/beacon.min.js"
