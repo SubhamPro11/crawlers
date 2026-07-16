@@ -8,32 +8,22 @@ const isValidKey = (token: string): boolean => {
   return token.startsWith("sb_publishable_") || token.split(".").length === 3;
 };
 
-interface MockQueryBuilder {
-  select: () => MockQueryBuilder;
-  order: () => Promise<{ data: never[]; error: null }>;
-  eq: () => MockQueryBuilder;
-  single: () => Promise<{ data: null; error: null }>;
-  contains: () => MockQueryBuilder;
-  or: () => Promise<{ data: never[]; error: null }>;
-  update: () => MockQueryBuilder;
-  insert: () => MockQueryBuilder;
-  delete: () => MockQueryBuilder;
-  then: (onfulfilled: (res: { data: never[]; error: null }) => void) => void;
-}
-
 const createMockSupabase = (): SupabaseClient => {
-  const mockQueryBuilder: MockQueryBuilder = {
-    select: () => mockQueryBuilder,
+  const mockQueryBuilderObj = {
     order: () => Promise.resolve({ data: [], error: null }),
-    eq: () => mockQueryBuilder,
     single: () => Promise.resolve({ data: null, error: null }),
-    contains: () => mockQueryBuilder,
     or: () => Promise.resolve({ data: [], error: null }),
-    update: () => mockQueryBuilder,
-    insert: () => mockQueryBuilder,
-    delete: () => mockQueryBuilder,
-    then: (onfulfilled) => onfulfilled({ data: [], error: null })
+    then: (onfulfilled: any) => onfulfilled({ data: [], error: null })
   };
+
+  const mockQueryBuilder: any = new Proxy(mockQueryBuilderObj, {
+    get: (target, prop) => {
+      if (prop in target) {
+        return target[prop as keyof typeof target];
+      }
+      return () => mockQueryBuilder;
+    }
+  });
 
   return {
     from: () => mockQueryBuilder,
@@ -48,11 +38,38 @@ const createMockSupabase = (): SupabaseClient => {
   } as unknown as SupabaseClient;
 };
 
-export const supabase: SupabaseClient = isValidKey(supabaseAnonKey) && supabaseUrl.startsWith("http")
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: typeof window !== "undefined",
-        detectSessionInUrl: typeof window !== "undefined",
-      },
-    })
-  : createMockSupabase();
+let supabaseInstance: SupabaseClient | null = null;
+
+const getSupabaseClient = (): SupabaseClient => {
+  if (supabaseInstance) return supabaseInstance;
+
+  const isPlaceholder = !isValidKey(supabaseAnonKey) || !supabaseUrl.startsWith("http");
+
+  if (isPlaceholder) {
+    supabaseInstance = createMockSupabase();
+  } else {
+    try {
+      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: typeof window !== "undefined",
+          detectSessionInUrl: false, // Prevent location-based auto-detect session crashes in edge workers
+        },
+      });
+    } catch (err) {
+      console.error("Failed to initialize Supabase client:", err);
+      supabaseInstance = createMockSupabase();
+    }
+  }
+  return supabaseInstance;
+};
+
+export const supabase: SupabaseClient = new Proxy({} as unknown as SupabaseClient, {
+  get: (target, prop) => {
+    const client = getSupabaseClient() as unknown as Record<string, any>;
+    const value = client[prop as string];
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
+  }
+});
