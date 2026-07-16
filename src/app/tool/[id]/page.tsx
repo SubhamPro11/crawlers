@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { mockDb } from "@/data/mockDb";
 import ToolDetailPageClient from "./ToolDetailPageClient";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({

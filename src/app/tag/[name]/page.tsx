@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import TagPageClient from "./TagPageClient";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
