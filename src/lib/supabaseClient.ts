@@ -1,4 +1,9 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+
+const isValidKey = (token: string): boolean => {
+  if (typeof token !== "string") return false;
+  return token.startsWith("sb_publishable_") || token.split(".").length === 3;
+};
 
 const createMockSupabase = (): SupabaseClient => {
   const mockQueryBuilderObj = {
@@ -30,4 +35,67 @@ const createMockSupabase = (): SupabaseClient => {
   } as unknown as SupabaseClient;
 };
 
-export const supabase: SupabaseClient = createMockSupabase();
+let supabaseInstance: SupabaseClient | null = null;
+
+const getSupabaseClient = (): SupabaseClient => {
+  if (supabaseInstance) return supabaseInstance;
+
+  // Browser environment - always try to use the build-time baked env variables
+  if (typeof window !== "undefined") {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    if (isValidKey(key) && url.startsWith("http")) {
+      try {
+        supabaseInstance = createClient(url, key, {
+          auth: {
+            persistSession: true,
+            detectSessionInUrl: false,
+          },
+        });
+        return supabaseInstance;
+      } catch (err) {
+        console.error("Browser Supabase init failed:", err);
+      }
+    }
+    supabaseInstance = createMockSupabase();
+    return supabaseInstance;
+  }
+
+  // Server/Edge environment
+  // At startup/module evaluation, process is undefined. Return mock client to prevent crash.
+  if (typeof process === "undefined" || !process.env) {
+    return createMockSupabase();
+  }
+
+  // At request time, process is defined by Next.js edge runtime
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+  if (isValidKey(key) && url.startsWith("http")) {
+    try {
+      supabaseInstance = createClient(url, key, {
+        auth: {
+          persistSession: false,
+          detectSessionInUrl: false,
+        },
+      });
+      return supabaseInstance;
+    } catch (err) {
+      console.error("Server Supabase init failed:", err);
+    }
+  }
+  
+  supabaseInstance = createMockSupabase();
+  return supabaseInstance;
+};
+
+export const supabase: SupabaseClient = new Proxy({} as unknown as SupabaseClient, {
+  get: (target, prop) => {
+    const client = getSupabaseClient() as unknown as Record<string, any>;
+    const value = client[prop as string];
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
+  }
+});
