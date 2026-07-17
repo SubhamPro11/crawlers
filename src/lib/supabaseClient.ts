@@ -51,7 +51,7 @@ const getSupabaseClient = (): SupabaseClient => {
         supabaseInstance = createClient(url, key, {
           auth: {
             persistSession: true,
-            detectSessionInUrl: false,
+            detectSessionInUrl: true,
           },
         });
         return supabaseInstance;
