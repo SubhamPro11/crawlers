@@ -396,9 +396,9 @@ export default function AdminPage() {
 
           <div className="border border-red-900 bg-red-950/20 p-4 rounded text-left mb-6 text-xs text-red-400">
             <div className="flex items-center gap-2 mb-2 font-bold uppercase">
-              <AlertCircle className="w-4 h-4" /> Gateway Credentials Info:
+              <AlertCircle className="w-4 h-4" /> Gateway Info:
             </div>
-            Authorized Identity: <span className="underline">{ADMIN_EMAIL}</span>
+            Access Level: <span className="text-red-400 font-bold">SYSTEM_ROOT_ADMIN</span>
             {user && (
               <div className="mt-2 text-gray-400">
                 Current Identity: <span className="text-red-400 font-bold">{user.email}</span>
