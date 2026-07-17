@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
-import ToolCard from "@/components/ToolCard";
+import ToolCard, { cleanDescription } from "@/components/ToolCard";
 import { WhyCrawlers, AINews } from "@/components/HomepageExtensions";
 import {
   Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
@@ -26,6 +26,29 @@ import {
   Recycle, CloudLightning, CloudSun, Rocket, Truck, Package, Zap, GitBranch,
   Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy
 } from "lucide-react";
+
+const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
+  "education-lifestyle": [
+    {
+      name: "Education & Career",
+      slugs: ["academia", "learning-tools", "language-learning", "reading", "accessibility", "job-tools"]
+    },
+    {
+      name: "Lifestyle, Health & Recreation",
+      slugs: ["parenting", "dating", "wellness", "fitness", "sports-analytics", "pets", "travel", "food", "gaming", "nutrition", "mental-health", "others"]
+    }
+  ],
+  "productivity-business": [
+    {
+      name: "Productivity & Workflow",
+      slugs: ["productivity", "project-management", "calendar-scheduling", "meeting-assistants", "email-assistants", "spreadsheets", "mind-mapping", "automation", "workflow-automation", "diagramming", "presentation", "knowledge-management"]
+    },
+    {
+      name: "Business, Finance & Operations",
+      slugs: ["crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "events", "nonprofit", "finance", "fintech"]
+    }
+  ]
+};
 
 interface CategoryGroupSectionProps {
   group: { id: string; name: string };
@@ -89,43 +112,97 @@ function CategoryGroupSection({
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {sortedGroupCategories.map((cat) => {
-          const count = toolCounts[cat.id] || 0;
-          const isZero = count === 0;
-          return (
-            <Link
-              key={cat.id}
-              href={`/category/${cat.slug}`}
-              className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
-                isZero ? "opacity-50 hover:opacity-85" : ""
-              }`}
-            >
-              <div>
-                <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
-                  {getCategoryIcon(cat.slug)}
+      {SUB_GROUPS[group.id] ? (
+        <div className="space-y-8">
+          {SUB_GROUPS[group.id].map((subGroup) => {
+            const subGroupCats = sortedGroupCategories.filter(cat => subGroup.slugs.includes(cat.slug));
+            if (subGroupCats.length === 0) return null;
+            return (
+              <div key={subGroup.name} className="space-y-4">
+                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <span>&gt;</span>
+                  <span>{subGroup.name.toLowerCase().replace(/ & /g, "_and_").replace(/, /g, "_").replace(/ /g, "_")} // {subGroupCats.length} categories</span>
                 </div>
-                <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
-                  {cat.name}
-                </h3>
-                <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
-                  {cat.description || "Browse curated tools for this domain."}
-                </p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {subGroupCats.map((cat) => {
+                    const count = toolCounts[cat.id] || 0;
+                    const isZero = count === 0;
+                    return (
+                      <Link
+                        key={cat.id}
+                        href={`/category/${cat.slug}`}
+                        className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
+                          isZero ? "opacity-50 hover:opacity-85" : ""
+                        }`}
+                      >
+                        <div>
+                          <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
+                            {getCategoryIcon(cat.slug)}
+                          </div>
+                          <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
+                            {cat.name}
+                          </h3>
+                          <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                            {cat.description || "Browse curated tools for this domain."}
+                          </p>
+                        </div>
+                        <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
+                          <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
+                            {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
+                          </span>
+                          {!isZero && (
+                            <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              Explore &rarr;
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
-                <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
-                  {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
-                </span>
-                {!isZero && (
-                  <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Explore &rarr;
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {sortedGroupCategories.map((cat) => {
+            const count = toolCounts[cat.id] || 0;
+            const isZero = count === 0;
+            return (
+              <Link
+                key={cat.id}
+                href={`/category/${cat.slug}`}
+                className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
+                  isZero ? "opacity-50 hover:opacity-85" : ""
+                }`}
+              >
+                <div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
+                    {getCategoryIcon(cat.slug)}
+                  </div>
+                  <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
+                    {cat.name}
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                    {cat.description || "Browse curated tools for this domain."}
+                  </p>
+                </div>
+                <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
+                  <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
+                    {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
                   </span>
-                )}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+                  {!isZero && (
+                    <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Explore &rarr;
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -300,6 +377,17 @@ export default function Home() {
 
   const handleScroll = () => {
     checkScroll();
+  };
+
+  const handleScrollClick = (direction: "left" | "right") => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      const scrollAmount = 240;
+      el.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
   };
 
   useEffect(() => {
@@ -938,7 +1026,7 @@ export default function Home() {
                   </h4>
                 </Link>
                 <p className="text-slate-400 text-xs leading-relaxed mb-4 line-clamp-2 h-8">
-                  {tool.short_description}
+                  {cleanDescription(tool.short_description)}
                 </p>
                 <div className="flex items-center justify-between border-t border-[#212623]/60 pt-3 text-[10px] font-mono">
                   <span className="text-[#8A8F87] uppercase tracking-wider truncate max-w-[150px]">
@@ -1038,14 +1126,26 @@ export default function Home() {
         </div>
 
         {/* Sticky Group Jump Nav */}
-        <div className="sticky top-[73px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative overflow-hidden">
+        <div className="sticky top-[73px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative">
           {showLeftFade && (
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-45" />
+            <>
+              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-25" />
+              <button
+                type="button"
+                onClick={() => handleScrollClick("left")}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-35 flex h-7 w-7 items-center justify-center rounded-full border border-[#212623] bg-[#0E100F]/90 text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all shadow-md shadow-black/50 cursor-pointer"
+                aria-label="Scroll Left"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            </>
           )}
           <div 
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth"
+            className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth pr-10"
           >
             <button
               onClick={() => {
@@ -1084,7 +1184,19 @@ export default function Home() {
             })}
           </div>
           {showRightFade && (
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-45" />
+            <>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-25" />
+              <button
+                type="button"
+                onClick={() => handleScrollClick("right")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-35 flex h-7 w-7 items-center justify-center rounded-full border border-[#212623] bg-[#0E100F]/90 text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all shadow-md shadow-black/50 cursor-pointer"
+                aria-label="Scroll Right"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
           )}
         </div>
 

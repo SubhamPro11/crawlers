@@ -4,6 +4,25 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Tool, mockDb, slugify } from "@/data/mockDb";
 
+export function cleanDescription(desc: string): string {
+  if (!desc) return "";
+  let clean = desc.trim();
+  
+  // Pattern matches common trailing conjunctions/prepositions
+  const danglingPattern = /\s+(and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet)[.,\s]*([.]{3}|…)?$/i;
+  clean = clean.replace(danglingPattern, (match, word, dots) => {
+    return dots ? ` ${dots}` : "";
+  });
+  
+  // Clean up trailing commas, colons, or semicolons before ellipsis
+  clean = clean.replace(/[,;:]\s*([.]{3}|…)$/, "$1");
+  
+  // Clean up trailing commas or punctuation at the very end
+  clean = clean.replace(/[,;:]+$/, "");
+  
+  return clean;
+}
+
 interface ToolCardProps {
   tool: Tool;
   categoryName?: string;
@@ -110,7 +129,7 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
 
         {/* Short Description */}
         <p className="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-3 font-sans">
-          {tool.short_description}
+          {cleanDescription(tool.short_description)}
         </p>
 
         {/* Monospace tag list */}
