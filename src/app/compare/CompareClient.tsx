@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { mockDb, Tool } from "@/data/mockDb";
 
@@ -151,14 +151,37 @@ export default function CompareClient() {
   const [showDropdownA, setShowDropdownA] = useState(false);
   const [showDropdownB, setShowDropdownB] = useState(false);
 
+  const containerRefA = useRef<HTMLDivElement>(null);
+  const containerRefB = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const loadTools = async () => {
       const toolsList = await mockDb.getTools();
-      setAllTools(toolsList);
+      
+      // Deduplicate tools list by name (case-insensitive)
+      const uniqueToolsMap = new Map<string, Tool>();
+      toolsList.forEach((t) => {
+        const nameKey = t.name.toLowerCase().trim();
+        const existing = uniqueToolsMap.get(nameKey);
+        // Keep the one with higher click_count if there's a duplicate
+        if (!existing || (t.click_count || 0) > (existing.click_count || 0)) {
+          uniqueToolsMap.set(nameKey, t);
+        }
+      });
+      const uniqueTools = Array.from(uniqueToolsMap.values());
+
+      // Sort by popularity (click count descending) and alphabetically by name as secondary
+      const sortedTools = uniqueTools.sort((a, b) => {
+        const clicksDiff = (b.click_count || 0) - (a.click_count || 0);
+        if (clicksDiff !== 0) return clicksDiff;
+        return a.name.localeCompare(b.name);
+      });
+
+      setAllTools(sortedTools);
       
       // Default selections: ChatGPT & Claude
-      const defaultA = toolsList.find(t => t.name.toLowerCase().includes("chatgpt")) || toolsList.find(t => t.id === "1") || null;
-      const defaultB = toolsList.find(t => t.name.toLowerCase().includes("claude")) || toolsList.find(t => t.id === "2") || null;
+      const defaultA = sortedTools.find(t => t.name.toLowerCase().includes("chatgpt")) || sortedTools.find(t => t.id === "1") || null;
+      const defaultB = sortedTools.find(t => t.name.toLowerCase().includes("claude")) || sortedTools.find(t => t.id === "2") || null;
       
       setToolA(defaultA);
       setToolB(defaultB);
@@ -167,6 +190,36 @@ export default function CompareClient() {
     };
     loadTools();
   }, []);
+
+  // Click outside and Escape key to close dropdowns and sync input values
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRefA.current && !containerRefA.current.contains(event.target as Node)) {
+        setShowDropdownA(false);
+        setSearchA(toolA?.name || "");
+      }
+      if (containerRefB.current && !containerRefB.current.contains(event.target as Node)) {
+        setShowDropdownB(false);
+        setSearchB(toolB?.name || "");
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowDropdownA(false);
+        setSearchA(toolA?.name || "");
+        setShowDropdownB(false);
+        setSearchB(toolB?.name || "");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [toolA, toolB]);
 
   const getProfile = (tool: Tool | null): ComparisonData | null => {
     if (!tool) return null;
@@ -246,7 +299,7 @@ export default function CompareClient() {
         {/* Selector A */}
         <div className="relative">
           <label className="block text-xs font-mono uppercase text-[#8A8F87] tracking-wider mb-2">First Tool</label>
-          <div className="relative">
+          <div ref={containerRefA} className="relative">
             <input
               type="text"
               value={searchA}
@@ -254,7 +307,12 @@ export default function CompareClient() {
                 setSearchA(e.target.value);
                 setShowDropdownA(true);
               }}
-              onFocus={() => setShowDropdownA(true)}
+              onFocus={() => {
+                setShowDropdownA(true);
+                if (searchA === toolA?.name) {
+                  setSearchA("");
+                }
+              }}
               placeholder="Search first tool..."
               className="w-full rounded-lg border border-[#212623] bg-[#131615] px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
             />
@@ -285,7 +343,7 @@ export default function CompareClient() {
         {/* Selector B */}
         <div className="relative">
           <label className="block text-xs font-mono uppercase text-[#8A8F87] tracking-wider mb-2">Second Tool</label>
-          <div className="relative">
+          <div ref={containerRefB} className="relative">
             <input
               type="text"
               value={searchB}
@@ -293,7 +351,12 @@ export default function CompareClient() {
                 setSearchB(e.target.value);
                 setShowDropdownB(true);
               }}
-              onFocus={() => setShowDropdownB(true)}
+              onFocus={() => {
+                setShowDropdownB(true);
+                if (searchB === toolB?.name) {
+                  setSearchB("");
+                }
+              }}
               placeholder="Search second tool..."
               className="w-full rounded-lg border border-[#212623] bg-[#131615] px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-[#8FBF3F] transition-all"
             />
