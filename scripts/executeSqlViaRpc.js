@@ -35,7 +35,7 @@ console.log("Initializing Supabase Client...");
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function run() {
-  const sqlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\eacdf494-0bb2-4d17-9933-2c2293492422\\scratch\\insert_all.sql';
+  const sqlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\cc2384ea-8a29-4e1a-b9ba-a4c02fdba461\\scratch\\insert_all.sql';
   console.log(`Reading SQL script from ${sqlPath}...`);
   let sqlContent = '';
   try {

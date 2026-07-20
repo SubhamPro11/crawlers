@@ -170,10 +170,14 @@ function escapeSqlArray(arr) {
 }
 
 async function run() {
-  console.log("Fetching AIxploria Ultimate List...");
-  const listUrl = "https://www.aixploria.com/en/ultimate-list-ai/";
+  console.log("Reading AIxploria HTML from local file...");
+  const localHtmlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\cc2384ea-8a29-4e1a-b9ba-a4c02fdba461\\.system_generated\\steps\\129\\content.md';
   let html = '';
   try {
+    html = fs.readFileSync(localHtmlPath, 'utf8');
+  } catch (error) {
+    console.error("Failed to read local HTML file, trying network fetch...");
+    const listUrl = "https://www.aixploria.com/en/ultimate-list-ai/";
     const response = await fetch(listUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -183,15 +187,6 @@ async function run() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     html = await response.text();
-  } catch (error) {
-    console.error("Failed to fetch ultimate list page, using local backup if available...");
-    const backupPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\eacdf494-0bb2-4d17-9933-2c2293492422\\.system_generated\\steps\\89\\content.md';
-    try {
-      html = fs.readFileSync(backupPath, 'utf8');
-    } catch (e) {
-      console.error("Could not read backup file either. Exiting.", e.message);
-      process.exit(1);
-    }
   }
 
   // Parse Categories and Tools
@@ -348,33 +343,48 @@ async function run() {
     };
   });
 
-  console.log("Generating SQL scripts...");
+  console.log("Fetching existing tool URLs from database...");
+  const { data: existingTools, error: existingError } = await supabase
+    .from('tools')
+    .select('url');
+
+  if (existingError) {
+    console.error("Error fetching existing tools:", existingError.message);
+    process.exit(1);
+  }
+
+  const existingUrls = new Set(existingTools.map(t => t.url.toLowerCase().replace(/\/$/, "")));
+  console.log(`Retrieved ${existingUrls.size} existing tool URLs.`);
+
+  const newTools = processedTools.filter(t => !existingUrls.has(t.url.toLowerCase().replace(/\/$/, "")));
+  console.log(`Filtered out duplicates. Found ${newTools.length} new tools to import.`);
+
   const sqlStatements = [];
   sqlStatements.push("BEGIN;");
   
-  if (newCategoriesSql.length > 0) {
-    sqlStatements.push("\n-- New Categories");
-    sqlStatements.push(...newCategoriesSql);
-  }
-
-  sqlStatements.push("\n-- Tools Upserts");
-  for (const tool of processedTools) {
-    sqlStatements.push(
-      `INSERT INTO tools (name, url, short_description, category_id, tags, pricing_model, logo_url, source, status, click_count, last_crawled_at) VALUES (${escapeSql(tool.name)}, ${escapeSql(tool.url)}, ${escapeSql(tool.short_description)}, ${escapeSql(tool.category_id)}, ${escapeSqlArray(tool.tags)}, ${escapeSql(tool.pricing_model)}, ${escapeSql(tool.logo_url)}, ${escapeSql(tool.source)}, ${escapeSql(tool.status)}, 0, ${escapeSql(tool.last_crawled_at)}) ON CONFLICT (url) DO UPDATE SET name = EXCLUDED.name, short_description = EXCLUDED.short_description, category_id = EXCLUDED.category_id, pricing_model = EXCLUDED.pricing_model, logo_url = EXCLUDED.logo_url, last_crawled_at = EXCLUDED.last_crawled_at;`
-    );
+  if (newTools.length > 0) {
+    console.log(`Writing SQL inserts for ${newTools.length} new tools...`);
+    for (const tool of newTools) {
+      sqlStatements.push(
+        `INSERT INTO tools (name, url, short_description, category_id, tags, pricing_model, logo_url, source, status, click_count, last_crawled_at) VALUES (${escapeSql(tool.name)}, ${escapeSql(tool.url)}, ${escapeSql(tool.short_description)}, ${escapeSql(tool.category_id)}, ${escapeSqlArray(tool.tags)}, ${escapeSql(tool.pricing_model)}, ${escapeSql(tool.logo_url)}, ${escapeSql(tool.source)}, ${escapeSql(tool.status)}, 0, ${escapeSql(tool.last_crawled_at)}) ON CONFLICT (url) DO NOTHING;`
+      );
+    }
+  } else {
+    console.log("No new tools to write.");
   }
 
   sqlStatements.push("\nCOMMIT;");
 
-  const targetSqlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\eacdf494-0bb2-4d17-9933-2c2293492422\\scratch\\insert_all.sql';
+  const targetSqlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\cc2384ea-8a29-4e1a-b9ba-a4c02fdba461\\scratch\\insert_all.sql';
   
   try {
     fs.mkdirSync(path.dirname(targetSqlPath), { recursive: true });
   } catch (err) {}
 
   fs.writeFileSync(targetSqlPath, sqlStatements.join('\n'), 'utf8');
-  console.log(`SQL statements saved to ${targetSqlPath}`);
-  console.log(`Crawler script finished preparing SQL statements.`);
+  console.log(`SQL statements for new tools saved to ${targetSqlPath}`);
+
+  console.log(`Crawler script finished successfully.`);
 }
 
 run().catch(err => {
