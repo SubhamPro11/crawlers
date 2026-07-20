@@ -96,7 +96,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[#0D0F0E] text-[#EDEEEA] font-sans overflow-x-hidden pb-16 md:pb-0">
         <Header />
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col pt-16">
           {children}
         </main>
         <Footer />
