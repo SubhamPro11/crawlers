@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
+import { mockDb, Category, CATEGORY_GROUPS } from "@/data/mockDb";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -12,10 +13,20 @@ export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Category Jump Dropdown state
+  const [exploreOpen, setExploreOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [catFilter, setCatFilter] = useState("");
+  const exploreRef = useRef<HTMLDivElement>(null);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
+    // Fetch categories for instant jump menu
+    mockDb.getCategories().then(cats => setCategories(cats));
+
     // Get active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -41,10 +52,13 @@ export default function Header() {
       }
     });
 
-    // Handle clicks outside of dropdown
+    // Handle clicks outside of dropdowns
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
+      }
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) {
+        setExploreOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -54,6 +68,12 @@ export default function Header() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const filteredCategories = useMemo(() => {
+    if (!catFilter.trim()) return categories;
+    const q = catFilter.toLowerCase();
+    return categories.filter(c => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q));
+  }, [categories, catFilter]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,12 +119,125 @@ export default function Header() {
             <span className="h-3 w-1.5 bg-[#8FBF3F] cursor-blink inline-block" />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link 
-              href="/" 
-              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
-            >
-              Explore
-            </Link>
+            {/* Interactive Category Jump Dropdown */}
+            <div className="relative" ref={exploreRef}>
+              <button
+                type="button"
+                onClick={() => setExploreOpen(!exploreOpen)}
+                className={`flex items-center gap-1.5 text-xs font-sans font-semibold tracking-wide transition-colors ${
+                  exploreOpen ? "text-[#8FBF3F]" : "text-[#8A8F87] hover:text-[#8FBF3F]"
+                }`}
+              >
+                <span>Explore</span>
+                <svg 
+                  className={`h-3 w-3 text-[#8A8F87] transition-transform duration-200 ${exploreOpen ? "rotate-180 text-[#8FBF3F]" : ""}`} 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor" 
+                  strokeWidth={2.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {exploreOpen && (
+                <div className="absolute left-0 top-full mt-3 w-[440px] rounded-xl border border-[#212623] bg-[#0E100F]/95 backdrop-blur-xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#212623]">
+                    <span className="font-mono text-[10px] uppercase font-bold text-[#8FBF3F] tracking-wider">
+                      &gt; category_jump_index //
+                    </span>
+                    <span className="font-mono text-[10px] text-slate-500">
+                      {categories.length} categories
+                    </span>
+                  </div>
+
+                  {/* Filter Search Input */}
+                  <div className="relative mb-3">
+                    <input
+                      type="text"
+                      placeholder="Type to filter categories..."
+                      value={catFilter}
+                      onChange={(e) => setCatFilter(e.target.value)}
+                      className="w-full rounded-md border border-[#212623] bg-[#131615] px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-[#8FBF3F] font-sans"
+                    />
+                    {catFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setCatFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Top Directory Sections */}
+                  {!catFilter && (
+                    <div className="mb-3">
+                      <div className="text-[9px] font-mono uppercase text-slate-500 tracking-wider mb-2">
+                        Directory Sections
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <Link
+                          href="/category/ai-extensions"
+                          onClick={() => setExploreOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md border border-[#8FBF3F]/30 bg-[#8FBF3F]/10 text-[#8FBF3F] hover:bg-[#8FBF3F]/20 text-xs font-mono font-bold transition-colors"
+                        >
+                          <span>AI Extensions</span>
+                          <span className="text-[9px] bg-[#8FBF3F] text-slate-950 px-1 rounded font-sans">NEW</span>
+                        </Link>
+                        {CATEGORY_GROUPS.map((group) => (
+                          <button
+                            type="button"
+                            key={group.id}
+                            onClick={() => {
+                              setExploreOpen(false);
+                              if (typeof window !== "undefined" && window.location.pathname === "/") {
+                                const el = document.getElementById(`group-${group.id}`);
+                                if (el) {
+                                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                  return;
+                                }
+                              }
+                              router.push(`/#group-${group.id}`);
+                            }}
+                            className="text-left px-2.5 py-1.5 rounded-md border border-[#212623] bg-[#131615]/60 hover:bg-[#1a1f1d] hover:border-[#8FBF3F]/40 text-[#EDEEEA] hover:text-[#8FBF3F] text-[11px] font-sans transition-colors truncate"
+                          >
+                            {group.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* All Categories Index */}
+                  <div className="text-[9px] font-mono uppercase text-slate-500 tracking-wider mb-1.5">
+                    {catFilter ? "Matching Categories" : "All Categories Index"}
+                  </div>
+                  <div className="max-h-48 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                    {filteredCategories.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={`/category/${cat.slug}`}
+                        onClick={() => setExploreOpen(false)}
+                        className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[#1a1f1d] text-xs text-slate-300 hover:text-white transition-colors group"
+                      >
+                        <span className="group-hover:text-[#8FBF3F] font-sans truncate">{cat.name}</span>
+                        <span className="font-mono text-[10px] text-slate-600 group-hover:text-slate-400">
+                          &gt; {cat.slug}
+                        </span>
+                      </Link>
+                    ))}
+                    {filteredCategories.length === 0 && (
+                      <div className="text-center py-4 text-xs text-slate-500 font-sans">
+                        No category found matching &quot;{catFilter}&quot;
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Link 
               href="/category/ai-extensions" 
               className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
