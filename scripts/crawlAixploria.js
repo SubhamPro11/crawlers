@@ -170,14 +170,10 @@ function escapeSqlArray(arr) {
 }
 
 async function run() {
-  console.log("Reading AIxploria HTML from local file...");
-  const localHtmlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\cc2384ea-8a29-4e1a-b9ba-a4c02fdba461\\.system_generated\\steps\\129\\content.md';
+  console.log("Fetching AIxploria Ultimate List from network...");
+  const listUrl = "https://www.aixploria.com/en/ultimate-list-ai/";
   let html = '';
   try {
-    html = fs.readFileSync(localHtmlPath, 'utf8');
-  } catch (error) {
-    console.error("Failed to read local HTML file, trying network fetch...");
-    const listUrl = "https://www.aixploria.com/en/ultimate-list-ai/";
     const response = await fetch(listUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -187,6 +183,15 @@ async function run() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     html = await response.text();
+  } catch (error) {
+    console.error("Failed to fetch live ultimate list, trying local cached file as fallback...");
+    const localHtmlPath = 'C:\\Users\\badbo\\.gemini\\antigravity-ide\\brain\\cc2384ea-8a29-4e1a-b9ba-a4c02fdba461\\.system_generated\\steps\\129\\content.md';
+    try {
+      html = fs.readFileSync(localHtmlPath, 'utf8');
+    } catch (e) {
+      console.error("Could not read local file either. Exiting.", e.message);
+      process.exit(1);
+    }
   }
 
   // Parse Categories and Tools
