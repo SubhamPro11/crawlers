@@ -106,6 +106,12 @@ export default function Header() {
               Explore
             </Link>
             <Link 
+              href="/category/ai-extensions" 
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            >
+              AI Extensions
+            </Link>
+            <Link 
               href="/search" 
               className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
             >
@@ -286,6 +292,13 @@ export default function Header() {
               className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
             >
               Explore
+            </Link>
+            <Link 
+              href="/category/ai-extensions" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+            >
+              AI Extensions
             </Link>
             <Link 
               href="/search" 
