@@ -151,6 +151,12 @@ export const CATEGORIES: Category[] = [
     name: "Creative & Media",
     slug: "creative-media",
     description: "Image generation, audio, music, and stylistic media utilities."
+  },
+  {
+    id: "fe1ee758-4faf-4b9f-873a-bb95a5939552",
+    name: "AI Extensions",
+    slug: "ai-extensions",
+    description: "Browser extensions, ChatGPT extensions, and AI plugins for Chrome, Firefox, and web workflows."
   }
 ];
 

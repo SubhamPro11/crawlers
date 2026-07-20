@@ -24,7 +24,7 @@ import {
   FolderOpen, LifeBuoy, Gauge, Leaf, Dumbbell, Hammer, Factory,
   Home as HomeIcon, ShieldCheck, Building, Stethoscope, HeartPulse, Pill, Dna,
   Recycle, CloudLightning, CloudSun, Rocket, Truck, Package, Zap, GitBranch,
-  Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy
+  Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy, Puzzle
 } from "lucide-react";
 
 const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
@@ -694,6 +694,8 @@ export default function Home() {
     "iot": Wifi,
     "prompt-tools": Wrench,
     "api-tools": Plug,
+    "ai-extensions": Puzzle,
+    "extensions-chatgpt": Puzzle,
 
     // Data, Models & Security
     "database-tools": Database,
