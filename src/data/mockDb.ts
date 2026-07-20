@@ -194,16 +194,39 @@ class MockDb {
 
   async getTools(): Promise<Tool[]> {
     try {
-      const { data, error } = await supabase
-        .from("tools")
-        .select("*, categories(name, slug)")
-        .eq("status", "active");
+      let allTools: Tool[] = [];
+      let page = 0;
+      const pageSize = 1000;
+      let hasMore = true;
 
-      if (error) {
-        console.error("Error fetching tools:", error.message);
-        return [];
+      while (hasMore) {
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+
+        const { data, error } = await supabase
+          .from("tools")
+          .select("*, categories(name, slug)")
+          .eq("status", "active")
+          .range(from, to);
+
+        if (error) {
+          console.error("Error fetching tools chunk:", error.message);
+          break;
+        }
+
+        if (data && data.length > 0) {
+          allTools = allTools.concat(data as Tool[]);
+          if (data.length < pageSize) {
+            hasMore = false;
+          } else {
+            page++;
+          }
+        } else {
+          hasMore = false;
+        }
       }
-      return data || [];
+
+      return allTools;
     } catch (err) {
       console.error("Uncaught exception in getTools:", err);
       return [];
