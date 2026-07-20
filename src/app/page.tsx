@@ -1082,7 +1082,7 @@ export default function Home() {
 
       <AINews tools={recentTools} categories={categories} />
 
-      <WhyCrawlers totalTools={totalToolsCount || 150} totalCategories={categories.length || 140} lastUpdated={lastUpdatedStr} />
+      <WhyCrawlers totalTools={totalToolsCount || 1417} totalCategories={categories.length || 170} lastUpdated={lastUpdatedStr} />
 
       {/* Category Indexing Section */}
       <section className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-t border-slate-900">

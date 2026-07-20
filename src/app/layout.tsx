@@ -37,14 +37,14 @@ export const metadata: Metadata = {
     default: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
     template: "%s | Crawlers"
   },
-  description: "Curated AI tools directory indexing 150+ categories by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
+  description: "Curated AI tools directory indexing 170+ categories and 1,400+ AI tools by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
   keywords: ["AI tools", "AI directory", "artificial intelligence bots", "use case search", "find AI platforms", "curated bots list", "AI tools directory"],
   alternates: {
     canonical: "https://crawlers.dpdns.org/",
   },
   openGraph: {
     title: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
-    description: "Curated AI tools directory indexing 150+ categories by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
+    description: "Curated AI tools directory indexing 170+ categories and 1,400+ AI tools by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
     url: "https://crawlers.dpdns.org",
     siteName: "Crawlers",
     type: "website",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
-    description: "Curated AI tools directory indexing 150+ categories by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
+    description: "Curated AI tools directory indexing 170+ categories and 1,400+ AI tools by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
   },
   robots: {
     index: true,
@@ -72,7 +72,7 @@ export default function RootLayout({
     "name": "Crawlers",
     "url": "https://crawlers.dpdns.org",
     "logo": "https://crawlers.dpdns.org/globe.svg",
-    "description": "Curated AI tools directory indexing 150+ categories by use case."
+    "description": "Curated AI tools directory indexing 170+ categories and 1,400+ AI tools by use case."
   };
 
   return (
