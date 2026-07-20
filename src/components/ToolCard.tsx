@@ -147,23 +147,37 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
       </div>
 
       {/* Action Footer */}
-      <div className="flex items-center justify-between border-t border-[#212623]/60 pt-4 mt-auto">
-        <div className="flex items-center gap-1.5 text-[#8A8F87] font-mono text-[9px] uppercase tracking-wider">
-          <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
-          <span>verified</span>
-        </div>
+      {(() => {
+        const isExtension = 
+          categoryName?.toLowerCase().includes("extension") ||
+          tool.category_id === "fe1ee758-4faf-4b9f-873a-bb95a5939552" ||
+          tool.tags?.some(t => t.toLowerCase().includes("extension")) ||
+          tool.url?.includes("chromewebstore") ||
+          tool.url?.includes("chrome.google.com") ||
+          tool.url?.includes("addons.mozilla.org");
 
-        <a
-          href={tool.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleVisit}
-          className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
-        >
-          <span>run_bot</span>
-          <span className="text-[#8A8F87]/60 font-normal">→</span>
-        </a>
-      </div>
+        const ctaLabel = isExtension ? "get_extension" : "run_bot";
+
+        return (
+          <div className="flex items-center justify-between border-t border-[#212623]/60 pt-4 mt-auto">
+            <div className="flex items-center gap-1.5 text-[#8A8F87] font-mono text-[9px] uppercase tracking-wider">
+              <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
+              <span>verified</span>
+            </div>
+
+            <a
+              href={tool.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleVisit}
+              className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
+            >
+              <span>{ctaLabel}</span>
+              <span className="text-[#8A8F87]/60 font-normal">→</span>
+            </a>
+          </div>
+        );
+      })()}
     </div>
   );
 }

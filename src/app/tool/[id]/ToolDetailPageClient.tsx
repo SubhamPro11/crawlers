@@ -234,18 +234,32 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
                   </svg>
                 </button>
 
-                <a
-                  href={tool.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleVisit}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#8FBF3F] hover:bg-[#7ba235] px-6 text-sm font-bold text-slate-950 transition-all shadow-md shadow-[#8FBF3F]/15 group font-mono"
-                >
-                  <span>run_bot</span>
-                  <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
+                {(() => {
+                  const isExtension = 
+                    categoryName?.toLowerCase().includes("extension") ||
+                    tool.category_id === "fe1ee758-4faf-4b9f-873a-bb95a5939552" ||
+                    tool.tags?.some(t => t.toLowerCase().includes("extension")) ||
+                    tool.url?.includes("chromewebstore") ||
+                    tool.url?.includes("chrome.google.com") ||
+                    tool.url?.includes("addons.mozilla.org");
+
+                  const ctaLabel = isExtension ? "get_extension" : "run_bot";
+
+                  return (
+                    <a
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={handleVisit}
+                      className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#8FBF3F] hover:bg-[#7ba235] px-6 text-sm font-bold text-slate-950 transition-all shadow-md shadow-[#8FBF3F]/15 group font-mono"
+                    >
+                      <span>{ctaLabel}</span>
+                      <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  );
+                })()}
               </div>
             </div>
 

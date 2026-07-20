@@ -1034,14 +1034,25 @@ export default function Home() {
                   <span className="text-[#8A8F87] uppercase tracking-wider truncate max-w-[150px]">
                     {categories.find(c => c.id === tool.category_id)?.name || "bot"}
                   </span>
-                  <a
-                    href={tool.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#8FBF3F] font-bold hover:underline"
-                  >
-                    run_bot &rarr;
-                  </a>
+                  {(() => {
+                    const catName = categories.find(c => c.id === tool.category_id)?.name;
+                    const isExtension = catName?.toLowerCase().includes("extension") ||
+                      tool.category_id === "fe1ee758-4faf-4b9f-873a-bb95a5939552" ||
+                      tool.tags?.some(t => t.toLowerCase().includes("extension")) ||
+                      tool.url?.includes("chromewebstore") ||
+                      tool.url?.includes("chrome.google.com");
+                    const label = isExtension ? "get_extension" : "run_bot";
+                    return (
+                      <a
+                        href={tool.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#8FBF3F] font-bold hover:underline"
+                      >
+                        {label} &rarr;
+                      </a>
+                    );
+                  })()}
                 </div>
               </div>
             ))}
