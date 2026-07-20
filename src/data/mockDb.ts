@@ -66,8 +66,8 @@ export const CATEGORY_GROUPS: CategoryGroup[] = [
   {
     id: "dev-tech",
     name: "Developer & Tech Tools",
-    slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot", "prompt-tools", "api-tools"],
-    keywords: ["dev", "code", "software", "test", "build", "cloud", "debug", "web3", "robot", "iot"]
+    slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot", "prompt-tools", "api-tools", "ai-extensions", "extensions-chatgpt"],
+    keywords: ["dev", "code", "software", "test", "build", "cloud", "debug", "web3", "robot", "iot", "extension"]
   },
   {
     id: "data-security",
