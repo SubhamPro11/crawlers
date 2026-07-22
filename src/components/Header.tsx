@@ -118,7 +118,7 @@ export default function Header() {
             <span>crawlers //</span>
             <span className="h-3 w-1.5 bg-[#8FBF3F] cursor-blink inline-block" />
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden xl:flex items-center gap-6">
             {/* Interactive Category Jump Dropdown */}
             <div className="relative" ref={exploreRef}>
               <button
@@ -266,8 +266,8 @@ export default function Header() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          {/* Quick Search Input */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Quick Search Input (Desktop xl+) */}
           <div 
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
             onKeyDown={(e) => {
@@ -279,7 +279,7 @@ export default function Header() {
             role="button"
             tabIndex={0}
             aria-label="Open command palette"
-            className="relative hidden sm:block cursor-pointer"
+            className="relative hidden xl:block cursor-pointer shrink-0"
           >
             <input
               type="text"
@@ -288,7 +288,7 @@ export default function Header() {
               aria-label="Search index"
               className="w-48 lg:w-56 cursor-pointer rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-14 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none hover:border-[#8FBF3F]/60 transition-all"
             />
-            <div className="absolute right-8 top-1.5 pointer-events-none hidden lg:flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-500">
+            <div className="absolute right-8 top-1.5 pointer-events-none flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-500">
               <span>⌘</span><span>K</span>
             </div>
             <div className="absolute right-2.5 top-2.5 text-[#8A8F87]">
@@ -298,22 +298,20 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Search Toggle Mobile */}
+          {/* Quick Search Icon Button (< xl) */}
           <button 
-            onClick={() => {
-              setSearchOpen(!searchOpen);
-              setMobileMenuOpen(false);
-            }} 
-            className="sm:hidden flex items-center justify-center h-11 w-11 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
-            aria-label="Toggle search"
+            onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))} 
+            className="xl:hidden flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-md border border-[#212623] bg-[#131615] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/60 transition-colors shrink-0"
+            aria-label="Search index"
+            title="Search index (Ctrl + K)"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
 
-          {/* Desktop Auth section & Submit Link */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Auth section & Submit Link - Always visible at all screen widths */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -335,7 +333,7 @@ export default function Header() {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-md border border-[#212623] bg-[#131615] py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute right-0 mt-2 w-48 rounded-md border border-[#212623] bg-[#131615] py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                     <div className="px-4 py-2 border-b border-[#212623]/80 text-[10px] text-slate-500 truncate max-w-full font-mono">
                       {user.email}
                     </div>
@@ -351,38 +349,38 @@ export default function Header() {
             ) : (
               <button
                 onClick={handleSignIn}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-2.5 sm:px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200 shrink-0"
               >
                 <svg className="h-3.5 w-3.5 text-[#8FBF3F]" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.68 0-8.473-3.882-8.473-8.514 0-4.632 3.793-8.515 8.473-8.515 2.502 0 4.263.957 5.372 2.036l3.12-3.12C18.665.926 15.69 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c6.96 0 11.52-4.896 11.52-11.724 0-.785-.078-1.547-.22-2.22H12.24z"/>
                 </svg>
-                <span>Sign In</span>
+                <span className="hidden sm:inline">Sign In</span>
               </button>
             )}
 
             <Link
               href="/submit"
-              className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] active:bg-[#6c9130] transition-colors duration-[100ms]"
+              className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-2.5 sm:px-3.5 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] active:bg-[#6c9130] transition-colors duration-[100ms] shrink-0 whitespace-nowrap"
             >
               Submit Bot
             </Link>
           </div>
 
-          {/* Hamburger Menu Toggle (Mobile/Tablet) */}
+          {/* Hamburger Menu Toggle (< xl) */}
           <button
             onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen);
               setSearchOpen(false);
             }}
-            className="md:hidden flex items-center justify-center h-11 w-11 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            className="xl:hidden flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors shrink-0"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
@@ -416,7 +414,7 @@ export default function Header() {
 
       {/* Mobile Menu Dropdown Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#212623] bg-[#0D0F0E] px-4 py-4 space-y-4">
+        <div className="xl:hidden border-t border-[#212623] bg-[#0D0F0E] px-4 py-4 space-y-4 max-h-[85vh] overflow-y-auto">
           {/* Mobile Navigation Links */}
           <div className="flex flex-col space-y-2">
             <Link 

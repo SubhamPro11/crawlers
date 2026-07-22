@@ -238,40 +238,10 @@ export default function Home() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | number | null = null;
-    const timer = setTimeout(() => {
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      setPrefersReducedMotion(prefersReduced);
-      
-      const hasPlayed = sessionStorage.getItem("hero-typed-v1") === "true";
-      if (hasPlayed || prefersReduced) {
-        setVisibleChars(totalLength);
-        setIsTypingComplete(true);
-        return;
-      }
-
-      // Set to 0 and false on mount to play the animation on client side
-      setVisibleChars(0);
-      setIsTypingComplete(false);
-
-      let current = 0;
-      interval = setInterval(() => {
-        current += 1;
-        if (current >= totalLength) {
-          setVisibleChars(totalLength);
-          setIsTypingComplete(true);
-          sessionStorage.setItem("hero-typed-v1", "true");
-          if (interval) clearInterval(interval);
-        } else {
-          setVisibleChars(current);
-        }
-      }, 30); // ~30ms per character
-    }, 0);
-
-    return () => {
-      clearTimeout(timer);
-      if (interval) clearInterval(interval);
-    };
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setPrefersReducedMotion(prefersReduced);
+    setVisibleChars(totalLength);
+    setIsTypingComplete(true);
   }, [totalLength]);
 
   const renderTypedHeading = () => {
@@ -364,7 +334,7 @@ export default function Home() {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
-  const [showRightFade, setShowRightFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(true);
 
   const checkScroll = useCallback(() => {
     const el = scrollContainerRef.current;
@@ -392,8 +362,12 @@ export default function Home() {
 
   useEffect(() => {
     checkScroll();
+    const timer = setTimeout(checkScroll, 100);
     window.addEventListener("resize", checkScroll);
-    return () => window.removeEventListener("resize", checkScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkScroll);
+    };
   }, [checkScroll, filteredCategories]);
 
   // Load from local storage cache instantly on mount
@@ -798,64 +772,66 @@ export default function Home() {
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
-          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6 min-h-[1.2em]">
+          <h1 className="font-serif text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-white mb-4 sm:mb-6 min-h-[1.2em]">
             {renderTypedHeading()}
           </h1>
           
           <div className={`transition-opacity duration-[200ms] ${
             isTypingComplete ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}>
-            <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
+            <p className="text-slate-400 text-xs sm:text-base lg:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans px-2">
               A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
             </p>
 
             {/* Large Use-case Search Bar */}
             <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
-              <div className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300">
-                <div className="pl-3 text-slate-500">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  aria-label="Search directory by task"
-                  placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
-                  value={searchQuery}
-                  onFocus={() => setIsDropdownOpen(true)}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setIsDropdownOpen(true);
-                  }}
-                  className="w-full bg-transparent px-4 py-3 text-base text-white placeholder-slate-500 outline-none font-sans font-mono"
-                />
-
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery("");
-                      searchInputRef.current?.focus();
-                    }}
-                    className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-2"
-                    aria-label="Clear search"
-                  >
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300 gap-2 sm:gap-0">
+                <div className="flex items-center flex-1 w-full">
+                  <div className="pl-3 text-slate-500 shrink-0">
+                    <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                  </button>
-                )}
+                  </div>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    aria-label="Search directory by task"
+                    placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
+                    value={searchQuery}
+                    onFocus={() => setIsDropdownOpen(true)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsDropdownOpen(true);
+                    }}
+                    className="w-full bg-transparent px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder-slate-500 outline-none font-sans"
+                  />
 
-                {!searchQuery && (
-                  <span className="hidden sm:inline-block rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] text-slate-500 font-mono select-none mr-3 shrink-0">
-                    Ctrl K
-                  </span>
-                )}
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        searchInputRef.current?.focus();
+                      }}
+                      className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-1 sm:mr-2 shrink-0"
+                      aria-label="Clear search"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+
+                  {!searchQuery && (
+                    <span className="hidden sm:inline-block rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] text-slate-500 font-mono select-none mr-3 shrink-0">
+                      Ctrl K
+                    </span>
+                  )}
+                </div>
 
                 <button
                   type="submit"
-                  className="shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-3 transition-colors duration-[100ms] font-sans"
+                  className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm sm:text-base transition-colors duration-[100ms] font-sans"
                 >
                   Search
                 </button>
@@ -863,7 +839,7 @@ export default function Home() {
 
               {/* Suggestions Dropdown */}
               {isDropdownOpen && searchQuery.trim() && (
-                <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left">
+                <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left max-h-[60vh] overflow-y-auto">
                   {searchQuery.trim() !== debouncedQuery.trim() ? (
                     <div className="px-4 py-4 text-xs text-slate-500 font-mono flex items-center gap-1">
                       <span>querying_index</span>
@@ -923,8 +899,8 @@ export default function Home() {
 
             {/* Quick Filter Chips */}
             {popularQueries.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-5 font-mono text-[10px] text-[#8A8F87]">
-                <span className="text-[9px] uppercase font-bold text-slate-500">popular:</span>
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-5 font-mono text-[10px] text-[#8A8F87] px-2">
+                <span className="text-[9px] uppercase font-bold text-slate-500 mr-1">popular:</span>
                 {popularQueries.map((queryText, idx) => (
                   <button
                     key={idx}

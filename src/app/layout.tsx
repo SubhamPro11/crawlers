@@ -3,10 +3,7 @@ import { Newsreader, JetBrains_Mono, Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CommandPalette from "@/components/CommandPalette";
-import ToastNotification from "@/components/ToastNotification";
-import BottomNav from "@/components/BottomNav";
-import AssistantWidget from "@/components/AssistantWidget";
+import ClientOverlays from "@/components/ClientOverlays";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -18,17 +15,20 @@ export const viewport: Viewport = {
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   style: ["normal", "italic"],
+  display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -82,6 +82,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
@@ -100,10 +102,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <CommandPalette />
-        <ToastNotification />
-        <BottomNav />
-        <AssistantWidget />
+        <ClientOverlays />
       </body>
     </html>
   );

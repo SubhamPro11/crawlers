@@ -17,18 +17,10 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      return;
-    }
-    const timeout = setTimeout(() => {
-      // On client mount, reset to 0 to prepare for scroll-triggered animation
-      setDisplayTools(0);
-      setDisplayCategories(0);
-      setHasTriggered(false);
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, []);
+    setDisplayTools(totalTools);
+    setDisplayCategories(totalCategories);
+    setHasTriggered(true);
+  }, [totalTools, totalCategories]);
 
   useEffect(() => {
     if (hasTriggered) return;
@@ -127,19 +119,19 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
       {/* Statistics Counters */}
       <div 
         ref={containerRef}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-xl border border-[#212623]/80 bg-[#131615]/40 text-center"
+        className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 rounded-xl border border-[#212623]/80 bg-[#131615]/40 text-center"
       >
         {stats.map((s, idx) => (
           <div 
             key={idx} 
-            className={`space-y-1 transition-opacity duration-500 ${
+            className={`space-y-1 transition-opacity duration-500 flex flex-col justify-center items-center py-2 ${
               !s.isNumeric && !hasTriggered ? "opacity-0" : "opacity-100"
             }`}
           >
-            <div className={`text-2xl sm:text-3xl font-bold font-serif ${s.isDate ? "text-white/80" : "text-[#8FBF3F]"}`}>
+            <div className={`text-xl xs:text-2xl sm:text-3xl font-bold font-serif ${s.isDate ? "text-white/80 text-base sm:text-2xl" : "text-[#8FBF3F]"}`}>
               {s.value}
             </div>
-            <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
+            <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-500">
               {s.label}
             </div>
           </div>

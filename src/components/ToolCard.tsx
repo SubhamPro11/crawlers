@@ -87,7 +87,7 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
       <button
         onClick={toggleFavorite}
         className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
-        aria-label="Toggle Bookmark"
+        aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
       >
         <svg
           className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
