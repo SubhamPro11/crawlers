@@ -31,6 +31,7 @@ interface ToolCardProps {
 
 export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
@@ -41,6 +42,30 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
   const handleVisit = () => {
     mockDb.incrementClickCount(tool.id);
     if (onRefresh) onRefresh();
+  };
+
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const canonicalUrl = `${window.location.origin}/tool/${tool.id}`;
+    if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(canonicalUrl).catch(() => {
+        // fallback ignored
+      });
+    } else if (typeof document !== "undefined") {
+      const textArea = document.createElement("textarea");
+      textArea.value = canonicalUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+    }
+
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1500);
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
@@ -83,24 +108,53 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
   return (
     <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 transition-colors duration-[120ms] hover:border-[#8FBF3F]/35">
       
-      {/* Favorite Toggle Button */}
-      <button
-        onClick={toggleFavorite}
-        className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
-        aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
-      >
-        <svg
-          className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
-          viewBox="0 0 24 24"
-          strokeWidth={2}
+      {/* Action Buttons: Copy-Link & Favorite */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
+        {/* Copy-Link Button */}
+        <button
+          onClick={handleCopyLink}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms] cursor-pointer"
+          aria-label={isCopied ? `Copied link for ${tool.name}` : `Copy link for ${tool.name}`}
+          title={isCopied ? "Link copied!" : "Copy tool page link"}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      </button>
+          {isCopied ? (
+            <svg
+              className="h-4 w-4 stroke-[#8FBF3F] fill-none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg
+              className="h-4 w-4 fill-none stroke-current"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          )}
+        </button>
+
+        {/* Favorite Toggle Button */}
+        <button
+          onClick={toggleFavorite}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms] cursor-pointer"
+          aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
+        >
+          <svg
+            className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
+      </div>
 
       <div>
         {/* Header: Initials + Title + Pricing */}
-        <div className="flex items-start justify-between gap-3 mb-4 pr-8">
+        <div className="flex items-start justify-between gap-3 mb-4 pr-20">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs shadow-inner">
               {tool.name.substring(0, 2).toLowerCase()}
