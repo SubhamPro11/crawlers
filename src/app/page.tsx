@@ -117,6 +117,12 @@ function CategoryGroupSection({
           {SUB_GROUPS[group.id].map((subGroup) => {
             const subGroupCats = sortedGroupCategories.filter(cat => subGroup.slugs.includes(cat.slug));
             if (subGroupCats.length === 0) return null;
+
+            // Group coming-soon (0 tool count) categories at the end of the sub-group
+            const liveSubGroupCats = subGroupCats.filter(c => (toolCounts[c.id] || 0) > 0);
+            const comingSoonSubGroupCats = subGroupCats.filter(c => (toolCounts[c.id] || 0) === 0);
+            const orderedSubGroupCats = [...liveSubGroupCats, ...comingSoonSubGroupCats];
+
             return (
               <div key={subGroup.name} className="space-y-4">
                 <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
@@ -124,16 +130,43 @@ function CategoryGroupSection({
                   <span>{subGroup.name.toLowerCase().replace(/ & /g, "_and_").replace(/, /g, "_").replace(/ /g, "_")} // {subGroupCats.length} categories</span>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {subGroupCats.map((cat) => {
+                  {orderedSubGroupCats.map((cat) => {
                     const count = toolCounts[cat.id] || 0;
                     const isZero = count === 0;
+
+                    if (isZero) {
+                      return (
+                        <div
+                          key={cat.id}
+                          className="relative flex flex-col justify-between rounded-lg border border-[#212623]/60 bg-[#0E100F]/40 p-5 sm:p-6 opacity-40 cursor-not-allowed select-none transition-opacity"
+                          title={`${cat.name} index coming soon`}
+                        >
+                          <div>
+                            <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 text-slate-600">
+                              {getCategoryIcon(cat.slug)}
+                            </div>
+                            <h3 className="text-base font-bold text-slate-400 font-serif line-clamp-1">
+                              {cat.name}
+                            </h3>
+                            <p className="text-slate-500 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                              {cat.description || "Curated tools for this domain."}
+                            </p>
+                          </div>
+                          <div className="mt-5 flex items-center justify-between text-xs font-mono">
+                            <span className="text-[10px] px-2 py-0.5 rounded border border-amber-500/20 bg-amber-500/10 text-amber-400/80 font-mono font-semibold">
+                              [coming soon]
+                            </span>
+                            <span className="text-[10px] text-slate-600 font-mono">0 tools</span>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     return (
                       <Link
                         key={cat.id}
                         href={`/category/${cat.slug}`}
-                        className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
-                          isZero ? "opacity-50 hover:opacity-85" : ""
-                        }`}
+                        className="group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms]"
                       >
                         <div>
                           <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
@@ -147,14 +180,12 @@ function CategoryGroupSection({
                           </p>
                         </div>
                         <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
-                          <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
-                            {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
+                          <span className="text-slate-500">
+                            {count} {count === 1 ? 'tool' : 'tools'} available
                           </span>
-                          {!isZero && (
-                            <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              Explore &rarr;
-                            </span>
-                          )}
+                          <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            Explore &rarr;
+                          </span>
                         </div>
                       </Link>
                     );
@@ -166,41 +197,72 @@ function CategoryGroupSection({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {sortedGroupCategories.map((cat) => {
-            const count = toolCounts[cat.id] || 0;
-            const isZero = count === 0;
-            return (
-              <Link
-                key={cat.id}
-                href={`/category/${cat.slug}`}
-                className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
-                  isZero ? "opacity-50 hover:opacity-85" : ""
-                }`}
-              >
-                <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
-                    {getCategoryIcon(cat.slug)}
+          {(() => {
+            const liveCats = sortedGroupCategories.filter(c => (toolCounts[c.id] || 0) > 0);
+            const comingSoonCats = sortedGroupCategories.filter(c => (toolCounts[c.id] || 0) === 0);
+            const orderedCats = [...liveCats, ...comingSoonCats];
+
+            return orderedCats.map((cat) => {
+              const count = toolCounts[cat.id] || 0;
+              const isZero = count === 0;
+
+              if (isZero) {
+                return (
+                  <div
+                    key={cat.id}
+                    className="relative flex flex-col justify-between rounded-lg border border-[#212623]/60 bg-[#0E100F]/40 p-5 sm:p-6 opacity-40 cursor-not-allowed select-none transition-opacity"
+                    title={`${cat.name} index coming soon`}
+                  >
+                    <div>
+                      <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 text-slate-600">
+                        {getCategoryIcon(cat.slug)}
+                      </div>
+                      <h3 className="text-base font-bold text-slate-400 font-serif line-clamp-1">
+                        {cat.name}
+                      </h3>
+                      <p className="text-slate-500 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                        {cat.description || "Curated tools for this domain."}
+                      </p>
+                    </div>
+                    <div className="mt-5 flex items-center justify-between text-xs font-mono">
+                      <span className="text-[10px] px-2 py-0.5 rounded border border-amber-500/20 bg-amber-500/10 text-amber-400/80 font-mono font-semibold">
+                        [coming soon]
+                      </span>
+                      <span className="text-[10px] text-slate-600 font-mono">0 tools</span>
+                    </div>
                   </div>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
-                    {cat.name}
-                  </h3>
-                  <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
-                    {cat.description || "Browse curated tools for this domain."}
-                  </p>
-                </div>
-                <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
-                  <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
-                    {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
-                  </span>
-                  {!isZero && (
+                );
+              }
+
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/category/${cat.slug}`}
+                  className="group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms]"
+                >
+                  <div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
+                      {getCategoryIcon(cat.slug)}
+                    </div>
+                    <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
+                      {cat.name}
+                    </h3>
+                    <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                      {cat.description || "Browse curated tools for this domain."}
+                    </p>
+                  </div>
+                  <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
+                    <span className="text-slate-500">
+                      {count} {count === 1 ? 'tool' : 'tools'} available
+                    </span>
                     <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       Explore &rarr;
                     </span>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+                  </div>
+                </Link>
+              );
+            });
+          })()}
         </div>
       )}
     </div>
@@ -311,6 +373,8 @@ export default function Home() {
   const [selectedLetter, setSelectedLetter] = useState<string>("All");
   const [categorySearchQuery, setCategorySearchQuery] = useState<string>("");
   const [categorySortBy, setCategorySortBy] = useState<"name" | "most_tools" | "recent">("name");
+  const [pricingFilter, setPricingFilter] = useState<"all" | "free" | "freemium" | "paid">("all");
+  const [activeGroupId, setActiveGroupId] = useState<string>("");
 
   useEffect(() => {
     const handleResize = () => {
@@ -329,9 +393,44 @@ export default function Home() {
       const firstChar = cat.name.charAt(0).toUpperCase();
       const matchesLetter = selectedLetter === "All" || firstChar === selectedLetter;
       
-      return matchesSearch && matchesLetter;
+      // Combine with pricingFilter (AND logic)
+      let matchesPricing = true;
+      if (pricingFilter !== "all") {
+        matchesPricing = tools.some(
+          (t) => t.category_id === cat.id && t.pricing_model === pricingFilter && t.status === "active"
+        );
+      }
+
+      return matchesSearch && matchesLetter && matchesPricing;
     });
-  }, [categories, selectedLetter, categorySearchQuery]);
+  }, [categories, selectedLetter, categorySearchQuery, pricingFilter, tools]);
+
+  // Scrollspy observer for active section group tracking
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const groupId = entry.target.id.replace("group-", "");
+            setActiveGroupId(groupId);
+          }
+        });
+      },
+      {
+        rootMargin: "-20% 0px -65% 0px",
+        threshold: 0.1,
+      }
+    );
+
+    CATEGORY_GROUPS.forEach((group) => {
+      const el = document.getElementById(`group-${group.id}`);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [filteredCategories]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
@@ -976,85 +1075,24 @@ export default function Home() {
         </section>
       )}
 
-      {/* Trending Carousel Section */}
-      {trendingTools.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900">
-          <div className="mb-6 font-sans">
-            <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
-              Recently Verified
-            </h2>
-            <p className="text-[#8FBF3F] text-xs mt-1 font-mono">
-              &gt; sorted_by_verification_date
-            </p>
-          </div>
-
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
-            {trendingTools.map((tool) => (
-              <div 
-                key={`trending-${tool.id}`} 
-                className="snap-start flex-shrink-0 w-80 rounded-xl border border-[#212623] bg-gradient-to-br from-[#131615] to-[#0A0D0B] p-6 shadow-lg hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5 transition-all duration-300 group"
-              >
-                <div className="flex justify-between items-start gap-2 mb-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs">
-                    {tool.name.substring(0, 2).toLowerCase()}
-                  </div>
-                </div>
-                <Link href={`/tool/${tool.id}`} className="block mb-2">
-                  <h4 className="font-serif text-base font-semibold text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
-                    {tool.name}
-                  </h4>
-                </Link>
-                <p className="text-slate-400 text-xs leading-relaxed mb-4 line-clamp-2 h-8">
-                  {cleanDescription(tool.short_description)}
-                </p>
-                <div className="flex items-center justify-between border-t border-[#212623]/60 pt-3 text-[10px] font-mono">
-                  <span className="text-[#8A8F87] uppercase tracking-wider truncate max-w-[150px]">
-                    {categories.find(c => c.id === tool.category_id)?.name || "bot"}
-                  </span>
-                  {(() => {
-                    const catName = categories.find(c => c.id === tool.category_id)?.name;
-                    const isExtension = catName?.toLowerCase().includes("extension") ||
-                      tool.category_id === "fe1ee758-4faf-4b9f-873a-bb95a5939552" ||
-                      tool.tags?.some(t => t.toLowerCase().includes("extension")) ||
-                      tool.url?.includes("chromewebstore") ||
-                      tool.url?.includes("chrome.google.com");
-                    const label = isExtension ? "get_extension" : "run_bot";
-                    return (
-                      <a
-                        href={tool.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#8FBF3F] font-bold hover:underline"
-                      >
-                        {label} &rarr;
-                      </a>
-                    );
-                  })()}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Featured / Recently Indexed Section */}
+      {/* Recently Indexed Section */}
       {recentTools.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900 font-sans">
           <div className="flex items-center justify-between mb-8 font-sans">
             <div>
               <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
                 Recently Indexed
               </h2>
-              <p className="text-slate-400 text-xs mt-1 font-sans">
-                Latest verified additions to the directory
+              <p className="text-[#8FBF3F] text-xs mt-1 font-mono">
+                &gt; latest_verified_entries
               </p>
             </div>
             <div className="h-[1px] flex-1 bg-slate-800/80 mx-6 hidden sm:block" />
             <Link 
-              href="/search" 
-              className="text-[#8FBF3F] hover:text-[#7ba235] text-sm font-semibold transition-colors"
+              href="/changelog" 
+              className="text-[#8FBF3F] hover:text-[#7ba235] text-sm font-semibold transition-colors font-mono"
             >
-              Browse All Tools &rarr;
+              View Full Changelog &rarr;
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -1069,8 +1107,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <AINews tools={recentTools} categories={categories} />
 
       <WhyCrawlers totalTools={totalToolsCount || 1417} totalCategories={categories.length || 170} lastUpdated={lastUpdatedStr} />
 
@@ -1088,6 +1124,7 @@ export default function Home() {
           
           {/* Category Quick Filter & Sort Toolbar */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto font-mono text-xs">
+            {/* Sort Control */}
             <div className="flex items-center gap-2 font-mono text-xs">
               <label htmlFor="index-category-sort-select" className="text-[#8FBF3F] font-bold shrink-0">
                 &gt; sort_by:
@@ -1102,6 +1139,29 @@ export default function Home() {
                   <option value="name">A-Z</option>
                   <option value="most_tools">Most Tools First</option>
                   <option value="recent">Recently Added</option>
+                </select>
+                <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">
+                  ▾
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing Filter Control */}
+            <div className="flex items-center gap-2 font-mono text-xs">
+              <label htmlFor="index-pricing-filter-select" className="text-[#8FBF3F] font-bold shrink-0">
+                &gt; pricing:
+              </label>
+              <div className="relative shrink-0">
+                <select
+                  id="index-pricing-filter-select"
+                  value={pricingFilter}
+                  onChange={(e) => setPricingFilter(e.target.value as "all" | "free" | "freemium" | "paid")}
+                  className="appearance-none bg-[#131615] text-slate-300 border border-[#212623] hover:border-[#8FBF3F]/40 focus:border-[#8FBF3F] rounded-lg px-3 py-2 pr-8 text-xs font-mono font-medium outline-none cursor-pointer transition-colors"
+                >
+                  <option value="all">All Models</option>
+                  <option value="free">Free</option>
+                  <option value="freemium">Freemium</option>
+                  <option value="paid">Paid</option>
                 </select>
                 <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">
                   ▾
@@ -1180,16 +1240,22 @@ export default function Home() {
             {CATEGORY_GROUPS.map((group) => {
               const hasCategoriesInView = filteredCategories.some(cat => getCategoryGroup(cat).id === group.id);
               if (!hasCategoriesInView) return null;
+              const isActive = activeGroupId === group.id;
               return (
                 <button
                   key={group.id}
                   onClick={() => {
+                    setActiveGroupId(group.id);
                     const element = document.getElementById(`group-${group.id}`);
                     if (element) {
                       element.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                   }}
-                  className="flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans"
+                  className={`flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold font-sans transition-all ${
+                    isActive
+                      ? "bg-[#8FBF3F] text-slate-950 font-bold shadow-sm shadow-[#8FBF3F]/20 border border-[#8FBF3F]"
+                      : "bg-[#0E100F] border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40"
+                  }`}
                 >
                   {group.name}
                 </button>
@@ -1214,15 +1280,24 @@ export default function Home() {
         </div>
 
         {/* Active Filters Display */}
-        {(selectedLetter !== "All" || categorySearchQuery) && (
+        {(selectedLetter !== "All" || categorySearchQuery || pricingFilter !== "all") && (
           <div className="flex items-center justify-between text-xs text-slate-400 mb-6 font-mono bg-slate-900/30 border border-slate-900 px-4 py-2.5 rounded-lg">
             <div>
-              Active Index filter: <span className="text-[#8FBF3F] font-sans font-bold">{selectedLetter !== "All" ? `Letter "${selectedLetter}"` : `Search "${categorySearchQuery}"`}</span>
+              Active Index filter:{" "}
+              <span className="text-[#8FBF3F] font-sans font-bold">
+                {[
+                  selectedLetter !== "All" ? `Letter "${selectedLetter}"` : null,
+                  categorySearchQuery ? `Search "${categorySearchQuery}"` : null,
+                  pricingFilter !== "all" ? `Pricing "${pricingFilter.toUpperCase()}"` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" + ")}
+              </span>
               <span className="text-slate-600 mx-2">|</span>
               Found {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
             </div>
             <button
-              onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
+              onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); setPricingFilter("all"); }}
               className="text-xs text-rose-400 hover:text-rose-300 font-sans font-semibold transition-colors"
             >
               Clear filter
@@ -1248,8 +1323,20 @@ export default function Home() {
                 }
 
                 if (categorySortBy === "recent") {
-                  // For categories, recently added sorts by ID order / reverse index
-                  return b.id.localeCompare(a.id);
+                  const latestA = tools
+                    .filter((t) => t.category_id === a.id)
+                    .reduce((max, t) => {
+                      const time = new Date(t.created_at || 0).getTime();
+                      return time > max ? time : max;
+                    }, 0);
+                  const latestB = tools
+                    .filter((t) => t.category_id === b.id)
+                    .reduce((max, t) => {
+                      const time = new Date(t.created_at || 0).getTime();
+                      return time > max ? time : max;
+                    }, 0);
+                  if (latestB !== latestA) return latestB - latestA;
+                  return a.name.localeCompare(b.name);
                 }
 
                 // Default A-Z sort (populated ones first)

@@ -109,47 +109,58 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
     <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 transition-colors duration-[120ms] hover:border-[#8FBF3F]/35">
       
       {/* Action Buttons: Copy-Link & Favorite */}
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 font-mono">
         {/* Copy-Link Button */}
-        <button
-          onClick={handleCopyLink}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms] cursor-pointer"
-          aria-label={isCopied ? `Copied link for ${tool.name}` : `Copy link for ${tool.name}`}
-          title={isCopied ? "Link copied!" : "Copy tool page link"}
-        >
-          {isCopied ? (
+        <div className="relative group/tip">
+          <button
+            onClick={handleCopyLink}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms] cursor-pointer"
+            aria-label={isCopied ? `Copied link for ${tool.name}` : `Copy link for ${tool.name}`}
+            title={isCopied ? "Link copied!" : "Copy tool page link"}
+          >
+            {isCopied ? (
+              <svg
+                className="h-4 w-4 stroke-[#8FBF3F] fill-none"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg
+                className="h-4 w-4 fill-none stroke-current"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            )}
+          </button>
+          <div className="pointer-events-none absolute -bottom-7 right-0 hidden group-hover/tip:flex items-center whitespace-nowrap rounded border border-[#8FBF3F]/40 bg-[#0B0F17] px-2 py-0.5 font-mono text-[9px] text-[#8FBF3F] shadow-lg z-30">
+            {isCopied ? "copied!" : "copy link"}
+          </div>
+        </div>
+
+        {/* Favorite Toggle Button */}
+        <div className="relative group/tip">
+          <button
+            onClick={toggleFavorite}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms] cursor-pointer"
+            aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
+            title={isFavorite ? "Bookmarked" : "Save to favorites"}
+          >
             <svg
-              className="h-4 w-4 stroke-[#8FBF3F] fill-none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          ) : (
-            <svg
-              className="h-4 w-4 fill-none stroke-current"
+              className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
               viewBox="0 0 24 24"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
-          )}
-        </button>
-
-        {/* Favorite Toggle Button */}
-        <button
-          onClick={toggleFavorite}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms] cursor-pointer"
-          aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
-        >
-          <svg
-            className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
+          </button>
+          <div className="pointer-events-none absolute -bottom-7 right-0 hidden group-hover/tip:flex items-center whitespace-nowrap rounded border border-[#8FBF3F]/40 bg-[#0B0F17] px-2 py-0.5 font-mono text-[9px] text-[#8FBF3F] shadow-lg z-30">
+            {isFavorite ? "saved" : "save to favorites"}
+          </div>
+        </div>
       </div>
 
       <div>
@@ -235,16 +246,23 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
               })()}
             </div>
 
-            <a
-              href={tool.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleVisit}
-              className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
-            >
-              <span>{ctaLabel}</span>
-              <span className="text-[#8A8F87]/60 font-normal">→</span>
-            </a>
+            <div className="relative group/tip font-mono">
+              <a
+                href={tool.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleVisit}
+                className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
+                aria-label={`Open ${tool.name} official site`}
+                title={`Open ${tool.name} official site`}
+              >
+                <span>{ctaLabel}</span>
+                <span className="text-[#8A8F87]/60 font-normal">→</span>
+              </a>
+              <div className="pointer-events-none absolute -top-7 right-0 hidden group-hover/tip:flex items-center whitespace-nowrap rounded border border-[#8FBF3F]/40 bg-[#0B0F17] px-2 py-0.5 font-mono text-[9px] text-[#8FBF3F] shadow-lg z-30">
+                open tool &rarr;
+              </div>
+            </div>
           </div>
         );
       })()}
