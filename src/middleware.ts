@@ -4,8 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Protect actual JSON API data endpoints under /api/v1 while leaving documentation pages (/api) accessible
-  if (path.startsWith("/api/v1")) {
+  // Gate all /api routes (including /api and /api/...) behind mandatory sign-in
+  if (path === "/api" || path.startsWith("/api/")) {
     // Allow CORS OPTIONS preflight
     if (request.method === "OPTIONS") {
       return NextResponse.next();
@@ -34,8 +34,12 @@ export async function middleware(request: NextRequest) {
 
         // 2. Check auth cookies if present
         if (!isAuthenticated) {
-          const authCookie = request.cookies.get("sb-access-token")?.value || 
-                             request.cookies.get("supabase-auth-token")?.value;
+          const cookies = request.cookies;
+          const authCookie =
+            cookies.get("sb-access-token")?.value ||
+            cookies.get("supabase-auth-token")?.value ||
+            cookies.getAll().find((c) => c.name.includes("auth-token") || c.name.includes("access-token"))?.value;
+
           if (authCookie) {
             const { data } = await supabase.auth.getUser(authCookie);
             if (data && data.user) {
@@ -70,5 +74,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/v1/:path*"],
+  matcher: ["/api", "/api/:path*"],
 };
