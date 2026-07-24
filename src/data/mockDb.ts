@@ -217,20 +217,23 @@ class MockDb {
 
   async getCategoryBySlug(slug: string): Promise<Category | undefined> {
     try {
+      const lower = (slug || "").toLowerCase().trim();
       const { data, error } = await supabase
         .from("categories")
         .select("*")
         .eq("slug", slug)
         .single();
 
-      if (error) {
-        console.error("Error fetching category by slug:", error.message);
-        return undefined;
+      if (error || !data) {
+        const allCats = await this.getCategories();
+        return allCats.find((c) => c.slug.toLowerCase() === lower || slugify(c.name) === lower);
       }
-      return data || undefined;
+      return data;
     } catch (err) {
       console.error("Uncaught exception in getCategoryBySlug:", err);
-      return undefined;
+      const allCats = await this.getCategories();
+      const lower = (slug || "").toLowerCase().trim();
+      return allCats.find((c) => c.slug.toLowerCase() === lower || slugify(c.name) === lower);
     }
   }
 
@@ -283,38 +286,53 @@ class MockDb {
         .eq("category_id", categoryId)
         .eq("status", "active");
 
-      if (error) {
-        console.error("Error fetching tools by category:", error.message);
-        return [];
+      if (error || !data || data.length === 0) {
+        const allTools = await this.getTools();
+        return allTools.filter((t) => t.category_id === categoryId && t.status === "active");
       }
-      return data || [];
+      return data;
     } catch (err) {
       console.error("Uncaught exception in getToolsByCategory:", err);
-      return [];
+      const allTools = await this.getTools();
+      return allTools.filter((t) => t.category_id === categoryId && t.status === "active");
     }
   }
 
   async getToolById(id: string): Promise<Tool | undefined> {
     try {
+      const lower = (id || "").toLowerCase().trim();
       const { data, error } = await supabase
         .from("tools")
         .select("*, categories(name, slug)")
         .eq("id", id)
         .single();
 
-      if (error) {
-        console.error("Error fetching tool by ID:", error.message);
-        return undefined;
+      if (error || !data) {
+        const allTools = await this.getTools();
+        return allTools.find(
+          (t) =>
+            t.id.toLowerCase() === lower ||
+            slugify(t.name) === lower ||
+            t.name.toLowerCase() === lower.replace(/-/g, " ")
+        );
       }
-      return data || undefined;
+      return data;
     } catch (err) {
       console.error("Uncaught exception in getToolById:", err);
-      return undefined;
+      const allTools = await this.getTools();
+      const lower = (id || "").toLowerCase().trim();
+      return allTools.find(
+        (t) =>
+          t.id.toLowerCase() === lower ||
+          slugify(t.name) === lower ||
+          t.name.toLowerCase() === lower.replace(/-/g, " ")
+      );
     }
   }
 
   async getActiveToolById(id: string): Promise<Tool | undefined> {
     try {
+      const lower = (id || "").toLowerCase().trim();
       const { data, error } = await supabase
         .from("tools")
         .select("*, categories(name, slug)")
@@ -322,14 +340,26 @@ class MockDb {
         .eq("status", "active")
         .single();
 
-      if (error) {
-        console.error("Error fetching active tool by ID:", error.message);
-        return undefined;
+      if (error || !data) {
+        const allTools = await this.getTools();
+        return allTools.find(
+          (t) =>
+            t.id.toLowerCase() === lower ||
+            slugify(t.name) === lower ||
+            t.name.toLowerCase() === lower.replace(/-/g, " ")
+        );
       }
-      return data || undefined;
+      return data;
     } catch (err) {
       console.error("Uncaught exception in getActiveToolById:", err);
-      return undefined;
+      const allTools = await this.getTools();
+      const lower = (id || "").toLowerCase().trim();
+      return allTools.find(
+        (t) =>
+          t.id.toLowerCase() === lower ||
+          slugify(t.name) === lower ||
+          t.name.toLowerCase() === lower.replace(/-/g, " ")
+      );
     }
   }
 

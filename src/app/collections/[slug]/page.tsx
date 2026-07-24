@@ -56,6 +56,17 @@ export async function generateMetadata({
   }
 }
 
+export async function generateStaticParams() {
+  try {
+    const collections = await mockDb.getCollections();
+    return collections.map((col) => ({
+      slug: col.slug,
+    }));
+  } catch (err) {
+    return [];
+  }
+}
+
 export default async function CollectionDetailPage({
   params,
 }: {

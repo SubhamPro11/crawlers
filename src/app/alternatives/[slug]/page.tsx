@@ -57,6 +57,22 @@ export async function generateMetadata({
   }
 }
 
+export async function generateStaticParams() {
+  try {
+    const allTools = await mockDb.getTools();
+    const qualify = allTools.filter((t) => {
+      const catTools = allTools.filter((ct) => ct.category_id === t.category_id);
+      return catTools.length >= 3;
+    });
+
+    return qualify.map((tool) => ({
+      slug: slugify(tool.name),
+    }));
+  } catch (err) {
+    return [];
+  }
+}
+
 export default async function AlternativesPage({
   params,
 }: {
