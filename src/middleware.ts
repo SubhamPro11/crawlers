@@ -4,8 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Only protect /api routes
-  if (path.startsWith("/api")) {
+  // Protect actual JSON API data endpoints under /api/v1 while leaving documentation pages (/api) accessible
+  if (path.startsWith("/api/v1")) {
     // Allow CORS OPTIONS preflight
     if (request.method === "OPTIONS") {
       return NextResponse.next();
@@ -70,5 +70,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/:path*"],
+  matcher: ["/api/v1/:path*"],
 };
