@@ -191,6 +191,12 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
             {tool.pricing_model}
           </span>
 
+          {Boolean(tool.upvote_count && tool.upvote_count > 0) && (
+            <span className="rounded-sm px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider bg-[#8FBF3F]/10 text-[#8FBF3F] border border-[#8FBF3F]/20 flex items-center gap-1">
+              ▲ {tool.upvote_count} {tool.upvote_count === 1 ? "upvote" : "upvotes"}
+            </span>
+          )}
+
           {(tool.status === "needs_review" || tool.status === "broken_link") && (
             <span className="rounded-sm px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#E8A33D]/15 text-[#E8A33D] border border-[#E8A33D]/30">
               ⚠ needs re-check
