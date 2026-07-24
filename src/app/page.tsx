@@ -47,6 +47,16 @@ const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
       name: "Business, Finance & Operations",
       slugs: ["crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "events", "nonprofit", "finance", "fintech"]
     }
+  ],
+  "science-health-industry": [
+    {
+      name: "Health, Medicine & BioTech",
+      slugs: ["healthcare", "telemedicine", "medical-imaging", "drug-discovery", "biotech", "legal-assistants", "patent-tools"]
+    },
+    {
+      name: "Industry, Energy & Earth Systems",
+      slugs: ["farming", "construction", "manufacturing", "real-estate", "home-design", "insurance", "government", "cleantech", "energy", "climate", "weather", "space-tech", "fleet-management", "supply-chain", "geospatial"]
+    }
   ]
 };
 
