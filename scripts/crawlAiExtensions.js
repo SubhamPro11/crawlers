@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
@@ -10,11 +11,11 @@ const envPath = path.join(__dirname, '../.env.local');
 let envContent = '';
 try {
   envContent = fs.readFileSync(envPath, 'utf8');
-} catch (err) {
+} catch {
   console.error("Could not read .env.local file, trying .env...");
   try {
     envContent = fs.readFileSync(path.join(__dirname, '../.env'), 'utf8');
-  } catch (e) {
+  } catch {
     console.error("Could not read .env file either. Exiting.");
     process.exit(1);
   }
@@ -102,7 +103,7 @@ async function resolveOutboundUrl(url, detailUrl) {
     });
     clearTimeout(timeoutId);
     return res.url;
-  } catch (err) {
+  } catch {
     return targetUrl;
   }
 }

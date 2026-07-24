@@ -12,11 +12,11 @@
   "/page": "/",
   "/search/page": "/search",
   "/submit/page": "/submit",
-  "/category/page": "/category",
   "/compare/page": "/compare",
-  "/category/[slug]/page": "/category/[slug]",
-  "/tags/[slug]/page": "/tags/[slug]",
-  "/api/page": "/api",
+  "/category/page": "/category",
   "/tags/page": "/tags",
-  "/tool/[id]/page": "/tool/[id]"
+  "/tags/[slug]/page": "/tags/[slug]",
+  "/tool/[id]/page": "/tool/[id]",
+  "/category/[slug]/page": "/category/[slug]",
+  "/api/page": "/api"
 }
