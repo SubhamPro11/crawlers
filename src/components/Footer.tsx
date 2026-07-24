@@ -33,8 +33,11 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-              <li className="pt-1">
-                <Link href="/" className="text-[#8FBF3F] hover:underline font-sans font-bold text-xs">
+              <li className="pt-1 flex flex-col gap-1.5 font-sans font-bold text-xs">
+                <Link href="/changelog" className="text-[#8FBF3F] hover:underline font-mono text-xs">
+                  /changelog &rarr;
+                </Link>
+                <Link href="/" className="text-slate-400 hover:text-white transition-colors font-normal">
                   All Categories &rarr;
                 </Link>
               </li>
@@ -53,6 +56,10 @@ export default function Footer() {
         <div className="mt-8 sm:mt-10 border-t border-[#212623]/80 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-center sm:text-left">
           <p className="text-[#8A8F87]/70">&copy; {new Date().getFullYear()} crawlers_index. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-3 font-sans font-semibold">
+            <Link href="/collections" className="hover:text-[#8FBF3F] transition-colors">
+              Collections
+            </Link>
+            <span className="text-[#212623]">|</span>
             <Link href="/submit" className="hover:text-[#8FBF3F] transition-colors">
               Submit Entry
             </Link>

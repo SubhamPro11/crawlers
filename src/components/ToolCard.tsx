@@ -174,11 +174,17 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
           </div>
         </div>
 
-        {/* Pricing Badge below Title */}
-        <div className="mb-3">
+        {/* Badges below Title */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap font-mono">
           <span className={`rounded-sm px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider ${getPricingBadge(tool.pricing_model)}`}>
             {tool.pricing_model}
           </span>
+
+          {(tool.status === "needs_review" || tool.status === "broken_link") && (
+            <span className="rounded-sm px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#E8A33D]/15 text-[#E8A33D] border border-[#E8A33D]/30">
+              ⚠ needs re-check
+            </span>
+          )}
         </div>
 
         {/* Short Description */}
@@ -216,7 +222,17 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
           <div className="flex items-center justify-between border-t border-[#212623]/60 pt-4 mt-auto">
             <div className="flex items-center gap-1.5 text-[#8A8F87] font-mono text-[9px] uppercase tracking-wider">
               <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
-              <span>verified</span>
+              {(() => {
+                const dateStr = tool.last_checked_at || tool.last_crawled_at || tool.created_at;
+                let formatted = "";
+                if (dateStr) {
+                  const d = new Date(dateStr);
+                  if (!isNaN(d.getTime())) {
+                    formatted = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                  }
+                }
+                return <span>verified{formatted ? ` ${formatted}` : ""}</span>;
+              })()}
             </div>
 
             <a

@@ -31,6 +31,42 @@ export interface Tool {
   };
 }
 
+export interface Collection {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  tool_ids: string[];
+  created_at?: string;
+}
+
+export const SEED_COLLECTIONS: Collection[] = [
+  {
+    id: "col-solo-founder",
+    slug: "solo-founder-stack",
+    title: "Solo Founder Stack",
+    description: "Essential AI tools to build, market, and scale a one-person business without hiring a full team.",
+    tool_ids: [],
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "col-video-editing",
+    slug: "video-editing-pipeline",
+    title: "Video Editing Pipeline",
+    description: "End-to-end AI tools for scripting, voice cloning, subtitling, and automated video generation.",
+    tool_ids: [],
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "col-dev-launchpad",
+    slug: "developer-launchpad",
+    title: "Developer Launchpad",
+    description: "Curated code assistants, automated testing tools, and deployment utilities for modern software engineers.",
+    tool_ids: [],
+    created_at: new Date().toISOString()
+  }
+];
+
 export interface CategoryGroup {
   id: string;
   name: string;
@@ -550,6 +586,45 @@ class MockDb {
     }
   }
 
+  async getRelatedTools(currentToolId: string, categoryId: string, tags: string[]): Promise<Tool[]> {
+    try {
+      const allTools = await this.getTools();
+      const cleanTags = (tags || []).map((t) => t.trim().toLowerCase()).filter(Boolean);
+
+      // 1. Match by shared tags first across all categories
+      const tagMatched: { tool: Tool; overlap: number }[] = [];
+
+      if (cleanTags.length > 0) {
+        allTools.forEach((t) => {
+          if (t.id === currentToolId || t.status !== "active") return;
+          const toolTags = (t.tags || []).map((tag) => tag.trim().toLowerCase());
+          const overlap = toolTags.filter((tag) => cleanTags.includes(tag)).length;
+          if (overlap > 0) {
+            tagMatched.push({ tool: t, overlap });
+          }
+        });
+      }
+
+      // Sort by highest tag overlap first
+      tagMatched.sort((a, b) => b.overlap - a.overlap);
+      let results: Tool[] = tagMatched.map((item) => item.tool);
+
+      // 2. Fallback to same-category if fewer than 3 tag matches found
+      if (results.length < 3 && categoryId) {
+        const existingIds = new Set(results.map((r) => r.id));
+        const categoryFallback = allTools.filter(
+          (t) => t.id !== currentToolId && t.category_id === categoryId && t.status === "active" && !existingIds.has(t.id)
+        );
+        results = [...results, ...categoryFallback];
+      }
+
+      return results.slice(0, 4);
+    } catch (err) {
+      console.error("Error in getRelatedTools:", err);
+      return [];
+    }
+  }
+
   async getPopularQueries(): Promise<string[]> {
     try {
       // Future-proofing: this will pull from a query logging table.
@@ -600,6 +675,84 @@ class MockDb {
     } catch (err) {
       console.error("Error in getToolsByTagSlug:", err);
       return { tools: [], tagName: slug.replace(/-/g, " ") };
+    }
+  }
+
+  async getAlternativesForTool(
+    identifier: string,
+    _catIdHint?: string
+  ): Promise<{ targetTool: Tool | null; categoryName: string; alternatives: Tool[]; totalCategoryCount: number }> {
+    try {
+      const allTools = await this.getTools();
+      const lower = (identifier || "").toLowerCase().trim();
+      const targetTool =
+        allTools.find(
+          (t) =>
+            t.id.toLowerCase() === lower ||
+            slugify(t.name) === lower ||
+            t.name.toLowerCase() === lower.replace(/-/g, " ")
+        ) || null;
+
+      if (!targetTool) {
+        return { targetTool: null, categoryName: "", alternatives: [], totalCategoryCount: 0 };
+      }
+
+      const categoryTools = allTools.filter(
+        (t) => t.category_id === targetTool.category_id && t.status === "active"
+      );
+      const categoryName = targetTool.categories?.name || "AI Tools";
+      const alternatives = categoryTools.filter((t) => t.id !== targetTool.id);
+
+      return {
+        targetTool,
+        categoryName,
+        alternatives,
+        totalCategoryCount: categoryTools.length
+      };
+    } catch (err) {
+      console.error("Error in getAlternativesForTool:", err);
+      return { targetTool: null, categoryName: "", alternatives: [], totalCategoryCount: 0 };
+    }
+  }
+
+  async getCollections(): Promise<Collection[]> {
+    try {
+      const { data, error } = await supabase
+        .from("collections")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error || !data || data.length === 0) {
+        return SEED_COLLECTIONS;
+      }
+      return data as Collection[];
+    } catch (err) {
+      console.error("Error in getCollections:", err);
+      return SEED_COLLECTIONS;
+    }
+  }
+
+  async getCollectionBySlug(slug: string): Promise<{ collection: Collection | null; tools: Tool[] }> {
+    try {
+      const collections = await this.getCollections();
+      const lower = (slug || "").toLowerCase().trim();
+      const col = collections.find((c) => c.slug.toLowerCase() === lower) || null;
+
+      if (!col) {
+        return { collection: null, tools: [] };
+      }
+
+      if (!col.tool_ids || col.tool_ids.length === 0) {
+        return { collection: col, tools: [] };
+      }
+
+      const allTools = await this.getTools();
+      const matchedTools = allTools.filter((t) => col.tool_ids.includes(t.id));
+
+      return { collection: col, tools: matchedTools };
+    } catch (err) {
+      console.error("Error in getCollectionBySlug:", err);
+      return { collection: null, tools: [] };
     }
   }
 }

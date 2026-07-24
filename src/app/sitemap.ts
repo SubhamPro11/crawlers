@@ -40,12 +40,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.4,
   }));
 
+  // Collect categories with 3+ tools for alternatives pages
+  const categoryCounts: Record<string, number> = {};
+  tools.forEach((tool) => {
+    categoryCounts[tool.category_id] = (categoryCounts[tool.category_id] || 0) + 1;
+  });
+
+  const alternativeUrls = tools
+    .filter((tool) => (categoryCounts[tool.category_id] || 0) >= 3)
+    .map((tool) => ({
+      url: `${baseUrl}/alternatives/${slugify(tool.name)}`,
+      lastModified: new Date(tool.created_at || Date.now()),
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    }));
+
+  const collections = await mockDb.getCollections();
+  const collectionUrls = collections.map((col) => ({
+    url: `${baseUrl}/collections/${col.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
   return [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/collections`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/changelog`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/search`,
@@ -62,5 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...categoryUrls,
     ...toolUrls,
     ...tagUrls,
+    ...alternativeUrls,
+    ...collectionUrls,
   ];
 }

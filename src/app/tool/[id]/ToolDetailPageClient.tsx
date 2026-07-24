@@ -25,9 +25,9 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
       setCategoryName(t.categories?.name || "");
       setCategorySlug(t.categories?.slug || "");
       
-      // Load similar tools (same category + overlapping tags fallback)
-      const res = await mockDb.getSimilarTools(t.id, t.category_id, t.tags);
-      setSimilarTools(res.slice(0, 4));
+      // Load related tools (shared tags first, fallback to same-category)
+      const res = await mockDb.getRelatedTools(t.id, t.category_id, t.tags);
+      setSimilarTools(res);
 
       // Log Recently Viewed
       try {
@@ -198,12 +198,20 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
                     {tool.name}
                   </h1>
                   {categoryName && (
-                    <Link 
-                      href={`/category/${categorySlug}`}
-                      className="inline-block text-xs font-semibold text-[#8FBF3F] hover:underline uppercase tracking-wider mt-1 font-mono"
-                    >
-                      &gt; {categoryName}
-                    </Link>
+                    <div className="flex items-center gap-3 mt-1 flex-wrap font-mono">
+                      <Link 
+                        href={`/category/${categorySlug}`}
+                        className="inline-block text-xs font-semibold text-[#8FBF3F] hover:underline uppercase tracking-wider font-mono"
+                      >
+                        &gt; {categoryName}
+                      </Link>
+                      <Link
+                        href={`/alternatives/${slugify(tool.name)}`}
+                        className="inline-block text-xs font-mono text-slate-400 hover:text-[#8FBF3F] transition-colors"
+                      >
+                        [view alternatives &rarr;]
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>
@@ -402,18 +410,18 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
         
       </div>
 
-      {/* Similar Tools Section */}
-      {similarTools.length >= 2 && (
+      {/* Related Tools Section ("You might also need") */}
+      {similarTools.length > 0 && (
         <div className="space-y-6 mt-12 border-t border-[#212623] pt-12">
           <div className="font-sans">
             <h2 className="font-serif text-2xl font-medium text-white tracking-tight">
-              Similar Tools
+              You might also need
             </h2>
             <p className="text-slate-500 text-xs mt-1 font-mono">
-              &gt; similar_tools
+              &gt; adjacent_tools // cross_category_matches
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {similarTools.map((t) => (
               <ToolCard key={t.id} tool={t} categoryName={t.categories?.name} />
             ))}
