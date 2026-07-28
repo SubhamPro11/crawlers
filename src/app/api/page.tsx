@@ -4,8 +4,6 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { mockDb, Tool } from "@/data/mockDb";
 import { TerminalLoader } from "@/components/TerminalLoader";
-import { supabase } from "@/lib/supabaseClient";
-import { User } from "@supabase/supabase-js";
 
 interface ApiBot {
   id: string;
@@ -356,24 +354,12 @@ const SEED_APIS: Omit<ApiBot, "id" | "click_count">[] = [
 ];
 
 export default function ApiKeysDirectoryPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [authChecking, setAuthChecking] = useState<boolean>(true);
   const [dbTools, setDbTools] = useState<Tool[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setAuthChecking(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setAuthChecking(false);
-    });
-
     mockDb.getTools()
       .then(tools => {
         setDbTools(tools);
@@ -383,23 +369,7 @@ export default function ApiKeysDirectoryPage() {
         console.error("Error loading tools for API page:", err);
         setIsLoading(false);
       });
-
-    return () => subscription.unsubscribe();
   }, []);
-
-  const handleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: typeof window !== "undefined" ? window.location.href : undefined,
-        },
-      });
-      if (error) throw error;
-    } catch (err) {
-      console.error("Sign in error:", err);
-    }
-  };
 
   // Classify a tool's creator/company
   const getCreatorName = (tool: Tool): string => {
@@ -618,43 +588,6 @@ export default function ApiKeysDirectoryPage() {
       </Link>
     </div>
   );
-
-  if (authChecking) {
-    return (
-      <div className="min-h-screen bg-[#070908] text-slate-100 flex items-center justify-center p-6">
-        <TerminalLoader message="Verifying API session authentication..." />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#070908] text-slate-100 flex flex-col items-center justify-center p-6 text-center font-mono">
-        <div className="max-w-md w-full rounded-2xl border border-[#212623] bg-[#0E100F] p-8 shadow-2xl">
-          <div className="inline-block rounded-sm bg-red-500/10 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-red-400 border border-red-500/20 mb-4">
-            &gt; 401_unauthorized // auth_required
-          </div>
-          <h1 className="font-serif text-2xl font-medium text-white mb-3">
-            Developer API Access Required
-          </h1>
-          <p className="text-xs text-slate-400 font-sans leading-relaxed mb-6">
-            API endpoints, API documentation, and developer key catalogs require an active user account. Please sign in to access the Crawlers API.
-          </p>
-          <button
-            onClick={handleSignIn}
-            className="w-full rounded-xl bg-[#8FBF3F] px-4 py-3 font-mono text-xs font-bold text-slate-950 hover:bg-[#A3D94E] active:scale-95 transition-all shadow-lg shadow-[#8FBF3F]/20 cursor-pointer"
-          >
-            Sign In with Google to Access API →
-          </button>
-          <div className="mt-6 pt-4 border-t border-[#212623]/80">
-            <Link href="/" className="text-xs text-slate-500 hover:text-[#8FBF3F] transition-colors">
-              [← return to directory homepage]
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex-1 mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
