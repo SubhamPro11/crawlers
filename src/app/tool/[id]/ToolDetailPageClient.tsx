@@ -13,8 +13,6 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [similarTools, setSimilarTools] = useState<Tool[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [upvoteCount, setUpvoteCount] = useState<number>(0);
-  const [hasUpvoted, setHasUpvoted] = useState<boolean>(false);
 
   const fetchToolData = useCallback(async () => {
     if (!id) {
@@ -52,35 +50,9 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
       } catch (e) {
         console.error("Error reading favorites:", e);
       }
-
-      // Load Upvotes
-      try {
-        const counts = await mockDb.getUpvoteCounts();
-        setUpvoteCount(counts[t.id] || 0);
-        const myVotes = JSON.parse(localStorage.getItem("crawlers_my_upvotes") || "[]");
-        setHasUpvoted(myVotes.includes(t.id));
-      } catch (e) {
-        console.error("Error loading upvotes:", e);
-      }
     }
     setIsLoading(false);
   }, [id]);
-
-  const handleUpvote = async () => {
-    if (!tool || hasUpvoted) return;
-    setHasUpvoted(true);
-    setUpvoteCount((prev) => prev + 1);
-    try {
-      const myVotes = JSON.parse(localStorage.getItem("crawlers_my_upvotes") || "[]");
-      if (!myVotes.includes(tool.id)) {
-        myVotes.push(tool.id);
-        localStorage.setItem("crawlers_my_upvotes", JSON.stringify(myVotes));
-      }
-      await mockDb.upvoteTool(tool.id);
-    } catch (e) {
-      console.error("Error upvoting tool:", e);
-    }
-  };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -244,23 +216,8 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
                 </div>
               </div>
 
-              {/* Actions: Upvote & Bookmark & Visit & Share */}
+              {/* Actions: Bookmark & Visit & Share */}
               <div className="flex items-center gap-3">
-                <button
-                  onClick={handleUpvote}
-                  disabled={hasUpvoted}
-                  className={`flex h-12 items-center justify-center gap-1.5 px-4 rounded-xl border font-mono text-xs font-bold transition-all ${
-                    hasUpvoted
-                      ? "border-[#8FBF3F]/60 bg-[#8FBF3F]/20 text-[#8FBF3F] cursor-default"
-                      : "border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 cursor-pointer"
-                  }`}
-                  aria-label="Upvote Tool"
-                  title={hasUpvoted ? "Upvoted!" : "Upvote this tool"}
-                >
-                  <span className="text-[#8FBF3F]">▲</span>
-                  <span>{upvoteCount > 0 ? upvoteCount : "Upvote"}</span>
-                </button>
-
                 <button
                   onClick={toggleFavorite}
                   className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all"

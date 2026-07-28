@@ -25,7 +25,6 @@ export interface Tool {
   starting_price?: string;
   pricing_url?: string;
   last_checked_at?: string;
-  upvote_count?: number;
   categories?: {
     name: string;
     slug: string;
@@ -785,69 +784,6 @@ class MockDb {
       console.error("Error in getCollectionBySlug:", err);
       return { collection: null, tools: [] };
     }
-  }
-
-  async getUpvoteCounts(): Promise<Record<string, number>> {
-    try {
-      const { data, error } = await supabase
-        .from("tool_upvotes")
-        .select("tool_id");
-
-      if (!error && data && data.length > 0) {
-        const counts: Record<string, number> = {};
-        data.forEach((row: { tool_id: string }) => {
-          if (row.tool_id) {
-            counts[row.tool_id] = (counts[row.tool_id] || 0) + 1;
-          }
-        });
-        return counts;
-      }
-    } catch (err) {
-      console.warn("Unable to fetch tool_upvotes from Supabase:", err);
-    }
-
-    if (typeof window !== "undefined") {
-      try {
-        const localVotes: Record<string, number> = JSON.parse(
-          localStorage.getItem("crawlers_upvote_counts") || "{}"
-        );
-        return localVotes;
-      } catch (e) {
-        return {};
-      }
-    }
-
-    return {};
-  }
-
-  async upvoteTool(toolId: string): Promise<{ success: boolean; count: number }> {
-    let newCount = 0;
-    try {
-      const { error } = await supabase
-        .from("tool_upvotes")
-        .insert({ tool_id: toolId, client_ip_hash: "anon_user" });
-
-      if (error) {
-        console.warn("Supabase tool_upvotes insert fallback to localStorage:", error.message);
-      }
-    } catch (err) {
-      console.warn("Upvote insert exception:", err);
-    }
-
-    if (typeof window !== "undefined") {
-      try {
-        const localVotes: Record<string, number> = JSON.parse(
-          localStorage.getItem("crawlers_upvote_counts") || "{}"
-        );
-        localVotes[toolId] = (localVotes[toolId] || 0) + 1;
-        localStorage.setItem("crawlers_upvote_counts", JSON.stringify(localVotes));
-        newCount = localVotes[toolId];
-      } catch (e) {
-        newCount = 1;
-      }
-    }
-
-    return { success: true, count: newCount };
   }
 }
 
