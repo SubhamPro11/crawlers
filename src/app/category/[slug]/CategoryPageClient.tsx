@@ -16,9 +16,6 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
   const sortedAndFilteredTools = useMemo(() => {
     const filtered = tools.filter(tool => {
       if (activeFilter === "all") return true;
-      if (activeFilter === "premium" || activeFilter === "paid") {
-        return tool.pricing_model === "paid";
-      }
       return tool.pricing_model === activeFilter;
     });
 
@@ -109,7 +106,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
     { label: "All", value: "all" },
     { label: "Free", value: "free" },
     { label: "Freemium", value: "freemium" },
-    { label: "Premium", value: "premium" }
+    { label: "Paid", value: "paid" }
   ];
 
   const parentGroup = category ? getCategoryGroup(category) : null;
@@ -147,15 +144,15 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
       {/* Filters Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8 font-sans">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-wrap gap-2 font-mono">
+          <div className="flex flex-wrap gap-2">
             {pricingFilters.map((filter) => (
               <button
                 key={filter.value}
                 onClick={() => setActiveFilter(filter.value)}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-mono font-semibold transition-colors duration-100 cursor-pointer ${
+                className={`rounded-full px-4 py-2.5 text-xs font-bold transition-colors duration-[100ms] font-sans cursor-pointer ${
                   activeFilter === filter.value
-                    ? "bg-[#8FBF3F] text-slate-950 border border-[#8FBF3F]"
-                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/40"
+                    ? "bg-[#8FBF3F] text-slate-950 active:bg-[#7ba235]"
+                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/30 active:bg-[#0c0d0c] active:border-[#8FBF3F]/50"
                 }`}
               >
                 {filter.label}
@@ -164,58 +161,26 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs">
-          <label htmlFor="category-sort-select" className="text-[#8FBF3F] font-bold">
-            &gt; sort_by:
-          </label>
-          <div className="relative">
-            <select
-              id="category-sort-select"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "name" | "recent")}
-              className="appearance-none bg-[#131615] text-slate-300 border border-[#212623] hover:border-[#8FBF3F]/40 focus:border-[#8FBF3F] rounded-lg px-3 py-1.5 pr-8 text-xs font-mono font-medium outline-none cursor-pointer transition-colors"
-            >
-              <option value="recent">Recently Added</option>
-              <option value="name">A-Z</option>
-            </select>
-            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">
-              ▾
-            </div>
-          </div>
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 font-mono">
+          <span>SORT BY:</span>
+          <button
+            onClick={() => setSortBy("name")}
+            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "name" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+          >
+            A-Z
+          </button>
+          <span>|</span>
+          <button
+            onClick={() => setSortBy("recent")}
+            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "recent" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+          >
+            NEWEST
+          </button>
         </div>
       </div>
 
       {/* Tools Grid */}
-      {tools.length === 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 font-mono min-h-[200px]">
-            <div>
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs shadow-inner">
-                    &gt;_
-                  </div>
-                  <div>
-                    <h3 className="font-mono text-xs font-bold text-[#8FBF3F] tracking-wider uppercase">
-                      &gt; awaiting_index
-                    </h3>
-                    <span className="font-mono text-[9px] tracking-wider text-slate-500 uppercase">
-                      [status: queued_for_crawl]
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4 font-sans">
-                This category is queued for indexing. Check back soon.
-              </p>
-            </div>
-            <div className="pt-3 border-t border-[#212623]/60 flex items-center justify-between text-[10px] text-slate-500 font-mono">
-              <span>crawlers // indexer</span>
-              <span className="text-[#8FBF3F]/70 animate-pulse">● active</span>
-            </div>
-          </div>
-        </div>
-      ) : sortedAndFilteredTools.length > 0 ? (
+      {sortedAndFilteredTools.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {sortedAndFilteredTools.map((tool) => (
             <ToolCard
@@ -227,17 +192,17 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-[#212623] bg-[#131615]/40 p-8 text-center font-sans">
-          <h3 className="text-sm font-bold text-white mb-1">No tools match filter</h3>
-          <p className="text-slate-400 text-xs max-w-xs mx-auto mb-4 font-sans">
-            No tools in this category match the active pricing filter ({activeFilter}).
+        <div className="rounded-xl border border-dashed border-[#212623] bg-[#131615]/20 p-12 text-center font-sans">
+          <h3 className="text-base font-bold text-white mb-2">No tools found</h3>
+          <p className="text-slate-400 text-xs max-w-xs mx-auto mb-6">
+            There are no tools listed under this category matching the active filter.
           </p>
-          <button
-            onClick={() => setActiveFilter("all")}
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-[#8FBF3F] px-4 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors cursor-pointer"
+          <Link
+            href="/"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
           >
-            Show All Tools
-          </button>
+            Back to Directory
+          </Link>
         </div>
       )}
     </div>

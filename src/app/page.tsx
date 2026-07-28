@@ -320,7 +320,6 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState<string>("All");
   const [categorySearchQuery, setCategorySearchQuery] = useState<string>("");
-  const [categorySortBy, setCategorySortBy] = useState<"name" | "most_tools" | "recent">("name");
 
   useEffect(() => {
     const handleResize = () => {
@@ -1096,55 +1095,32 @@ export default function Home() {
             </p>
           </div>
           
-          {/* Category Quick Filter & Sort Toolbar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto font-mono text-xs">
-            <div className="flex items-center gap-2 font-mono text-xs">
-              <label htmlFor="index-category-sort-select" className="text-[#8FBF3F] font-bold shrink-0">
-                &gt; sort_by:
-              </label>
-              <div className="relative shrink-0">
-                <select
-                  id="index-category-sort-select"
-                  value={categorySortBy}
-                  onChange={(e) => setCategorySortBy(e.target.value as "name" | "most_tools" | "recent")}
-                  className="appearance-none bg-[#131615] text-slate-300 border border-[#212623] hover:border-[#8FBF3F]/40 focus:border-[#8FBF3F] rounded-lg px-3 py-2 pr-8 text-xs font-mono font-medium outline-none cursor-pointer transition-colors"
-                >
-                  <option value="name">A-Z</option>
-                  <option value="most_tools">Most Tools First</option>
-                  <option value="recent">Recently Added</option>
-                </select>
-                <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">
-                  ▾
-                </div>
-              </div>
+          {/* Category Quick Filter */}
+          <div className="relative w-full md:max-w-xs">
+            <input
+              type="text"
+              aria-label="Search categories"
+              placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}
+              value={categorySearchQuery}
+              onChange={(e) => {
+                setCategorySearchQuery(e.target.value);
+                setSelectedLetter("All"); // Reset letter filter when searching
+              }}
+              className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] pl-10 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all font-sans"
+            />
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
-
-            <div className="relative w-full sm:w-64">
-              <input
-                type="text"
-                aria-label="Search categories"
-                placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}
-                value={categorySearchQuery}
-                onChange={(e) => {
-                  setCategorySearchQuery(e.target.value);
-                  setSelectedLetter("All"); // Reset letter filter when searching
-                }}
-                className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] pl-10 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all font-sans"
-              />
-              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              {categorySearchQuery && (
-                <button
-                  onClick={() => setCategorySearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+            {categorySearchQuery && (
+              <button
+                onClick={() => setCategorySearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
@@ -1247,22 +1223,10 @@ export default function Home() {
               const groupCategories = filteredCategories.filter(cat => getCategoryGroup(cat).id === group.id);
               if (groupCategories.length === 0) return null;
               
-              // Sort categories based on active categorySortBy filter
+              // Sort categories so populated ones come first, empty ones go to bottom
               const sortedGroupCategories = [...groupCategories].sort((a, b) => {
                 const countA = toolCounts[a.id] || 0;
                 const countB = toolCounts[b.id] || 0;
-
-                if (categorySortBy === "most_tools") {
-                  if (countB !== countA) return countB - countA;
-                  return a.name.localeCompare(b.name);
-                }
-
-                if (categorySortBy === "recent") {
-                  // For categories, recently added sorts by ID order / reverse index
-                  return b.id.localeCompare(a.id);
-                }
-
-                // Default A-Z sort (populated ones first)
                 if (countA > 0 && countB === 0) return -1;
                 if (countA === 0 && countB > 0) return 1;
                 return a.name.localeCompare(b.name);

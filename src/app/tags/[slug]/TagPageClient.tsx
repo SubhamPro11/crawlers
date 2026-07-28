@@ -16,9 +16,6 @@ export default function TagPageClient({ slug }: { slug: string }) {
   const sortedAndFilteredTools = useMemo(() => {
     const filtered = tools.filter(tool => {
       if (activeFilter === "all") return true;
-      if (activeFilter === "premium" || activeFilter === "paid") {
-        return tool.pricing_model === "paid";
-      }
       return tool.pricing_model === activeFilter;
     });
 
@@ -73,7 +70,7 @@ export default function TagPageClient({ slug }: { slug: string }) {
     { label: "All", value: "all" },
     { label: "Free", value: "free" },
     { label: "Freemium", value: "freemium" },
-    { label: "Premium", value: "premium" }
+    { label: "Paid", value: "paid" }
   ];
 
   return (
@@ -119,15 +116,15 @@ export default function TagPageClient({ slug }: { slug: string }) {
       {/* Filters Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8 font-sans">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-wrap gap-2 font-mono">
+          <div className="flex flex-wrap gap-2">
             {pricingFilters.map((filter) => (
               <button
                 key={filter.value}
                 onClick={() => setActiveFilter(filter.value)}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-mono font-semibold transition-colors duration-100 cursor-pointer ${
+                className={`rounded-full px-4 py-2.5 text-xs font-bold transition-colors duration-[100ms] font-sans cursor-pointer ${
                   activeFilter === filter.value
-                    ? "bg-[#8FBF3F] text-slate-950 border border-[#8FBF3F]"
-                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/40"
+                    ? "bg-[#8FBF3F] text-slate-950 active:bg-[#7ba235]"
+                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/30 active:bg-[#0c0d0c] active:border-[#8FBF3F]/50"
                 }`}
               >
                 {filter.label}
@@ -136,24 +133,21 @@ export default function TagPageClient({ slug }: { slug: string }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs">
-          <label htmlFor="tag-sort-select" className="text-[#8FBF3F] font-bold">
-            &gt; sort_by:
-          </label>
-          <div className="relative">
-            <select
-              id="tag-sort-select"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "name" | "recent")}
-              className="appearance-none bg-[#131615] text-slate-300 border border-[#212623] hover:border-[#8FBF3F]/40 focus:border-[#8FBF3F] rounded-lg px-3 py-1.5 pr-8 text-xs font-mono font-medium outline-none cursor-pointer transition-colors"
-            >
-              <option value="recent">Recently Added</option>
-              <option value="name">A-Z</option>
-            </select>
-            <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">
-              ▾
-            </div>
-          </div>
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 font-mono">
+          <span>SORT BY:</span>
+          <button
+            onClick={() => setSortBy("name")}
+            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "name" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+          >
+            A-Z
+          </button>
+          <span>|</span>
+          <button
+            onClick={() => setSortBy("recent")}
+            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "recent" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+          >
+            NEWEST
+          </button>
         </div>
       </div>
 
