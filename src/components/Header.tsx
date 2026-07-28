@@ -38,42 +38,17 @@ export default function Header() {
       
       // Dispatch toast notifications on state changes
       if (event === "SIGNED_IN" && session) {
-        const wasInactivityLogout = typeof window !== "undefined" && localStorage.getItem("crawlers_inactivity_logout") === "true";
-        if (wasInactivityLogout) {
-          localStorage.removeItem("crawlers_inactivity_logout");
-          window.dispatchEvent(
-            new CustomEvent("toast", {
-              detail: {
-                message: "You were signed out after 3 hours of inactivity, for your security.",
-                type: "warning"
-              }
-            })
-          );
-        } else {
-          window.dispatchEvent(
-            new CustomEvent("toast", {
-              detail: { message: `Logged in as ${session.user.email}`, type: "success" }
-            })
-          );
-        }
+        window.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: { message: `Logged in as ${session.user.email}`, type: "success" }
+          })
+        );
       } else if (event === "SIGNED_OUT") {
-        const wasInactivityLogout = typeof window !== "undefined" && localStorage.getItem("crawlers_inactivity_logout") === "true";
-        if (wasInactivityLogout) {
-          window.dispatchEvent(
-            new CustomEvent("toast", {
-              detail: {
-                message: "You were signed out after 3 hours of inactivity, for your security.",
-                type: "warning"
-              }
-            })
-          );
-        } else {
-          window.dispatchEvent(
-            new CustomEvent("toast", {
-              detail: { message: "Signed out successfully", type: "info" }
-            })
-          );
-        }
+        window.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: { message: "Signed out successfully", type: "info" }
+          })
+        );
       }
     });
 
