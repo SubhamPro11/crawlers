@@ -64,10 +64,6 @@ export default function Footer() {
               Submit Entry
             </Link>
             <span className="text-[#212623]">|</span>
-            <Link href="/api" className="hover:text-[#8FBF3F] transition-colors">
-              API
-            </Link>
-            <span className="text-[#212623]">|</span>
             <span className="text-[#8A8F87]/60 font-normal">Link-out Only</span>
           </div>
         </div>
