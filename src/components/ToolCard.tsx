@@ -9,16 +9,14 @@ export function cleanDescription(desc: string): string {
   let clean = desc.trim();
   
   // Pattern matches common trailing conjunctions/prepositions
-  const danglingPattern = /\s+(and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet)[.,\s]*([.]{3}|…)?$/i;
-  clean = clean.replace(danglingPattern, (match, word, dots) => {
-    return dots ? ` ${dots}` : "";
-  });
+  const danglingPattern = /\s+(&|and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet)[.,\s]*([.]{3}|…)?$/i;
+  while (danglingPattern.test(clean)) {
+    clean = clean.replace(danglingPattern, (_match, _word, dots) => (dots ? ` ${dots}` : ""));
+  }
   
-  // Clean up trailing commas, colons, or semicolons before ellipsis
-  clean = clean.replace(/[,;:]\s*([.]{3}|…)$/, "$1");
-  
-  // Clean up trailing commas or punctuation at the very end
-  clean = clean.replace(/[,;:]+$/, "");
+  // Clean up trailing commas, colons, hyphens, or semicolons before ellipsis or end
+  clean = clean.replace(/[,;:&\-\s]+\s*([.]{3}|…)$/, "$1");
+  clean = clean.replace(/[,;:&\-\s]+$/, "");
   
   return clean;
 }

@@ -237,7 +237,7 @@ export default function CommandPalette() {
             ref={inputRef}
             type="text"
             aria-label="Search command palette"
-            placeholder="Search categories, tools, tags..."
+            placeholder={`Search ${categories.length > 0 ? categories.length : 170} categories, tools, tags...`}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);

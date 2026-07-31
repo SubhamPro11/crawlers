@@ -319,6 +319,10 @@ export default function Header() {
                       src={user.user_metadata.avatar_url || user.user_metadata.picture} 
                       alt="Profile" 
                       referrerPolicy="no-referrer"
+                      width={32}
+                      height={32}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -451,6 +455,10 @@ export default function Header() {
                       src={user.user_metadata.avatar_url || user.user_metadata.picture} 
                       alt="Profile" 
                       referrerPolicy="no-referrer"
+                      width={20}
+                      height={20}
+                      loading="lazy"
+                      decoding="async"
                       className="h-5 w-5 rounded-full object-cover border border-[#8FBF3F]/30"
                     />
                   ) : (
