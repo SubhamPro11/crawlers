@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" width="100%" height="240" fill="none">
+  <rect width="1200" height="240" rx="12" fill="#090D10" stroke="#21262D" stroke-width="2"/>
+  
+  <!-- Window Top Bar -->
+  <rect width="1200" height="40" rx="12" fill="#0D1117"/>
+  <path d="M0 28h1200v12H0z" fill="#0D1117"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#21262D" stroke-width="1"/>
+  
+  <!-- Control Buttons -->
+  <circle cx="24" cy="20" r="6" fill="#FF5F56"/>
+  <circle cx="44" cy="20" r="6" fill="#FFBD2E"/>
+  <circle cx="64" cy="20" r="6" fill="#27C93F"/>
+  <text x="90" y="24" fill="#8B949E" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13">crawlers ~ bash -- 1200x240</text>
+  
+  <!-- Terminal Content -->
+  <text x="40" y="90" fill="#A6E22E" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="28" font-weight="700">&gt; crawlers //<tspan fill="#A6E22E"> ▍</tspan></text>
+  
+  <text x="40" y="132" fill="#C9D1D9" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18">An AI tools and bots directory organized strictly by <tspan fill="#A6E22E" font-weight="600">use case</tspan>, not brand hype.</text>
+  
+  <text x="40" y="180" fill="#8B949E" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14">$ index --stats</text>
+  <text x="180" y="180" fill="#A6E22E" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14">[989 tools // 170 categories // 8 top-level sections]</text>
+  
+  <!-- Status Badge on Right -->
+  <rect x="1000" y="70" width="160" height="32" rx="6" fill="#161B22" stroke="#21262D"/>
+  <circle cx="1020" cy="86" r="4" fill="#A6E22E"/>
+  <text x="1034" y="91" fill="#A6E22E" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" font-weight="700">STATUS: ONLINE</text>
+</svg>
