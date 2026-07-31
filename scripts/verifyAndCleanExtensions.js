@@ -10,11 +10,11 @@ const envPath = path.join(__dirname, '../.env.local');
 let envContent = '';
 try {
   envContent = fs.readFileSync(envPath, 'utf8');
-} catch (err) {
+} catch {
   console.error("Could not read .env.local file, trying .env...");
   try {
     envContent = fs.readFileSync(path.join(__dirname, '../.env'), 'utf8');
-  } catch (e) {
+  } catch {
     console.error("Could not read .env file either. Exiting.");
     process.exit(1);
   }
@@ -77,7 +77,7 @@ async function checkUrlHealth(url) {
         signal: controller.signal,
         headers
       });
-    } catch (e) {
+    } catch {
       // Retry with GET
       const getController = new AbortController();
       const getTimeoutId = setTimeout(() => getController.abort(), 8000);
@@ -143,7 +143,7 @@ async function run() {
     console.log("\nDeleting broken/dead extensions from database...");
     const deadIds = deadTools.map(t => t.id);
 
-    const { error: deleteError, count } = await supabase
+    const { error: deleteError } = await supabase
       .from('tools')
       .delete()
       .in('id', deadIds);

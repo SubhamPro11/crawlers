@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
@@ -62,15 +62,7 @@ export default function AdminPage() {
     };
   }, []);
 
-  // Fetch pending review tools and stats when authenticated
-  useEffect(() => {
-    if (user && user.email === ADMIN_EMAIL) {
-      loadPendingTools();
-      loadStats();
-    }
-  }, [user]);
-
-  const loadPendingTools = async () => {
+  const loadPendingTools = useCallback(async () => {
     if (!user || user.email !== ADMIN_EMAIL) {
       console.error("Unauthorized access to pending tools");
       return;
@@ -79,9 +71,9 @@ export default function AdminPage() {
     const pending = await mockDb.getPendingTools();
     setPendingTools(pending);
     setLoadingPending(false);
-  };
+  }, [user]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!user || user.email !== ADMIN_EMAIL) {
       console.error("Unauthorized access to database statistics");
       return;
@@ -114,7 +106,15 @@ export default function AdminPage() {
     } finally {
       setLoadingStats(false);
     }
-  };
+  }, [user]);
+
+  // Fetch pending review tools and stats when authenticated
+  useEffect(() => {
+    if (user && user.email === ADMIN_EMAIL) {
+      loadPendingTools();
+      loadStats();
+    }
+  }, [user, loadPendingTools, loadStats]);
 
   const handleSignIn = async () => {
     try {

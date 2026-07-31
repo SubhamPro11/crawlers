@@ -10,11 +10,11 @@ const envPath = path.join(__dirname, '../.env.local');
 let envContent = '';
 try {
   envContent = fs.readFileSync(envPath, 'utf8');
-} catch (err) {
+} catch {
   console.error("Could not read .env.local file, trying .env...");
   try {
     envContent = fs.readFileSync(path.join(__dirname, '../.env'), 'utf8');
-  } catch (e) {
+  } catch {
     console.error("Could not read .env file either. Exiting.");
     process.exit(1);
   }
@@ -75,7 +75,7 @@ async function checkUrlHealth(url) {
         signal: controller.signal,
         headers
       });
-    } catch (e) {
+    } catch {
       // Retry HEAD if GET failed due to body size/stream issue
       const headController = new AbortController();
       const headTimeoutId = setTimeout(() => headController.abort(), 8000);
@@ -105,7 +105,7 @@ async function checkUrlHealth(url) {
         if (altRes.ok || altRes.status < 400) {
           return { ok: true, status: altRes.status };
         }
-      } catch (err) {}
+      } catch {}
       return { ok: false, status: res.status, reason: `HTTP ${res.status}` };
     } else {
       return { ok: false, status: res.status, reason: `HTTP ${res.status}` };
@@ -123,7 +123,7 @@ async function run() {
   // Fetch tools from AI Extensions category AND tools tagged or named extension
   let allToolsMap = new Map();
 
-  const { data: catTools, error: catErr } = await supabase
+  const { data: catTools } = await supabase
     .from('tools')
     .select('id, name, url, category_id, pricing_model')
     .eq('category_id', CATEGORY_ID);
@@ -132,7 +132,7 @@ async function run() {
     catTools.forEach(t => allToolsMap.set(t.id, t));
   }
 
-  const { data: taggedTools, error: tagErr } = await supabase
+  const { data: taggedTools } = await supabase
     .from('tools')
     .select('id, name, url, category_id, pricing_model')
     .or('url.ilike.%chromewebstore%,url.ilike.%chrome.google.com%,tags.cs.{"extension"}');

@@ -131,7 +131,7 @@ function CategoryGroupSection({
               <div key={subGroup.name} className="space-y-4">
                 <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                   <span>&gt;</span>
-                  <span>{subGroup.name.toLowerCase().replace(/ & /g, "_and_").replace(/, /g, "_").replace(/ /g, "_")} // {subGroupCats.length} categories</span>
+                  <span>{subGroup.name.toLowerCase().replace(/ & /g, "_and_").replace(/, /g, "_").replace(/ /g, "_")} {"// "} {subGroupCats.length} categories</span>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {subGroupCats.map((cat) => {
@@ -243,16 +243,18 @@ export default function Home() {
   const textPart3 = " by use case";
   const totalLength = textPart1.length + textPart2.length + textPart3.length;
   
-  const [visibleChars, setVisibleChars] = useState(totalLength);
-  const [isTypingComplete, setIsTypingComplete] = useState(true);
+  const [visibleChars] = useState(totalLength);
+  const [isTypingComplete] = useState(true);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setPrefersReducedMotion(prefersReduced);
-    setVisibleChars(totalLength);
-    setIsTypingComplete(true);
-  }, [totalLength]);
+    if (typeof window !== "undefined") {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReduced) {
+        setPrefersReducedMotion(true);
+      }
+    }
+  }, []);
 
   const renderTypedHeading = () => {
     if (isTypingComplete) {

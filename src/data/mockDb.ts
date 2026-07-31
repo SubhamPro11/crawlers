@@ -727,8 +727,9 @@ class MockDb {
         return { targetTool: null, categoryName: "", alternatives: [], totalCategoryCount: 0 };
       }
 
+      const catId = _catIdHint || targetTool.category_id;
       const categoryTools = allTools.filter(
-        (t) => t.category_id === targetTool.category_id && t.status === "active"
+        (t) => t.category_id === catId && t.status === "active"
       );
       const categoryName = targetTool.categories?.name || "AI Tools";
       const alternatives = categoryTools.filter((t) => t.id !== targetTool.id);

@@ -21,8 +21,22 @@ export default function ChangelogClient() {
   }, []);
 
   useEffect(() => {
-    fetchChangelogData();
-  }, [fetchChangelogData]);
+    let ignore = false;
+    async function load() {
+      const allTools = await mockDb.getTools();
+      if (!ignore) {
+        const sorted = [...allTools].sort(
+          (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+        );
+        setTools(sorted);
+        setIsLoading(false);
+      }
+    }
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const groupedChangelog = useMemo(() => {
     const groups: Record<string, Tool[]> = {};
@@ -34,7 +48,7 @@ export default function ChangelogClient() {
         : dateObj.toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
-            year: "numeric"
+            year: "numeric",
           });
 
       if (!groups[dateLabel]) {
@@ -43,30 +57,27 @@ export default function ChangelogClient() {
       groups[dateLabel].push(tool);
     });
 
-    return Object.entries(groups).map(([dateLabel, tools]) => ({
+    return Object.entries(groups).map(([dateLabel, groupTools]) => ({
       dateLabel,
-      tools
+      tools: groupTools,
     }));
   }, [tools]);
 
   if (isLoading) {
-    return <TerminalLoader message="querying_changelog_history" />;
+    return <TerminalLoader message="querying_changelog_index" />;
   }
 
   return (
     <div className="flex-1 mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
-        <Link href="/" className="hover:text-white transition-colors">Home</Link>
-        <span>/</span>
-        <span className="text-[#8FBF3F] font-mono">Changelog</span>
-      </nav>
-
-      {/* Header Info */}
-      <div className="border-b border-slate-800/80 pb-8 mb-8 font-sans">
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#8FBF3F] mb-2 font-mono">
-          &gt; changelog // index_updates
-        </span>
+      {/* Page Header */}
+      <div className="mb-10 pb-6 border-b border-[#212623]">
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-500 mb-2">
+          <Link href="/" className="hover:text-slate-300 transition-colors">
+            crawlers //
+          </Link>
+          <span>/</span>
+          <span className="text-[#8FBF3F]">changelog</span>
+        </div>
         <h1 className="font-serif text-3xl font-medium tracking-tight text-white sm:text-4xl">
           Directory Changelog
         </h1>
@@ -85,7 +96,7 @@ export default function ChangelogClient() {
                 &gt; {group.dateLabel}
               </h2>
               <span className="font-mono text-xs text-slate-500">
-                // {group.tools.length} tool{group.tools.length !== 1 ? "s" : ""} indexed
+                {"// "}{group.tools.length} tool{group.tools.length !== 1 ? "s" : ""} indexed
               </span>
             </div>
 

@@ -9,15 +9,20 @@ export default function CollectionsIndexClient() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const fetchCollections = useCallback(async () => {
-    const data = await mockDb.getCollections();
-    setCollections(data);
-    setIsLoading(false);
-  }, []);
-
   useEffect(() => {
-    fetchCollections();
-  }, [fetchCollections]);
+    let ignore = false;
+    async function fetchData() {
+      const data = await mockDb.getCollections();
+      if (!ignore) {
+        setCollections(data);
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   if (isLoading) {
     return <TerminalLoader message="loading_curated_collections" />;

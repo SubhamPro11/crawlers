@@ -4,6 +4,8 @@
 
 Live Site: [crawlers.dpdns.org](https://crawlers.dpdns.org)
 
+![Crawlers AI Tools Directory Preview](./public/crawlers-preview.png)
+
 ---
 
 ## Overview
@@ -21,6 +23,7 @@ Live Site: [crawlers.dpdns.org](https://crawlers.dpdns.org)
 9. **Education & Lifestyle**
 
 ### Brand & Design Philosophy
+
 - **Terminal & Monospace Aesthetics**: Dark-mode primary, monospace accents (`> crawlers //`, `run_bot`, `[tags]`). Intentionally distinct from generic purple-gradient AI directory templates.
 - **Scannable & Structured**: High visual hierarchy, icon differentiation, and category grouping.
 - **Ethical Indexing**: Checks `robots.txt`, paraphrases tool copy, and links directly out to official sources without iframe wrappers.
@@ -60,11 +63,13 @@ crawlers/
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (v20+)
 - npm / pnpm
 - Supabase Project Credentials
 
 ### Environment Setup
+
 Create a `.env.local` file in the root directory:
 
 ```env
