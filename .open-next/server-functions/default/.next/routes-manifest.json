@@ -54,12 +54,28 @@
   },
   "dynamicRoutes": [
     {
+      "page": "/alternatives/[slug]",
+      "regex": "^/alternatives/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/alternatives/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/category/[slug]",
       "regex": "^/category/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPslug": "nxtPslug"
       },
       "namedRegex": "^/category/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/collections/[slug]",
+      "regex": "^/collections/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/collections/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
       "page": "/tags/[slug]",
@@ -132,6 +148,18 @@
       "regex": "^/category(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/category(?:/)?$"
+    },
+    {
+      "page": "/changelog",
+      "regex": "^/changelog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/changelog(?:/)?$"
+    },
+    {
+      "page": "/collections",
+      "regex": "^/collections(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/collections(?:/)?$"
     },
     {
       "page": "/compare",

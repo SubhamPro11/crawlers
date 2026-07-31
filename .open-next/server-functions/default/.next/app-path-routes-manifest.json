@@ -12,11 +12,15 @@
   "/page": "/",
   "/search/page": "/search",
   "/submit/page": "/submit",
-  "/compare/page": "/compare",
   "/category/page": "/category",
-  "/tags/page": "/tags",
-  "/tags/[slug]/page": "/tags/[slug]",
-  "/tool/[id]/page": "/tool/[id]",
+  "/api/page": "/api",
+  "/changelog/page": "/changelog",
+  "/collections/page": "/collections",
+  "/alternatives/[slug]/page": "/alternatives/[slug]",
+  "/collections/[slug]/page": "/collections/[slug]",
   "/category/[slug]/page": "/category/[slug]",
-  "/api/page": "/api"
+  "/compare/page": "/compare",
+  "/tags/[slug]/page": "/tags/[slug]",
+  "/tags/page": "/tags",
+  "/tool/[id]/page": "/tool/[id]"
 }
