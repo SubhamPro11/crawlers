@@ -8,8 +8,8 @@ export function cleanDescription(desc: string): string {
   if (!desc) return "";
   let clean = desc.trim();
   
-  // Pattern matches common trailing conjunctions/prepositions
-  const danglingPattern = /\s+(&|and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet)[.,\s]*([.]{3}|…)?$/i;
+  // Pattern matches common trailing conjunctions, prepositions, and transition phrases
+  const danglingPattern = /\s+(&|and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet|including|such as|allows you to|designed for|used to|which|that)[.,\s]*([.]{3}|…)?$/i;
   while (danglingPattern.test(clean)) {
     clean = clean.replace(danglingPattern, (_match, _word, dots) => (dots ? ` ${dots}` : ""));
   }

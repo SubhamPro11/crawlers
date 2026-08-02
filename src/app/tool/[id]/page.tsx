@@ -68,13 +68,15 @@ export default async function ToolDetailPage({
     const tool = id ? await mockDb.getActiveToolById(id) : undefined;
 
     if (tool) {
-      // Schema.org SoftwareApplication JSON-LD Structured Data
-      jsonLd = {
+      const categoryName = tool.categories?.name || "AI Tools";
+      const categorySlug = tool.categories?.slug || "";
+
+      const appSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": tool.name,
         "description": tool.short_description,
-        "applicationCategory": tool.categories?.name || "MultimediaApplication",
+        "applicationCategory": categoryName,
         "operatingSystem": "All",
         "offers": {
           "@type": "Offer",
@@ -83,6 +85,33 @@ export default async function ToolDetailPage({
           "category": tool.pricing_model,
         },
       };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://crawlers.dpdns.org"
+          },
+          ...(categorySlug ? [{
+            "@type": "ListItem",
+            "position": 2,
+            "name": categoryName,
+            "item": `https://crawlers.dpdns.org/category/${categorySlug}`
+          }] : []),
+          {
+            "@type": "ListItem",
+            "position": categorySlug ? 3 : 2,
+            "name": tool.name,
+            "item": `https://crawlers.dpdns.org/tool/${id}`
+          }
+        ]
+      };
+
+      jsonLd = [appSchema, breadcrumbSchema];
     }
   } catch (err) {
     console.error("Error in ToolDetailPage server component:", err);

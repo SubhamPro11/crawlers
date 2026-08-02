@@ -48,6 +48,16 @@ const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
       slugs: ["crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "events", "nonprofit", "finance", "fintech"]
     }
   ],
+  "science-industry": [
+    {
+      name: "Health, Medicine & BioTech",
+      slugs: ["healthcare", "telemedicine", "medical-imaging", "drug-discovery", "biotech", "legal-assistants", "patent-tools"]
+    },
+    {
+      name: "Industry, Energy & Earth Systems",
+      slugs: ["farming", "construction", "manufacturing", "real-estate", "home-design", "insurance", "government", "cleantech", "energy", "climate", "weather", "space-tech", "fleet-management", "supply-chain", "geospatial"]
+    }
+  ],
   "science-health-industry": [
     {
       name: "Health, Medicine & BioTech",
@@ -56,6 +66,46 @@ const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
     {
       name: "Industry, Energy & Earth Systems",
       slugs: ["farming", "construction", "manufacturing", "real-estate", "home-design", "insurance", "government", "cleantech", "energy", "climate", "weather", "space-tech", "fleet-management", "supply-chain", "geospatial"]
+    }
+  ],
+  "dev-tech": [
+    {
+      name: "Coding & Frameworks",
+      slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "prompt-tools", "api-tools"]
+    },
+    {
+      name: "App & Web Builders",
+      slugs: ["no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot", "ai-extensions", "extensions-chatgpt"]
+    }
+  ],
+  "data-security": [
+    {
+      name: "Data & Observability",
+      slugs: ["database-tools", "observability", "synthetic-data", "data-labeling", "data", "models", "leaderboards-benchmarks"]
+    },
+    {
+      name: "Security & Privacy",
+      slugs: ["cybersecurity", "privacy", "identity", "computer-vision", "content-moderation"]
+    }
+  ],
+  "marketing-sales": [
+    {
+      name: "Marketing & Growth",
+      slugs: ["marketing", "seo", "social-media-tools", "ad-generator", "market-research"]
+    },
+    {
+      name: "Sales & Commerce",
+      slugs: ["sales-tools", "lead-generation", "e-commerce"]
+    }
+  ],
+  "search-agents": [
+    {
+      name: "Search & Discovery",
+      slugs: ["search-research", "search-engines", "local-search-engines", "ai-directories", "research-tools"]
+    },
+    {
+      name: "Chatbots & AI Agents",
+      slugs: ["chatbot-builders", "chatbots", "ai-agents", "personal-assistants", "ai-companion", "customer-support", "general-reasoning", "sentiment-analysis"]
     }
   ]
 };
@@ -772,7 +822,21 @@ export default function Home() {
     const s = (slug || "").toLowerCase();
     const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
 
-    const IconComponent = CATEGORY_ICON_MAP[s] || HelpCircle;
+    let IconComponent = CATEGORY_ICON_MAP[s];
+
+    if (!IconComponent) {
+      if (s.includes("code") || s.includes("dev") || s.includes("script") || s.includes("program")) IconComponent = Code;
+      else if (s.includes("search") || s.includes("find") || s.includes("query")) IconComponent = Search;
+      else if (s.includes("chat") || s.includes("agent") || s.includes("bot")) IconComponent = Bot;
+      else if (s.includes("write") || s.includes("text") || s.includes("doc") || s.includes("note")) IconComponent = FileText;
+      else if (s.includes("image") || s.includes("photo") || s.includes("art") || s.includes("draw")) IconComponent = ImageIcon;
+      else if (s.includes("audio") || s.includes("voice") || s.includes("sound") || s.includes("music")) IconComponent = AudioLines;
+      else if (s.includes("data") || s.includes("db") || s.includes("analytic")) IconComponent = Database;
+      else if (s.includes("security") || s.includes("shield") || s.includes("lock") || s.includes("privat")) IconComponent = Lock;
+      else if (s.includes("market") || s.includes("sale") || s.includes("ad") || s.includes("lead")) IconComponent = Megaphone;
+      else IconComponent = Sparkles;
+    }
+
     return <IconComponent className={baseClass} strokeWidth={2} />;
   };
 

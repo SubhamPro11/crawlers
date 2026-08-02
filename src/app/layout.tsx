@@ -71,7 +71,15 @@ export default function RootLayout({
     "@type": "WebSite",
     "name": "Crawlers",
     "alternateName": "Crawlers AI Tools Directory",
-    "url": "https://crawlers.dpdns.org"
+    "url": "https://crawlers.dpdns.org",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://crawlers.dpdns.org/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
   };
 
   const orgJsonLd = {

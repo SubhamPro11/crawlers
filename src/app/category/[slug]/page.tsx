@@ -70,7 +70,7 @@ export default async function CategoryPage({
 
     if (category) {
       const tools = await mockDb.getToolsByCategory(category.id);
-      jsonLd = {
+      const collectionSchema = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "name": category.name,
@@ -87,6 +87,33 @@ export default async function CategoryPage({
           }))
         }
       };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://crawlers.dpdns.org"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Categories",
+            "item": "https://crawlers.dpdns.org/category"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": category.name,
+            "item": `https://crawlers.dpdns.org/category/${slug}`
+          }
+        ]
+      };
+
+      jsonLd = [collectionSchema, breadcrumbSchema];
     }
   } catch (err) {
     console.error("Error in CategoryPage server component:", err);
