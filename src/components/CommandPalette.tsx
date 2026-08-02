@@ -214,20 +214,24 @@ export default function CommandPalette() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-start justify-center pt-24 px-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-start justify-center pt-20 px-4">
       <div 
         ref={modalRef}
-        className="w-full max-w-lg rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#161917]/90 backdrop-blur-2xl shadow-2xl shadow-black/90 font-mono"
       >
-        {/* Terminal Header Info */}
-        <div className="flex items-center justify-between border-b border-[#212623]/80 bg-[#131615] px-4 py-2 text-[10px] text-[#8A8F87]">
-          <div className="flex items-center gap-1.5 font-mono">
-            <span className="h-2 w-2 rounded-full bg-red-500/80" />
-            <span className="h-2 w-2 rounded-full bg-yellow-500/80" />
-            <span className="h-2 w-2 rounded-full bg-green-500/80" />
-            <span className="ml-2">crawlers_shell.sh</span>
+        {/* macOS Window Header Chrome */}
+        <div className="flex items-center justify-between border-b border-white/10 bg-[#1A1E1C]/90 px-4 py-2.5 text-[10px] text-slate-400 select-none">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="h-3 w-3 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity"
+              aria-label="Close modal"
+            />
+            <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+            <span className="h-3 w-3 rounded-full bg-[#27C93F]" />
+            <span className="ml-2 font-mono text-[11px] text-slate-400">crawlers_shell.sh</span>
           </div>
-          <div className="font-mono">ESC to close</div>
+          <div className="font-mono text-slate-500">ESC to close</div>
         </div>
 
         {/* Input prompt */}

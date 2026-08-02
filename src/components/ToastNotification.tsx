@@ -32,25 +32,41 @@ export default function ToastNotification() {
   }, []);
 
   return (
-    <div className="fixed bottom-20 sm:bottom-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0">
+    <div className="fixed bottom-20 sm:bottom-6 right-5 z-[9999] flex flex-col gap-3 pointer-events-none max-w-xs sm:max-w-sm w-full px-4 sm:px-0">
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`flex items-center justify-between rounded-lg border px-4 py-3 text-xs font-mono shadow-xl transition-all duration-300 pointer-events-auto bg-[#0E100F] ${
-            toast.type === "success"
-              ? "border-[#8FBF3F]/30 text-[#8FBF3F] shadow-[#8FBF3F]/5"
-              : toast.type === "error"
-              ? "border-red-500/30 text-red-400 shadow-red-500/5"
-              : "border-slate-800 text-slate-300 shadow-black/40"
-          }`}
+          className="pointer-events-auto overflow-hidden rounded-xl border border-white/10 bg-[#161917]/90 backdrop-blur-2xl shadow-2xl shadow-black/80 transition-all duration-300 font-sans"
         >
-          <span>{toast.message}</span>
-          <button
-            onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-            className="ml-3 hover:text-white transition-colors"
-          >
-            ✕
-          </button>
+          {/* macOS Banner Window Header */}
+          <div className="flex items-center justify-between border-b border-white/10 bg-[#1A1E1C]/80 px-3 py-1.5 select-none">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+                className="h-2.5 w-2.5 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity"
+                aria-label="Dismiss toast"
+              />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
+              <span className="ml-1.5 font-mono text-[9px] text-slate-400">crawlers // notice</span>
+            </div>
+            <span className="font-mono text-[9px] text-slate-500">now</span>
+          </div>
+
+          {/* Toast Message Body */}
+          <div className="flex items-center justify-between px-3.5 py-2.5">
+            <span
+              className={`text-xs font-medium leading-normal ${
+                toast.type === "success"
+                  ? "text-[#8FBF3F]"
+                  : toast.type === "error"
+                  ? "text-red-400"
+                  : "text-slate-200"
+              }`}
+            >
+              {toast.message}
+            </span>
+          </div>
         </div>
       ))}
     </div>

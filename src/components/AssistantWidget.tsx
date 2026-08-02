@@ -39,14 +39,23 @@ export default function AssistantWidget() {
 
       {/* Suggestion Panel */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-72 rounded-xl border border-[#212623] bg-[#0E100F] p-4 shadow-2xl animate-fade-in">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#212623]/80 pb-2 mb-3 text-[10px] text-slate-500">
-            <span className="text-[#8FBF3F]">&gt; run_assistant //</span>
-            <button onClick={() => setIsOpen(false)} className="hover:text-white" aria-label="Close assistant panel">✕</button>
+        <div className="absolute bottom-16 right-0 w-80 overflow-hidden rounded-2xl border border-white/10 bg-[#161917]/90 backdrop-blur-2xl p-4 shadow-2xl shadow-black/80 animate-fade-in font-sans">
+          {/* macOS Window Header */}
+          <div className="flex items-center justify-between border-b border-white/10 bg-[#1A1E1C]/80 -mx-4 -mt-4 px-4 py-2 mb-3 select-none">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="h-3 w-3 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity"
+                aria-label="Close assistant panel"
+              />
+              <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+              <span className="h-3 w-3 rounded-full bg-[#27C93F]" />
+              <span className="ml-2 font-mono text-[10px] text-[#8FBF3F]">&gt; run_assistant //</span>
+            </div>
+            <span className="font-mono text-[10px] text-slate-500">v1.4</span>
           </div>
 
-          <p className="text-xs text-slate-300 leading-relaxed mb-4 font-sans">
+          <p className="text-xs text-slate-300 leading-relaxed mb-4">
             How can I help you find the right AI tool today? Try one of my quick filters below:
           </p>
 
@@ -56,7 +65,7 @@ export default function AssistantWidget() {
               <button
                 key={idx}
                 onClick={() => handleSuggestionClick(sug.query)}
-                className="w-full text-left rounded-lg border border-[#212623] hover:border-[#8FBF3F]/40 bg-[#131615] px-3 py-2 text-[11px] text-slate-350 hover:text-[#8FBF3F] transition-all duration-200"
+                className="w-full text-left rounded-xl border border-white/5 hover:border-[#8FBF3F]/40 bg-white/[0.03] hover:bg-[#8FBF3F]/10 px-3.5 py-2.5 text-xs text-slate-200 hover:text-[#8FBF3F] transition-all duration-150"
               >
                 {sug.text}
               </button>
