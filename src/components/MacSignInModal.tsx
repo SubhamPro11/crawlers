@@ -11,22 +11,36 @@ export default function MacSignInModal() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // 1. Initial user session check
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-    });
-
-    // 2. Auth state subscription
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    // 1. Fetch user session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
+        setUser(session.user);
         setIsOpen(false);
         setIsAnimating(false);
       }
     });
 
-    // 3. Custom event listener
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUser(data.user);
+        setIsOpen(false);
+        setIsAnimating(false);
+      }
+    });
+
+    // 2. Auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const activeUser = session?.user ?? null;
+      setUser(activeUser);
+      if (activeUser) {
+        setIsOpen(false);
+        setIsAnimating(false);
+      }
+    });
+
+    // 3. Custom event trigger (completely disabled if user is logged in)
     const handleOpen = () => {
+      if (user) return;
       setIsOpen(true);
       setTimeout(() => setIsAnimating(true), 10);
     };
@@ -47,19 +61,33 @@ export default function MacSignInModal() {
       window.removeEventListener("open-signin-modal", handleOpen);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, user]);
 
-  // Recurring 10-second interval if user is NOT signed in
+  // Recurring 10-second interval strictly for unauthenticated users
   useEffect(() => {
-    if (user) return; // Do not trigger interval if signed in
+    // If logged in, completely disable and hide modal
+    if (user) {
+      setIsOpen(false);
+      setIsAnimating(false);
+      return;
+    }
 
     const interval = setInterval(() => {
-      setIsOpen((currentlyOpen) => {
-        if (!currentlyOpen) {
-          setTimeout(() => setIsAnimating(true), 10);
-          return true;
+      // Re-verify session before popping up
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          setUser(session.user);
+          setIsOpen(false);
+          return;
         }
-        return currentlyOpen;
+
+        setIsOpen((currentlyOpen) => {
+          if (!currentlyOpen) {
+            setTimeout(() => setIsAnimating(true), 10);
+            return true;
+          }
+          return currentlyOpen;
+        });
       });
     }, 10000);
 
@@ -89,6 +117,7 @@ export default function MacSignInModal() {
     }
   };
 
+  // Strictly return null if user is logged in or modal is closed
   if (!isOpen || user) return null;
 
   return (
