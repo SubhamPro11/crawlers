@@ -85,7 +85,7 @@ export default function CollectionDetailPageClient({ slug }: { slug: string }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 font-mono min-h-[200px]">
+          <div className="flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615] p-5 font-mono min-h-[200px]">
             <div>
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">

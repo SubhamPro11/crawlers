@@ -160,3 +160,10 @@ body {
   backdrop-filter: blur(8px);
   border: 1px solid #212623;
 }
+
+/* Rendering performance optimization utility */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 300px;
+}
+

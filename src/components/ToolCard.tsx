@@ -79,7 +79,7 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
   };
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 transition-colors duration-[120ms] hover:border-[#8FBF3F]/35">
+    <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615] p-5 transition-colors duration-[120ms] hover:border-[#8FBF3F]/35">
       
       {/* Favorite Toggle Button */}
       <button

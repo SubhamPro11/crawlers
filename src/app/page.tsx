@@ -125,42 +125,10 @@ function CategoryGroupSection({
   toolCounts,
   getCategoryIcon
 }: CategoryGroupSectionProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-    const timeout = setTimeout(() => {
-      setIsVisible(false);
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced || isVisible) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsVisible(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.05 });
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-    return () => observer.disconnect();
-  }, [isVisible]);
-
   return (
     <div
-      ref={containerRef}
       id={`group-${group.id}`}
-      className={`scroll-mt-28 transition-opacity duration-500 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className="scroll-mt-28 cv-auto"
     >
       <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
         <div className="flex items-center gap-3">
@@ -295,16 +263,12 @@ export default function Home() {
   
   const [visibleChars] = useState(totalLength);
   const [isTypingComplete] = useState(true);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
+  const [prefersReducedMotion] = useState(() => {
     if (typeof window !== "undefined") {
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (prefersReduced) {
-        setPrefersReducedMotion(true);
-      }
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
-  }, []);
+    return false;
+  });
 
   const renderTypedHeading = () => {
     if (isTypingComplete) {
@@ -402,8 +366,10 @@ export default function Home() {
     const el = scrollContainerRef.current;
     if (el) {
       const { scrollLeft, scrollWidth, clientWidth } = el;
-      setShowLeftFade(scrollLeft > 2);
-      setShowRightFade(scrollLeft < scrollWidth - clientWidth - 2);
+      const nextLeft = scrollLeft > 2;
+      const nextRight = scrollLeft < scrollWidth - clientWidth - 2;
+      setShowLeftFade(prev => prev !== nextLeft ? nextLeft : prev);
+      setShowRightFade(prev => prev !== nextRight ? nextRight : prev);
     }
   }, []);
 
