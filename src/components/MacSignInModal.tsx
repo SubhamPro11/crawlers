@@ -3,13 +3,29 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Sparkles, Bookmark, Cpu, ShieldCheck, ArrowRight, X } from "lucide-react";
+import type { User } from "@supabase/supabase-js";
 
 export default function MacSignInModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Listen for custom trigger event
+    // 1. Initial user session check
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user ?? null);
+    });
+
+    // 2. Auth state subscription
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        setIsOpen(false);
+        setIsAnimating(false);
+      }
+    });
+
+    // 3. Custom event listener
     const handleOpen = () => {
       setIsOpen(true);
       setTimeout(() => setIsAnimating(true), 10);
@@ -17,18 +33,7 @@ export default function MacSignInModal() {
 
     window.addEventListener("open-signin-modal", handleOpen);
 
-    // Auto-prompt after 12 seconds if not previously dismissed in session
-    const timer = setTimeout(() => {
-      const dismissed = sessionStorage.getItem("crawlers_mac_signin_dismissed");
-      const hasToken = document.cookie.includes("sb-") || localStorage.getItem("crawlers_favorites");
-      
-      // Only auto-show if not dismissed this session
-      if (!dismissed && !hasToken) {
-        setIsOpen(true);
-        setTimeout(() => setIsAnimating(true), 10);
-      }
-    }, 12000);
-
+    // 4. Keyboard ESC key listener
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
         handleClose();
@@ -38,17 +43,33 @@ export default function MacSignInModal() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      subscription.unsubscribe();
       window.removeEventListener("open-signin-modal", handleOpen);
       window.removeEventListener("keydown", handleKeyDown);
-      clearTimeout(timer);
     };
   }, [isOpen]);
+
+  // Recurring 10-second interval if user is NOT signed in
+  useEffect(() => {
+    if (user) return; // Do not trigger interval if signed in
+
+    const interval = setInterval(() => {
+      setIsOpen((currentlyOpen) => {
+        if (!currentlyOpen) {
+          setTimeout(() => setIsAnimating(true), 10);
+          return true;
+        }
+        return currentlyOpen;
+      });
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleClose = () => {
     setIsAnimating(false);
     setTimeout(() => {
       setIsOpen(false);
-      sessionStorage.setItem("crawlers_mac_signin_dismissed", "true");
     }, 200);
   };
 
@@ -68,7 +89,7 @@ export default function MacSignInModal() {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || user) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
