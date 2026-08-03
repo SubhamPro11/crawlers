@@ -252,7 +252,7 @@ class MockDb {
 
         const { data, error } = await supabase
           .from("tools")
-          .select("*, categories(name, slug)")
+          .select("id, name, short_description, category_id, url, pricing_model, tags, status, created_at, categories(name, slug)")
           .eq("status", "active")
           .range(from, to);
 
@@ -262,7 +262,7 @@ class MockDb {
         }
 
         if (data && data.length > 0) {
-          allTools = allTools.concat(data as Tool[]);
+          allTools = allTools.concat(data as unknown as Tool[]);
           if (data.length < pageSize) {
             hasMore = false;
           } else {
