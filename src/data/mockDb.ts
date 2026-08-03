@@ -209,7 +209,7 @@ class MockDb {
       try {
         const { data, error } = await supabase
           .from("categories")
-          .select("id, name, slug, description, description_long")
+          .select("id, name, slug, description")
           .order("name", { ascending: true });
 
         if (error) {
