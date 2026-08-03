@@ -359,6 +359,32 @@ export default function Home() {
     });
   }, [categories, selectedLetter, categorySearchQuery]);
 
+  const groupedCategoriesMap = useMemo(() => {
+    const map: Record<string, { groupCategories: Category[]; sortedGroupCategories: Category[] }> = {};
+    
+    filteredCategories.forEach(cat => {
+      const group = getCategoryGroup(cat);
+      if (!map[group.id]) {
+        map[group.id] = { groupCategories: [], sortedGroupCategories: [] };
+      }
+      map[group.id].groupCategories.push(cat);
+    });
+
+    Object.keys(map).forEach(groupId => {
+      const groupCategories = map[groupId].groupCategories;
+      const sorted = [...groupCategories].sort((a, b) => {
+        const countA = toolCounts[a.id] || 0;
+        const countB = toolCounts[b.id] || 0;
+        if (countA > 0 && countB === 0) return -1;
+        if (countA === 0 && countB > 0) return 1;
+        return a.name.localeCompare(b.name);
+      });
+      map[groupId].sortedGroupCategories = sorted;
+    });
+
+    return map;
+  }, [filteredCategories, toolCounts]);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(true);
@@ -1256,24 +1282,15 @@ export default function Home() {
         ) : filteredCategories.length > 0 ? (
           <div className="space-y-12">
             {CATEGORY_GROUPS.map((group) => {
-              const groupCategories = filteredCategories.filter(cat => getCategoryGroup(cat).id === group.id);
-              if (groupCategories.length === 0) return null;
-              
-              // Sort categories so populated ones come first, empty ones go to bottom
-              const sortedGroupCategories = [...groupCategories].sort((a, b) => {
-                const countA = toolCounts[a.id] || 0;
-                const countB = toolCounts[b.id] || 0;
-                if (countA > 0 && countB === 0) return -1;
-                if (countA === 0 && countB > 0) return 1;
-                return a.name.localeCompare(b.name);
-              });
+              const data = groupedCategoriesMap[group.id];
+              if (!data || data.groupCategories.length === 0) return null;
               
               return (
                 <CategoryGroupSection
                   key={group.id}
                   group={group}
-                  groupCategories={groupCategories}
-                  sortedGroupCategories={sortedGroupCategories}
+                  groupCategories={data.groupCategories}
+                  sortedGroupCategories={data.sortedGroupCategories}
                   toolCounts={toolCounts}
                   getCategoryIcon={getCategoryIcon}
                 />
