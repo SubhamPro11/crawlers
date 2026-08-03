@@ -866,10 +866,6 @@ export default function Home() {
                   )}
 
                   {!searchQuery && (
-                    <span className="text-[#8FBF3F] terminal-cursor select-none pointer-events-none mr-2 shrink-0">▍</span>
-                  )}
-
-                  {!searchQuery && (
                     <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-[#212623] bg-[#0D0F0E] px-2 py-0.5 text-[10px] text-slate-400 font-mono select-none mr-3 shrink-0">
                       Ctrl K
                     </kbd>
@@ -880,7 +876,7 @@ export default function Home() {
                   type="submit"
                   className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm transition-colors duration-[100ms] font-mono cursor-pointer"
                 >
-                  run_search
+                  Search
                 </button>
               </div>
 
