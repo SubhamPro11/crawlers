@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/data/mockDb";
+import { CATEGORY_GROUPS } from "@/data/mockDb";
 
 export default function Footer() {
-  const quickCategories = CATEGORIES.slice(0, 5);
-
   return (
     <footer className="border-t border-[#212623] bg-[#0A0C0B] py-10 sm:py-12 text-[#8A8F87]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -19,26 +17,26 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Categories */}
+          {/* Quick Categories / Index Sections */}
           <div>
             <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-3">Index Sections</h3>
-            <ul className="space-y-2 text-xs font-mono">
-              {quickCategories.map((cat) => (
-                <li key={cat.id}>
+            <ul className="space-y-1.5 text-xs font-mono">
+              {CATEGORY_GROUPS.map((group) => (
+                <li key={group.id}>
                   <Link 
-                    href={`/category/${cat.slug}`} 
-                    className="hover:text-[#8FBF3F] transition-colors"
+                    href={`/#group-${group.id}`} 
+                    className="hover:text-[#8FBF3F] transition-colors truncate block"
                   >
-                    /{cat.slug}
+                    /{group.id}
                   </Link>
                 </li>
               ))}
-              <li className="pt-1 flex flex-col gap-1.5 font-sans font-bold text-xs">
-                <Link href="/changelog" className="text-[#8FBF3F] hover:underline font-mono text-xs">
-                  /changelog &rarr;
+              <li className="pt-2 flex flex-col gap-1.5 font-sans font-bold text-xs border-t border-[#212623]/60 mt-2">
+                <Link href="/stacks" className="text-[#8FBF3F] hover:underline font-mono text-xs">
+                  /stacks &rarr;
                 </Link>
                 <Link href="/" className="text-slate-400 hover:text-white transition-colors font-normal">
-                  All Categories &rarr;
+                  All 150+ Categories &rarr;
                 </Link>
               </li>
             </ul>

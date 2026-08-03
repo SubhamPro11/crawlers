@@ -5,6 +5,7 @@ export interface Category {
   name: string;
   slug: string;
   description: string;
+  description_long?: string;
 }
 
 export interface Tool {
@@ -174,7 +175,8 @@ export const CATEGORIES: Category[] = [
     id: "550e8400-e29b-41d4-a716-446655440001",
     name: "Developer Tools",
     slug: "developer-tools",
-    description: "AI-first code editors, browser sandboxes, and UI generation utilities."
+    description: "AI-first code editors, browser sandboxes, and UI generation utilities.",
+    description_long: "<!-- TODO: Cryo editorial category blurb --> Developer tools in this category span AI-native code editors, autonomous terminal agents, and automated test generators. They range from offline local models for high-security environments to cloud-based agentic pairs."
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440002",

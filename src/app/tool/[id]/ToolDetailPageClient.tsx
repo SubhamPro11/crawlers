@@ -5,6 +5,9 @@ import Link from "next/link";
 import { mockDb, Tool, slugify } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import { TerminalLoader } from "@/components/TerminalLoader";
+import AddToCollectionModal from "@/components/AddToCollectionModal";
+import { fetchStacksForTool, Stack } from "@/lib/stacks";
+import { getVerificationStatus } from "@/lib/verification";
 
 export default function ToolDetailPageClient({ id }: { id: string }) {
   const [tool, setTool] = useState<Tool | null>(null);
@@ -12,7 +15,9 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
   const [categorySlug, setCategorySlug] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [similarTools, setSimilarTools] = useState<Tool[]>([]);
+  const [featuredStacks, setFeaturedStacks] = useState<Stack[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
 
   const fetchToolData = useCallback(async () => {
     if (!id) {
@@ -28,6 +33,10 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
       // Load related tools (shared tags first, fallback to same-category)
       const res = await mockDb.getRelatedTools(t.id, t.category_id, t.tags);
       setSimilarTools(res);
+
+      // Load Featured Stacks
+      const stacks = await fetchStacksForTool(t.id);
+      setFeaturedStacks(stacks);
 
       // Log Recently Viewed
       try {
@@ -211,13 +220,35 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
                       >
                         [view alternatives &rarr;]
                       </Link>
+
+                      {featuredStacks.map((s) => (
+                        <Link
+                          key={s.id}
+                          href={`/stacks/${s.slug}`}
+                          className="inline-block text-[11px] font-mono text-[#8FBF3F] bg-[#8FBF3F]/10 border border-[#8FBF3F]/30 px-2 py-0.5 rounded hover:bg-[#8FBF3F]/20 transition-colors"
+                        >
+                          Featured in: {s.title}
+                        </Link>
+                      ))}
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Actions: Bookmark & Visit & Share */}
+              {/* Actions: Bookmark & Visit & Share & Collection */}
               <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsCollectionModalOpen(true)}
+                  className="flex h-12 px-4 items-center justify-center gap-2 rounded-xl border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all text-xs font-mono font-bold"
+                  aria-label="Add to Collection"
+                  title="Add to Personal Collection"
+                >
+                  <svg className="h-4 w-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  <span className="hidden sm:inline">+ collection</span>
+                </button>
+
                 <button
                   onClick={toggleFavorite}
                   className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all"
@@ -359,13 +390,24 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
               )}
             </div>
 
-            {/* Link Status */}
+            {/* Link & Verification Status */}
             <div>
-              <div className="text-[10px] uppercase font-bold text-slate-500 mb-1 font-mono">link_status</div>
-              <div className="text-xs font-semibold text-white flex items-center gap-1.5 font-mono">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#8FBF3F] animate-pulse" />
-                <span>active_connection</span>
-              </div>
+              <div className="text-[10px] uppercase font-bold text-slate-500 mb-1 font-mono">verification_status</div>
+              {(() => {
+                const vStatus = getVerificationStatus(tool);
+                return (
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-xs ${
+                    vStatus.isFresh 
+                      ? "bg-[#8FBF3F]/10 border-[#8FBF3F]/30 text-[#8FBF3F]" 
+                      : "bg-[#E8A33D]/10 border-[#E8A33D]/30 text-[#E8A33D]"
+                  }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${
+                      vStatus.isFresh ? "bg-[#8FBF3F]" : "bg-[#E8A33D]"
+                    }`} />
+                    <span>&gt; {vStatus.label}</span>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Click Count */}
@@ -427,6 +469,15 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
             ))}
           </div>
         </div>
+      )}
+
+      {tool && (
+        <AddToCollectionModal
+          toolId={tool.id}
+          toolName={tool.name}
+          isOpen={isCollectionModalOpen}
+          onClose={() => setIsCollectionModalOpen(false)}
+        />
       )}
     </div>
   );

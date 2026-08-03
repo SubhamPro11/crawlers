@@ -238,6 +238,7 @@ function CategoryGroupSection({
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [recentTools, setRecentTools] = useState<Tool[]>([]);
   const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
   
@@ -410,6 +411,7 @@ export default function Home() {
           
           setTools(tools);
           setCategories(cats);
+          setIsCategoriesLoading(false);
           setTotalToolsCount(tools.length);
           updateLastUpdatedDate(tools);
 
@@ -458,6 +460,7 @@ export default function Home() {
     
     setTools(allTools);
     setCategories(dbCategories);
+    setIsCategoriesLoading(false);
     setPopularQueries(queries);
     setTotalToolsCount(allTools.length);
     updateLastUpdatedDate(allTools);
@@ -827,25 +830,21 @@ export default function Home() {
 
             {/* Large Use-case Search Bar */}
             <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
-              <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-xl shadow-black/30 transition-all duration-300 gap-2 sm:gap-0">
-                <div className="flex items-center flex-1 w-full">
-                  <div className="pl-3 text-slate-500 shrink-0">
-                    <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
+              <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-2xl shadow-black/40 transition-all duration-200 gap-2 sm:gap-0 font-mono">
+                <div className="flex items-center flex-1 w-full relative">
+                  <span className="pl-3 font-mono text-[#8FBF3F] font-bold text-sm sm:text-base select-none shrink-0">&gt;</span>
                   <input
                     ref={searchInputRef}
                     type="text"
                     aria-label="Search directory by task"
-                    placeholder={isMobile ? "Search by task..." : "What do you want to do? (e.g., generate an image, summarize a video, write python code)"}
+                    placeholder={isMobile ? "search tools by task..." : "search tools by task (e.g. summarize video, write code)..."}
                     value={searchQuery}
                     onFocus={() => setIsDropdownOpen(true)}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
                       setIsDropdownOpen(true);
                     }}
-                    className="w-full bg-transparent px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder-slate-500 outline-none font-sans"
+                    className="w-full bg-transparent pl-2 pr-3 sm:px-3 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder-slate-500 outline-none font-mono"
                   />
 
                   {searchQuery && (
@@ -858,24 +857,28 @@ export default function Home() {
                       className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-1 sm:mr-2 shrink-0"
                       aria-label="Clear search"
                     >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   )}
 
                   {!searchQuery && (
-                    <span className="hidden sm:inline-block rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] text-slate-500 font-mono select-none mr-3 shrink-0">
+                    <span className="text-[#8FBF3F] terminal-cursor select-none pointer-events-none mr-2 shrink-0">▍</span>
+                  )}
+
+                  {!searchQuery && (
+                    <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-[#212623] bg-[#0D0F0E] px-2 py-0.5 text-[10px] text-slate-400 font-mono select-none mr-3 shrink-0">
                       Ctrl K
-                    </span>
+                    </kbd>
                   )}
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm sm:text-base transition-colors duration-[100ms] font-sans"
+                  className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm transition-colors duration-[100ms] font-mono cursor-pointer"
                 >
-                  Search
+                  run_search
                 </button>
               </div>
 
@@ -1249,7 +1252,12 @@ export default function Home() {
         )}
 
         {/* Grouped Categories Grid */}
-        {filteredCategories.length > 0 ? (
+        {isCategoriesLoading && categories.length === 0 ? (
+          <div className="py-16 text-center text-xs font-mono text-slate-500 flex items-center justify-center gap-2 border border-[#212623] rounded-2xl bg-[#131615]">
+            <span className="h-2 w-2 rounded-full bg-[#8FBF3F] animate-pulse" />
+            <span>loading_category_index...</span>
+          </div>
+        ) : filteredCategories.length > 0 ? (
           <div className="space-y-12">
             {CATEGORY_GROUPS.map((group) => {
               const groupCategories = filteredCategories.filter(cat => getCategoryGroup(cat).id === group.id);

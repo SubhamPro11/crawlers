@@ -245,6 +245,12 @@ export default function Header() {
               AI Extensions
             </Link>
             <Link 
+              href="/stacks" 
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            >
+              Stacks
+            </Link>
+            <Link 
               href="/search" 
               className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
             >
@@ -335,6 +341,13 @@ export default function Header() {
                     <div className="px-4 py-2 border-b border-[#212623]/80 text-[10px] text-slate-500 truncate max-w-full font-mono">
                       {user.email}
                     </div>
+                    <Link
+                      href="/my/collections"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex w-full px-4 py-2 text-xs text-slate-300 hover:bg-[#8FBF3F]/10 hover:text-white transition-colors font-sans font-semibold border-b border-[#212623]/50"
+                    >
+                      My Collections
+                    </Link>
                     <button
                       onClick={handleSignOut}
                       className="flex w-full px-4 py-2 text-xs text-left text-slate-300 hover:bg-[#8FBF3F]/10 hover:text-white transition-colors font-sans font-semibold"
@@ -414,34 +427,41 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="xl:hidden border-t border-[#212623] bg-[#0D0F0E] px-4 py-4 space-y-4 max-h-[85vh] overflow-y-auto">
           {/* Mobile Navigation Links */}
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 font-mono text-xs">
             <Link 
               href="/" 
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+              className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
             >
-              Explore
+              &gt; explore_directory
             </Link>
             <Link 
               href="/category/ai-extensions" 
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+              className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
             >
-              AI Extensions
+              &gt; ai_extensions
+            </Link>
+            <Link 
+              href="/stacks" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
+            >
+              &gt; workflow_stacks
             </Link>
             <Link 
               href="/search" 
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+              className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
             >
-              Search
+              &gt; search_index
             </Link>
             <Link 
               href="/compare" 
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center h-11 px-3 text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors border border-transparent hover:border-[#212623] rounded-md"
+              className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
             >
-              Compare
+              &gt; compare_tools
             </Link>
           </div>
 

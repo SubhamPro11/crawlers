@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Tool, mockDb, slugify } from "@/data/mockDb";
+import AddToCollectionModal from "@/components/AddToCollectionModal";
+import { getVerificationStatus } from "@/lib/verification";
 
 export function cleanDescription(desc: string): string {
   if (!desc) return "";
@@ -25,10 +27,12 @@ interface ToolCardProps {
   tool: Tool;
   categoryName?: string;
   onRefresh?: () => void;
+  isFocused?: boolean;
 }
 
-export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProps) {
+export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: ToolCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
 
   useEffect(() => {
     const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
@@ -65,6 +69,12 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
     if (onRefresh) onRefresh();
   };
 
+  const openCollectionModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCollectionModalOpen(true);
+  };
+
   const getPricingBadge = (pricing: string) => {
     switch (pricing) {
       case "free":
@@ -79,22 +89,41 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
   };
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615] p-5 transition-colors duration-[120ms] hover:border-[#8FBF3F]/35">
-      
-      {/* Favorite Toggle Button */}
-      <button
-        onClick={toggleFavorite}
-        className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
-        aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
-      >
-        <svg
-          className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      </button>
+    <>
+      <div className={`group relative flex flex-col justify-between rounded-xl border p-5 transition-colors duration-[120ms] ${
+        isFocused
+          ? "border-[#8FBF3F] ring-1 ring-[#8FBF3F] bg-[#131615]"
+          : "border-[#212623] bg-[#131615] hover:border-[#8FBF3F]/35"
+      }`}>
+        
+        {/* Actions Cluster: Bookmark + Collection */}
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
+          <button
+            onClick={openCollectionModal}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
+            aria-label={`Add ${tool.name} to personal collection`}
+            title="Add to personal collection"
+          >
+            <svg className="h-4 w-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
+
+          <button
+            onClick={toggleFavorite}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
+            aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
+            title={isFavorite ? "Bookmarked" : "Bookmark tool"}
+          >
+            <svg
+              className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
 
       <div>
         {/* Header: Initials + Title + Pricing */}
@@ -162,21 +191,17 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
 
         const ctaLabel = isExtension ? "get_extension" : "run_bot";
 
+        const vStatus = getVerificationStatus(tool);
+
         return (
           <div className="flex items-center justify-between border-t border-[#212623]/60 pt-4 mt-auto">
-            <div className="flex items-center gap-1.5 text-[#8A8F87] font-mono text-[9px] uppercase tracking-wider">
-              <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
-              {(() => {
-                const dateStr = tool.last_checked_at || tool.last_crawled_at || tool.created_at;
-                let formatted = "";
-                if (dateStr) {
-                  const d = new Date(dateStr);
-                  if (!isNaN(d.getTime())) {
-                    formatted = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                  }
-                }
-                return <span>verified{formatted ? ` ${formatted}` : ""}</span>;
-              })()}
+            <div className={`flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider ${
+              vStatus.isFresh ? "text-[#8A8F87]" : "text-[#E8A33D]"
+            }`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${
+                vStatus.isFresh ? "bg-[#8FBF3F]" : "bg-[#E8A33D]"
+              }`} />
+              <span>&gt; {vStatus.label}</span>
             </div>
 
             <a
@@ -193,5 +218,13 @@ export default function ToolCard({ tool, categoryName, onRefresh }: ToolCardProp
         );
       })()}
     </div>
+
+    <AddToCollectionModal
+      toolId={tool.id}
+      toolName={tool.name}
+      isOpen={isCollectionModalOpen}
+      onClose={() => setIsCollectionModalOpen(false)}
+    />
+    </>
   );
 }

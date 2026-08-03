@@ -5,8 +5,11 @@ import Link from "next/link";
 import { mockDb, Category, Tool, getCategoryGroup } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import { TerminalLoader } from "@/components/TerminalLoader";
+import { useVimNavigation } from "@/hooks/useVimNavigation";
+import { useRouter } from "next/navigation";
 
 export default function CategoryPageClient({ slug }: { slug: string }) {
+  const router = useRouter();
   const [category, setCategory] = useState<Category | null>(null);
   const [tools, setTools] = useState<Tool[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("all");
@@ -26,6 +29,19 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
       return a.name.localeCompare(b.name);
     });
   }, [tools, activeFilter, sortBy]);
+
+  const handleSelectTool = useCallback((index: number) => {
+    const targetTool = sortedAndFilteredTools[index];
+    if (targetTool) {
+      if (targetTool.url) {
+        window.open(targetTool.url, "_blank");
+      } else {
+        router.push(`/tool/${targetTool.id}`);
+      }
+    }
+  }, [sortedAndFilteredTools, router]);
+
+  const { selectedIndex } = useVimNavigation(sortedAndFilteredTools.length, handleSelectTool);
 
   // Load from local storage cache instantly on mount/slug change
   useEffect(() => {
@@ -139,6 +155,14 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
         <p className="text-slate-400 text-base mt-3 max-w-2xl leading-relaxed font-sans">
           {category.description}
         </p>
+
+        {category.description_long && category.description_long.trim().length > 0 && (
+          <div className="mt-4 p-4 rounded-xl border border-[#212623] bg-[#131615] max-w-3xl border-l-2 border-l-[#8FBF3F]">
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
+              {category.description_long.replace(/<!--[\s\S]*?-->/g, "").trim()}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Filters Toolbar */}
@@ -181,15 +205,24 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
 
       {/* Tools Grid */}
       {sortedAndFilteredTools.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {sortedAndFilteredTools.map((tool) => (
-            <ToolCard
-              key={tool.id}
-              tool={tool}
-              categoryName={category.name}
-              onRefresh={fetchCategoryData}
-            />
-          ))}
+        <div>
+          <div className="mb-4 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>&gt; {sortedAndFilteredTools.length} {sortedAndFilteredTools.length === 1 ? 'tool' : 'tools'} listed</span>
+            <span className="hidden sm:inline-block font-mono text-[10px] text-[#8FBF3F] bg-[#8FBF3F]/10 border border-[#8FBF3F]/20 px-2 py-0.5 rounded">
+              [j / k navigation active — press Enter to open]
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {sortedAndFilteredTools.map((tool, index) => (
+              <ToolCard
+                key={tool.id}
+                tool={tool}
+                categoryName={category.name}
+                onRefresh={fetchCategoryData}
+                isFocused={index === selectedIndex}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-[#212623] bg-[#131615]/20 p-12 text-center font-sans">

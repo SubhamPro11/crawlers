@@ -6,6 +6,7 @@ import Link from "next/link";
 import { mockDb, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import { TerminalLoader } from "@/components/TerminalLoader";
+import { useVimNavigation } from "@/hooks/useVimNavigation";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -15,6 +16,19 @@ function SearchContent() {
   const [prevQuery, setPrevQuery] = useState(query);
   const [searchInput, setSearchInput] = useState(query);
   const [results, setResults] = useState<Tool[]>([]);
+
+  const handleSelectTool = (index: number) => {
+    const targetTool = results[index];
+    if (targetTool) {
+      if (targetTool.url) {
+        window.open(targetTool.url, "_blank");
+      } else {
+        router.push(`/tool/${targetTool.id}`);
+      }
+    }
+  };
+
+  const { selectedIndex } = useVimNavigation(results.length, handleSelectTool);
 
   if (query !== prevQuery) {
     setPrevQuery(query);
@@ -81,16 +95,20 @@ function SearchContent() {
       {/* Results Grid */}
       {results.length > 0 ? (
         <div>
-          <div className="mb-6 text-xs text-slate-500 font-semibold font-sans">
-            Found {results.length} matching tools
+          <div className="mb-6 flex items-center justify-between text-xs text-slate-500 font-semibold font-sans">
+            <span>Found {results.length} matching tools</span>
+            <span className="hidden sm:inline-block font-mono text-[10px] text-[#8FBF3F] bg-[#8FBF3F]/10 border border-[#8FBF3F]/20 px-2 py-0.5 rounded">
+              [j / k navigation active — press Enter to open]
+            </span>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {results.map((tool) => (
+            {results.map((tool, index) => (
               <ToolCard 
                 key={tool.id} 
                 tool={tool} 
                 categoryName={tool.categories?.name}
                 onRefresh={refreshSearch}
+                isFocused={index === selectedIndex}
               />
             ))}
           </div>

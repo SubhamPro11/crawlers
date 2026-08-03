@@ -66,16 +66,16 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
   const stats = [
     { 
       value: hasTriggered ? (displayTools > 0 ? displayTools.toLocaleString() : "...") : "0", 
-      label: "ai tools listed",
+      label: "AI tools listed",
       isNumeric: true
     },
     { 
       value: hasTriggered ? (displayCategories > 0 ? displayCategories.toLocaleString() : "...") : "0", 
-      label: "use-case categories",
+      label: "Use-case categories",
       isNumeric: true
     },
-    { value: "Direct Link", label: "no embeds or iframes", isNumeric: false },
-    { value: lastUpdated || "today", label: "last updated", isDate: true, isNumeric: false }
+    { value: "Direct Link", label: "No embeds or iframes", isNumeric: false },
+    { value: lastUpdated || "today", label: "Last updated", isDate: true, isNumeric: false }
   ];
 
   return (
@@ -91,7 +91,7 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
 
       {/* Trust Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="border border-[#212623] bg-[#131615]/30 rounded-xl p-6">
+        <div className="border border-[#212623] border-l-2 border-l-[#8FBF3F] bg-[#131615]/30 rounded-xl p-6">
           <div className="text-[#8FBF3F] font-mono text-xs uppercase mb-2">&gt; curated_listings</div>
           <h3 className="text-white font-bold text-base mb-2 font-serif">Original Paraphrasing</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
@@ -99,7 +99,7 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
           </p>
         </div>
 
-        <div className="border border-[#212623] bg-[#131615]/30 rounded-xl p-6">
+        <div className="border border-[#212623] border-l-2 border-l-[#8FBF3F] bg-[#131615]/30 rounded-xl p-6">
           <div className="text-[#8FBF3F] font-mono text-xs uppercase mb-2">&gt; direct_connection</div>
           <h3 className="text-white font-bold text-base mb-2 font-serif">No Embeds or Iframes</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
@@ -107,7 +107,7 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
           </p>
         </div>
 
-        <div className="border border-[#212623] bg-[#131615]/30 rounded-xl p-6">
+        <div className="border border-[#212623] border-l-2 border-l-[#8FBF3F] bg-[#131615]/30 rounded-xl p-6">
           <div className="text-[#8FBF3F] font-mono text-xs uppercase mb-2">&gt; free_index</div>
           <h3 className="text-white font-bold text-base mb-2 font-serif">Completely Free</h3>
           <p className="text-slate-400 text-xs leading-relaxed">
