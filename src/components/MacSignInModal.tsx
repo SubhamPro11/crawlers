@@ -49,7 +49,7 @@ export default function MacSignInModal() {
 
     // 4. Keyboard ESC key listener
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape") {
         handleClose();
       }
     };
@@ -61,38 +61,9 @@ export default function MacSignInModal() {
       window.removeEventListener("open-signin-modal", handleOpen);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, user]);
-
-  // Recurring 10-second interval strictly for unauthenticated users
-  useEffect(() => {
-    // If logged in, completely disable and hide modal
-    if (user) {
-      setIsOpen(false);
-      setIsAnimating(false);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      // Re-verify session before popping up
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          setUser(session.user);
-          setIsOpen(false);
-          return;
-        }
-
-        setIsOpen((currentlyOpen) => {
-          if (!currentlyOpen) {
-            setTimeout(() => setIsAnimating(true), 10);
-            return true;
-          }
-          return currentlyOpen;
-        });
-      });
-    }, 10000);
-
-    return () => clearInterval(interval);
   }, [user]);
+
+
 
   const handleClose = () => {
     setIsAnimating(false);
