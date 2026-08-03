@@ -8,20 +8,13 @@ export default function MacSignInModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
-<<<<<<< HEAD
     // 1. Fetch user session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user);
-        setIsOpen(false);
-        setIsAnimating(false);
-      }
-    });
-
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setUser(data.user);
         setIsOpen(false);
         setIsAnimating(false);
       }
@@ -37,10 +30,7 @@ export default function MacSignInModal() {
       }
     });
 
-    // 3. Custom event trigger (completely disabled if user is logged in)
-=======
-    // Listen for custom trigger event
->>>>>>> parent of f2ea192 (feat: resend macOS sign-in modal every 10s if user is not authenticated)
+    // 3. Custom event trigger
     const handleOpen = () => {
       if (user) return;
       setIsOpen(true);
@@ -55,7 +45,7 @@ export default function MacSignInModal() {
       const hasToken = document.cookie.includes("sb-") || localStorage.getItem("crawlers_favorites");
       
       // Only auto-show if not dismissed this session
-      if (!dismissed && !hasToken) {
+      if (!dismissed && !hasToken && !user) {
         setIsOpen(true);
         setTimeout(() => setIsAnimating(true), 10);
       }
@@ -70,9 +60,11 @@ export default function MacSignInModal() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      subscription.unsubscribe();
       window.removeEventListener("open-signin-modal", handleOpen);
       window.removeEventListener("keydown", handleKeyDown);
       clearTimeout(timer);
+    };
   }, [user]);
 
   const handleClose = () => {
@@ -99,12 +91,8 @@ export default function MacSignInModal() {
     }
   };
 
-<<<<<<< HEAD
   // Strictly return null if user is logged in or modal is closed
   if (!isOpen || user) return null;
-=======
-  if (!isOpen) return null;
->>>>>>> parent of f2ea192 (feat: resend macOS sign-in modal every 10s if user is not authenticated)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
