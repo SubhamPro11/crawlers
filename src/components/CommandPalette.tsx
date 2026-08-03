@@ -70,8 +70,9 @@ export default function CommandPalette() {
     };
   }, []);
 
-  // Fetch all categories and tools on mount
+  // Fetch all categories and tools lazily when opened
   useEffect(() => {
+    if (!isOpen || tools.length > 0) return;
     const loadData = async () => {
       try {
         const [cats, tls] = await Promise.all([
@@ -85,7 +86,7 @@ export default function CommandPalette() {
       }
     };
     loadData();
-  }, []);
+  }, [isOpen, tools.length]);
 
   // Load localStorage data when opened
   useEffect(() => {

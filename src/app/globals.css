@@ -156,8 +156,7 @@ body {
 
 /* Glass terminal styling */
 .terminal-panel {
-  background: rgba(19, 22, 21, 0.85);
-  backdrop-filter: blur(8px);
+  background: #131615;
   border: 1px solid #212623;
 }
 

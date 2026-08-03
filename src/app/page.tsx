@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
 import ToolCard, { cleanDescription } from "@/components/ToolCard";
-import { WhyCrawlers, AINews } from "@/components/HomepageExtensions";
+import { WhyCrawlers } from "@/components/HomepageExtensions";
 import {
   Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
   Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
@@ -496,13 +496,15 @@ export default function Home() {
       .filter((t): t is Tool => !!t);
     setRecentToolsList(recTools);
 
-    // Save to cache for instant load next time
-    try {
-      localStorage.setItem("crawlers_cached_tools", JSON.stringify(allTools));
-      localStorage.setItem("crawlers_cached_categories", JSON.stringify(dbCategories));
-    } catch (e) {
-      console.error("Error saving tools cache:", e);
-    }
+    // Save to cache for instant load next time (non-blocking after first paint)
+    setTimeout(() => {
+      try {
+        localStorage.setItem("crawlers_cached_tools", JSON.stringify(allTools));
+        localStorage.setItem("crawlers_cached_categories", JSON.stringify(dbCategories));
+      } catch (e) {
+        console.error("Error saving tools cache:", e);
+      }
+    }, 300);
   }, [updateLastUpdatedDate]);
 
   useEffect(() => {
@@ -1113,8 +1115,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <AINews tools={recentTools} categories={categories} />
 
       <WhyCrawlers totalTools={totalToolsCount || 1417} totalCategories={categories.length || 170} lastUpdated={lastUpdatedStr} />
 
