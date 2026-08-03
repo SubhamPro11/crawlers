@@ -99,24 +99,26 @@ export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: T
         {/* Actions Cluster: Bookmark + Collection */}
         <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
           <button
+            type="button"
             onClick={openCollectionModal}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
             aria-label={`Add ${tool.name} to personal collection`}
             title="Add to personal collection"
           >
-            <svg className="h-4 w-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth={2}>
+            <svg className="h-4 w-4 fill-none stroke-current pointer-events-none" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
           </button>
 
           <button
+            type="button"
             onClick={toggleFavorite}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#212623] bg-[#0E100F] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:bg-[#1a1f1d] transition-colors duration-[100ms]"
             aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Bookmark ${tool.name}`}
             title={isFavorite ? "Bookmarked" : "Bookmark tool"}
           >
             <svg
-              className={`h-4.5 w-4.5 transition-all duration-[150ms] ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
+              className={`h-4.5 w-4.5 transition-all duration-[150ms] pointer-events-none ${isFavorite ? "fill-[#8FBF3F] stroke-[#8FBF3F]" : "fill-none stroke-current"}`}
               viewBox="0 0 24 24"
               strokeWidth={2}
             >

@@ -202,12 +202,14 @@ export default function AddToCollectionModal({
               ) : collections.length > 0 ? (
                 <div className="pt-2 border-t border-[#212623] flex justify-between items-center">
                   <button
+                    type="button"
                     onClick={() => setIsCreating(true)}
                     className="text-xs font-mono text-[#8FBF3F] hover:underline cursor-pointer"
                   >
                     + new_collection
                   </button>
                   <button
+                    type="button"
                     onClick={onClose}
                     className="rounded-lg border border-[#212623] bg-[#131615] px-3 py-1.5 text-xs text-slate-300 hover:text-white transition-colors cursor-pointer font-sans"
                   >

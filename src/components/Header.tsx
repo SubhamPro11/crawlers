@@ -299,13 +299,17 @@ export default function Header() {
               type="text"
               placeholder="Search index... (Ctrl + K)"
               readOnly
+              onClick={(e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent("toggle-command-palette"));
+              }}
               aria-label="Search index"
               className="w-48 lg:w-56 cursor-pointer rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-14 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none hover:border-[#8FBF3F]/60 transition-all"
             />
             <div className="absolute right-8 top-1.5 pointer-events-none flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-500">
               <span>⌘</span><span>K</span>
             </div>
-            <div className="absolute right-2.5 top-2.5 text-[#8A8F87]">
+            <div className="absolute right-2.5 top-2.5 text-[#8A8F87] pointer-events-none">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -314,12 +318,13 @@ export default function Header() {
 
           {/* Quick Search Icon Button (< xl) */}
           <button 
+            type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))} 
             className="xl:hidden flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-md border border-[#212623] bg-[#131615] text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/60 transition-colors shrink-0"
             aria-label="Search index"
             title="Search index (Ctrl + K)"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-4 w-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
@@ -329,6 +334,7 @@ export default function Header() {
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
+                  type="button"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center justify-center h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-[#8FBF3F] to-[#7ba235] text-[#0D0F0E] font-bold text-xs shadow-md border border-[#8FBF3F]/35 hover:scale-105 transition-transform"
                   title={user.email}
@@ -373,10 +379,11 @@ export default function Header() {
               </div>
             ) : (
               <button
+                type="button"
                 onClick={handleSignIn}
                 className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-2.5 sm:px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200 shrink-0"
               >
-                <svg className="h-3.5 w-3.5 text-[#8FBF3F]" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="h-3.5 w-3.5 text-[#8FBF3F] pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.68 0-8.473-3.882-8.473-8.514 0-4.632 3.793-8.515 8.473-8.515 2.502 0 4.263.957 5.372 2.036l3.12-3.12C18.665.926 15.69 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c6.96 0 11.52-4.896 11.52-11.724 0-.785-.078-1.547-.22-2.22H12.24z"/>
                 </svg>
                 <span className="hidden sm:inline">Sign In</span>
@@ -393,6 +400,7 @@ export default function Header() {
 
           {/* Hamburger Menu Toggle (< xl) */}
           <button
+            type="button"
             onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen);
               setSearchOpen(false);
