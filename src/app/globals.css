@@ -160,9 +160,40 @@ body {
   border: 1px solid #212623;
 }
 
-/* Rendering performance optimization utility */
+/* Low-end device rendering performance optimization utilities */
 .cv-auto {
   content-visibility: auto;
   contain-intrinsic-size: 1px 300px;
+}
+
+.cv-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 180px;
+}
+
+.cv-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}
+
+/* DOM reflow isolation for high-repetition UI nodes */
+.contain-card {
+  contain: layout style paint;
+}
+
+/* GPU Layer promotion for smooth compositing on low-end mobile devices */
+.gpu-accel {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Performant backdrop fallback for low-power mobile GPUs */
+@supports not (backdrop-filter: blur(1px)) {
+  .backdrop-blur-md,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl {
+    background-color: rgba(13, 15, 14, 0.98) !important;
+  }
 }
 

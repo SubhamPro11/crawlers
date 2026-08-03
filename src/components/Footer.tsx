@@ -32,6 +32,9 @@ export default function Footer() {
                 </li>
               ))}
               <li className="pt-2 flex flex-col gap-1.5 font-sans font-bold text-xs border-t border-[#212623]/60 mt-2">
+                <Link href="/api" className="text-[#8FBF3F] hover:underline font-mono text-xs">
+                  /api (API Keys Registry) &rarr;
+                </Link>
                 <Link href="/stacks" className="text-[#8FBF3F] hover:underline font-mono text-xs">
                   /stacks &rarr;
                 </Link>
@@ -54,6 +57,10 @@ export default function Footer() {
         <div className="mt-8 sm:mt-10 border-t border-[#212623]/80 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-center sm:text-left">
           <p className="text-[#8A8F87]/70">&copy; {new Date().getFullYear()} crawlers_index. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-3 font-sans font-semibold">
+            <Link href="/api" className="hover:text-[#8FBF3F] transition-colors">
+              API Keys
+            </Link>
+            <span className="text-[#212623]">|</span>
             <Link href="/collections" className="hover:text-[#8FBF3F] transition-colors">
               Collections
             </Link>

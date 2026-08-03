@@ -90,7 +90,7 @@ export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: T
 
   return (
     <>
-      <div className={`group relative flex flex-col justify-between rounded-xl border p-5 transition-colors duration-[120ms] ${
+      <div className={`group relative flex flex-col justify-between rounded-xl border p-5 transition-colors duration-[120ms] contain-card cv-card ${
         isFocused
           ? "border-[#8FBF3F] ring-1 ring-[#8FBF3F] bg-[#131615]"
           : "border-[#212623] bg-[#131615] hover:border-[#8FBF3F]/35"

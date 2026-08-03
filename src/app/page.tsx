@@ -128,7 +128,7 @@ function CategoryGroupSection({
   return (
     <div
       id={`group-${group.id}`}
-      className="scroll-mt-28 cv-auto"
+      className="scroll-mt-28 cv-section"
     >
       <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
         <div className="flex items-center gap-3">
@@ -159,7 +159,7 @@ function CategoryGroupSection({
                       <Link
                         key={cat.id}
                         href={`/category/${cat.slug}`}
-                        className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
+                        className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] contain-card cv-card ${
                           isZero ? "opacity-50 hover:opacity-85" : ""
                         }`}
                       >
@@ -201,7 +201,7 @@ function CategoryGroupSection({
               <Link
                 key={cat.id}
                 href={`/category/${cat.slug}`}
-                className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] ${
+                className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] contain-card cv-card ${
                   isZero ? "opacity-50 hover:opacity-85" : ""
                 }`}
               >

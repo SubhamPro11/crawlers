@@ -61,7 +61,7 @@ export default function Header() {
         setExploreOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, { passive: true });
 
     return () => {
       subscription.unsubscribe();
@@ -186,6 +186,14 @@ export default function Header() {
                           <span>AI Extensions</span>
                           <span className="text-[9px] bg-[#8FBF3F] text-slate-950 px-1 rounded font-sans">NEW</span>
                         </Link>
+                        <Link
+                          href="/api"
+                          onClick={() => setExploreOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md border border-[#8FBF3F]/30 bg-[#8FBF3F]/10 text-[#8FBF3F] hover:bg-[#8FBF3F]/20 text-xs font-mono font-bold transition-colors"
+                        >
+                          <span>API Registry</span>
+                          <span className="text-[9px] bg-[#8FBF3F] text-slate-950 px-1 rounded font-sans">API</span>
+                        </Link>
                         {CATEGORY_GROUPS.map((group) => (
                           <button
                             type="button"
@@ -243,6 +251,12 @@ export default function Header() {
               className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
             >
               AI Extensions
+            </Link>
+            <Link 
+              href="/api" 
+              className="text-xs font-sans font-semibold tracking-wide text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            >
+              API Keys
             </Link>
             <Link 
               href="/stacks" 
@@ -441,6 +455,13 @@ export default function Header() {
               className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
             >
               &gt; ai_extensions
+            </Link>
+            <Link 
+              href="/api" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center h-11 px-3 text-[#EDEEEA] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-colors border border-[#212623] bg-[#131615] rounded-lg"
+            >
+              &gt; api_keys_registry
             </Link>
             <Link 
               href="/stacks" 

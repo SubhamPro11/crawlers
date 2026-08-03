@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/_next/"],
+        disallow: ["/api/v1/", "/_next/"],
       },
     ],
     sitemap: "https://crawlers.dpdns.org/sitemap.xml",
