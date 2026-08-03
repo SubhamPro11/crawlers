@@ -425,112 +425,52 @@ export default function Home() {
     };
   }, [checkScroll, filteredCategories]);
 
-  // Load from local storage cache instantly on mount
+  // Load lightweight cached categories instantly on mount
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      try {
-        const cachedTools = localStorage.getItem("crawlers_cached_tools");
-        const cachedCats = localStorage.getItem("crawlers_cached_categories");
-        if (cachedTools && cachedCats) {
-          const tools = JSON.parse(cachedTools) as Tool[];
-          const cats = JSON.parse(cachedCats) as Category[];
-          
-          setTools(tools);
-          setCategories(cats);
-          setIsCategoriesLoading(false);
-          setTotalToolsCount(tools.length);
-          updateLastUpdatedDate(tools);
-
-          const counts: Record<string, number> = {};
-          tools.forEach(tool => {
-            counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
-          });
-          setToolCounts(counts);
-
-          const sorted = [...tools]
-            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-            .slice(0, 6);
-          setRecentTools(sorted);
-
-          // TODO: reinstate real view-count sort once analytics tracking is wired up
-          const trending = [...tools]
-            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-            .slice(0, 8);
-          setTrendingTools(trending);
-
-          const favIds: string[] = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
-          const recItems: Array<{ id: string; type: string }> = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
-
-          const favTools = tools.filter(t => favIds.includes(t.id));
-          setFavoriteTools(favTools);
-
-          const recentIds = recItems.filter(i => i.type === "tool").map(i => i.id);
-          const recTools = recentIds
-            .map(id => tools.find(t => t.id === id))
-            .filter((t): t is Tool => !!t);
-          setRecentToolsList(recTools);
-        }
-      } catch (e) {
-        console.error("Error reading tools cache on mount:", e);
+    try {
+      localStorage.removeItem("crawlers_cached_tools"); // Cleanup legacy heavy memory blob
+      const cachedCats = localStorage.getItem("crawlers_cached_categories");
+      if (cachedCats) {
+        const cats = JSON.parse(cachedCats) as Category[];
+        setCategories(cats);
+        setIsCategoriesLoading(false);
       }
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, [updateLastUpdatedDate]);
+    } catch (e) {
+      console.error("Error reading categories cache on mount:", e);
+    }
+  }, []);
 
   const loadData = useCallback(async () => {
-    const [allTools, dbCategories, queries] = await Promise.all([
-      mockDb.getTools(),
-      mockDb.getCategories(),
-      mockDb.getPopularQueries()
-    ]);
-    
-    setTools(allTools);
-    setCategories(dbCategories);
-    setIsCategoriesLoading(false);
-    setPopularQueries(queries);
-    setTotalToolsCount(allTools.length);
-    updateLastUpdatedDate(allTools);
+    try {
+      const [dbCategories, counts, recent, totalCount, queries] = await Promise.all([
+        mockDb.getCategories(),
+        mockDb.getCategoryToolCounts(),
+        mockDb.getRecentTools(8),
+        mockDb.getTotalToolsCount(),
+        mockDb.getPopularQueries()
+      ]);
+      
+      setCategories(dbCategories);
+      setToolCounts(counts);
+      setRecentTools(recent.slice(0, 6));
+      setTrendingTools(recent.slice(0, 8));
+      setTotalToolsCount(totalCount);
+      setIsCategoriesLoading(false);
+      setPopularQueries(queries);
+      updateLastUpdatedDate(recent);
 
-    // Calculate counts in memory
-    const counts: Record<string, number> = {};
-    allTools.forEach(tool => {
-      counts[tool.category_id] = (counts[tool.category_id] || 0) + 1;
-    });
-    setToolCounts(counts);
-
-    const sorted = [...allTools]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 6);
-    setRecentTools(sorted);
-
-    // TODO: reinstate real view-count sort once analytics tracking is wired up
-    const trending = [...allTools]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 8);
-    setTrendingTools(trending);
-
-    // Load favorites and recently viewed from localStorage
-    const favIds: string[] = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
-    const recItems: Array<{ id: string; type: string }> = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
-
-    const favTools = allTools.filter(t => favIds.includes(t.id));
-    setFavoriteTools(favTools);
-
-    const recentIds = recItems.filter(i => i.type === "tool").map(i => i.id);
-    const recTools = recentIds
-      .map(id => allTools.find(t => t.id === id))
-      .filter((t): t is Tool => !!t);
-    setRecentToolsList(recTools);
-
-    // Save to cache for instant load next time (non-blocking after first paint)
-    setTimeout(() => {
-      try {
-        localStorage.setItem("crawlers_cached_tools", JSON.stringify(allTools));
-        localStorage.setItem("crawlers_cached_categories", JSON.stringify(dbCategories));
-      } catch (e) {
-        console.error("Error saving tools cache:", e);
-      }
-    }, 300);
+      // Save only small categories list to localStorage (150 light items vs 1,400 full tools)
+      setTimeout(() => {
+        try {
+          localStorage.setItem("crawlers_cached_categories", JSON.stringify(dbCategories));
+        } catch (e) {
+          console.error("Error saving categories cache:", e);
+        }
+      }, 300);
+    } catch (err) {
+      console.error("Error loading homepage data:", err);
+      setIsCategoriesLoading(false);
+    }
   }, [updateLastUpdatedDate]);
 
   useEffect(() => {

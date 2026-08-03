@@ -70,14 +70,14 @@ export default function CommandPalette() {
     };
   }, []);
 
-  // Fetch all categories and tools lazily when opened
+  // Fetch categories and top recent tools lazily when opened
   useEffect(() => {
     if (!isOpen || tools.length > 0) return;
     const loadData = async () => {
       try {
         const [cats, tls] = await Promise.all([
           mockDb.getCategories(),
-          mockDb.getTools()
+          mockDb.getRecentTools(12)
         ]);
         setCategories(cats);
         setTools(tls);

@@ -199,21 +199,89 @@ export const CATEGORIES: Category[] = [
 ];
 
 class MockDb {
-  async getCategories(): Promise<Category[]> {
-    try {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .order("name", { ascending: true });
+  private categoriesCachePromise: Promise<Category[]> | null = null;
 
-      if (error) {
-        console.error("Error fetching categories:", error.message);
+  async getCategories(): Promise<Category[]> {
+    if (this.categoriesCachePromise) {
+      return this.categoriesCachePromise;
+    }
+    this.categoriesCachePromise = (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug, description, description_long")
+          .order("name", { ascending: true });
+
+        if (error) {
+          console.error("Error fetching categories:", error.message);
+          return CATEGORIES;
+        }
+        return data && data.length > 0 ? data : CATEGORIES;
+      } catch (err) {
+        console.error("Uncaught exception in getCategories:", err);
         return CATEGORIES;
       }
-      return data && data.length > 0 ? data : CATEGORIES;
+    })();
+    return this.categoriesCachePromise;
+  }
+
+  async getCategoryToolCounts(): Promise<Record<string, number>> {
+    try {
+      const { data, error } = await supabase
+        .from("tools")
+        .select("category_id")
+        .eq("status", "active");
+
+      if (error || !data) {
+        console.error("Error fetching category tool counts:", error?.message);
+        return {};
+      }
+
+      const counts: Record<string, number> = {};
+      for (let i = 0; i < data.length; i++) {
+        const cid = data[i].category_id;
+        if (cid) {
+          counts[cid] = (counts[cid] || 0) + 1;
+        }
+      }
+      return counts;
     } catch (err) {
-      console.error("Uncaught exception in getCategories:", err);
-      return CATEGORIES;
+      console.error("Uncaught exception in getCategoryToolCounts:", err);
+      return {};
+    }
+  }
+
+  async getRecentTools(limit = 8): Promise<Tool[]> {
+    try {
+      const { data, error } = await supabase
+        .from("tools")
+        .select("id, name, short_description, category_id, url, pricing_model, tags, status, created_at, categories(name, slug)")
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (error || !data) {
+        console.error("Error fetching recent tools:", error?.message);
+        return [];
+      }
+      return data as unknown as Tool[];
+    } catch (err) {
+      console.error("Uncaught exception in getRecentTools:", err);
+      return [];
+    }
+  }
+
+  async getTotalToolsCount(): Promise<number> {
+    try {
+      const { count, error } = await supabase
+        .from("tools")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active");
+
+      if (error) return 0;
+      return count || 0;
+    } catch {
+      return 0;
     }
   }
 
