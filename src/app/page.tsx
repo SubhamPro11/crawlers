@@ -1066,7 +1066,13 @@ export default function Home() {
             {trendingTools.map((tool) => (
               <div 
                 key={`trending-${tool.id}`} 
-                className="snap-start flex-shrink-0 w-80 rounded-xl border border-[#212623] bg-gradient-to-br from-[#131615] to-[#0A0D0B] p-6 shadow-lg hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5 transition-all duration-300 group"
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (!target.closest("a") && !target.closest("button")) {
+                    router.push(`/tool/${tool.id}`);
+                  }
+                }}
+                className="snap-start flex-shrink-0 w-80 rounded-xl border border-[#212623] bg-gradient-to-br from-[#131615] to-[#0A0D0B] p-6 shadow-lg hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5 transition-all duration-300 group cursor-pointer"
               >
                 <div className="flex justify-between items-start gap-2 mb-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs">

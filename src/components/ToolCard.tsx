@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Tool, mockDb, slugify } from "@/data/mockDb";
 import AddToCollectionModal from "@/components/AddToCollectionModal";
 import { getVerificationStatus } from "@/lib/verification";
@@ -31,8 +32,17 @@ interface ToolCardProps {
 }
 
 export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: ToolCardProps) {
+  const router = useRouter();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("a")) {
+      return;
+    }
+    router.push(`/tool/${tool.id}`);
+  };
 
   useEffect(() => {
     const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
@@ -90,11 +100,14 @@ export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: T
 
   return (
     <>
-      <div className={`group relative flex flex-col justify-between rounded-xl border p-5 transition-colors duration-[120ms] contain-card cv-card ${
-        isFocused
-          ? "border-[#8FBF3F] ring-1 ring-[#8FBF3F] bg-[#131615]"
-          : "border-[#212623] bg-[#131615] hover:border-[#8FBF3F]/35"
-      }`}>
+      <div
+        onClick={handleCardClick}
+        className={`group relative flex flex-col justify-between rounded-xl border p-5 transition-colors duration-[120ms] contain-card cv-card cursor-pointer ${
+          isFocused
+            ? "border-[#8FBF3F] ring-1 ring-[#8FBF3F] bg-[#131615]"
+            : "border-[#212623] bg-[#131615] hover:border-[#8FBF3F]/35"
+        }`}
+      >
         
         {/* Actions Cluster: Bookmark + Collection */}
         <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5">
