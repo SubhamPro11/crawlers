@@ -68,7 +68,7 @@ export async function generateStaticParams() {
     return qualify.map((tool) => ({
       slug: slugify(tool.name),
     }));
-  } catch (_err) {
+  } catch {
     return [];
   }
 }

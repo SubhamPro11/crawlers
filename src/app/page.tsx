@@ -28,6 +28,36 @@ import {
 } from "lucide-react";
 
 const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
+  "text-writing": [
+    {
+      name: "Writing & Content Creation",
+      slugs: ["writing-assistants", "copywriting", "storytelling", "newsletters", "ai-newsletters"]
+    },
+    {
+      name: "Translation & Document Intelligence",
+      slugs: ["transcription", "translator", "localization", "resume-tools", "document-ai", "documentation", "note-taking-apps"]
+    }
+  ],
+  "audio-video": [
+    {
+      name: "Video & Animation Production",
+      slugs: ["video", "video-editor", "video-generator", "video-enhancer", "video-subtitling", "talking-avatar-generator", "animation"]
+    },
+    {
+      name: "Audio, Speech & Music Processing",
+      slugs: ["music-generation", "audio", "voice-cloning", "podcast", "dubbing", "text-to-speech"]
+    }
+  ],
+  "design-creative": [
+    {
+      name: "Image & Graphic Design",
+      slugs: ["image-generation", "image-editing", "background-remover", "logo-generator", "character-design", "infographics", "graphic-design", "fashion", "meme-generator", "creative-media"]
+    },
+    {
+      name: "3D, Spatial & Architectural Design",
+      slugs: ["architecture", "ar-vr", "3d", "3d-printing"]
+    }
+  ],
   "education-lifestyle": [
     {
       name: "Education & Career",
@@ -248,16 +278,62 @@ export default function Home() {
     }
   });
   const [isCategoriesLoading, setIsCategoriesLoading] = useState<boolean>(categories.length === 0);
-  const [recentTools, setRecentTools] = useState<Tool[]>([]);
-  const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
-  const [favoriteTools, _setFavoriteTools] = useState<Tool[]>([]);
-  const [recentToolsList, _setRecentToolsList] = useState<Tool[]>([]);
-  const [trendingTools, setTrendingTools] = useState<Tool[]>([]);
-  const [totalToolsCount, setTotalToolsCount] = useState<number>(0);
+  const [recentTools, setRecentTools] = useState<Tool[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const cached = localStorage.getItem("crawlers_cached_recent_tools");
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [toolCounts, setToolCounts] = useState<Record<string, number>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const cached = localStorage.getItem("crawlers_cached_tool_counts");
+      return cached ? JSON.parse(cached) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [favoriteTools] = useState<Tool[]>([]);
+  const [recentToolsList] = useState<Tool[]>([]);
+  const [trendingTools, setTrendingTools] = useState<Tool[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const cached = localStorage.getItem("crawlers_cached_recent_tools");
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [totalToolsCount, setTotalToolsCount] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      const cached = localStorage.getItem("crawlers_cached_total_count");
+      return cached ? parseInt(cached, 10) : 0;
+    } catch {
+      return 0;
+    }
+  });
   const [lastUpdatedStr, setLastUpdatedStr] = useState<string>("today");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [popularQueries, setPopularQueries] = useState<string[]>([]);
+  const [popularQueries, setPopularQueries] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const cached = localStorage.getItem("crawlers_cached_queries");
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isMac] = useState(() => {
+    if (typeof window !== "undefined") {
+      return navigator.platform.toUpperCase().indexOf("MAC") >= 0 || navigator.userAgent.includes("Macintosh");
+    }
+    return false;
+  });
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchFormRef = useRef<HTMLFormElement>(null);
@@ -446,12 +522,16 @@ export default function Home() {
       setPopularQueries(queries);
       updateLastUpdatedDate(recent);
 
-      // Save only small categories list to localStorage (150 light items vs 1,400 full tools)
+      // Cache homepage metadata in localStorage for instant 0ms load times on future visits
       setTimeout(() => {
         try {
           localStorage.setItem("crawlers_cached_categories", JSON.stringify(dbCategories));
+          localStorage.setItem("crawlers_cached_tool_counts", JSON.stringify(counts));
+          localStorage.setItem("crawlers_cached_recent_tools", JSON.stringify(recent.slice(0, 8)));
+          localStorage.setItem("crawlers_cached_total_count", totalCount.toString());
+          localStorage.setItem("crawlers_cached_queries", JSON.stringify(queries));
         } catch (e) {
-          console.error("Error saving categories cache:", e);
+          console.error("Error saving homepage cache:", e);
         }
       }, 300);
     } catch (err) {
@@ -784,21 +864,21 @@ export default function Home() {
             </p>
 
             <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
-              <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-2xl shadow-black/40 transition-all duration-200 gap-2 sm:gap-0 font-mono">
-                <div className="flex items-center flex-1 w-full relative">
+              <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-2xl shadow-black/40 transition-all duration-200 gap-2 font-mono">
+                <div className="flex items-center flex-1 min-w-0 relative">
                   <span className="pl-3 font-mono text-[#8FBF3F] font-bold text-sm sm:text-base select-none shrink-0">&gt;</span>
                   <input
                     ref={searchInputRef}
                     type="text"
                     aria-label="Search directory by task"
-                    placeholder={isMobile ? "search tools by task..." : "search tools by task (e.g. summarize video, write code)..."}
+                    placeholder={isMobile ? "search tools by task..." : "search tools by task (e.g. summarize video)..."}
                     value={searchQuery}
                     onFocus={() => setIsDropdownOpen(true)}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
                       setIsDropdownOpen(true);
                     }}
-                    className="w-full bg-transparent pl-2 pr-3 sm:px-3 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder-slate-500 outline-none font-mono"
+                    className="w-full min-w-0 bg-transparent pl-2 pr-2 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder-slate-500 outline-none font-mono"
                   />
 
                   {searchQuery && (
@@ -808,7 +888,7 @@ export default function Home() {
                         setSearchQuery("");
                         searchInputRef.current?.focus();
                       }}
-                      className="p-2 text-slate-500 hover:text-white transition-colors cursor-pointer mr-1 sm:mr-2 shrink-0"
+                      className="p-1.5 text-slate-500 hover:text-white transition-colors cursor-pointer mr-1 shrink-0"
                       aria-label="Clear search"
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -818,10 +898,12 @@ export default function Home() {
                   )}
 
                   {!searchQuery && (
-                    <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-[#212623] bg-[#0D0F0E] px-2 py-0.5 text-[10px] text-slate-400 font-mono select-none mr-3 shrink-0">
-                      Ctrl K
+                    <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-[#212623] bg-[#0D0F0E] px-2 py-0.5 text-[10px] text-slate-400 font-mono select-none mr-2 shrink-0">
+                      {isMac ? "⌘K" : "Ctrl K"}
                     </kbd>
                   )}
+                </div>
+
                 <button
                   type="submit"
                   className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm transition-colors duration-[100ms] font-mono cursor-pointer"
@@ -829,7 +911,6 @@ export default function Home() {
                   Search
                 </button>
               </div>
-            </div>
 
               {/* Suggestions Dropdown */}
               {isDropdownOpen && searchQuery.trim() && (

@@ -14,10 +14,23 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Category Jump Dropdown state
   const [exploreOpen, setExploreOpen] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const cached = localStorage.getItem("crawlers_cached_categories");
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   const [catFilter, setCatFilter] = useState("");
+  const [isMac] = useState(() => {
+    if (typeof window !== "undefined") {
+      return navigator.platform.toUpperCase().indexOf("MAC") >= 0 || navigator.userAgent.includes("Macintosh");
+    }
+    return false;
+  });
   const exploreRef = useRef<HTMLDivElement>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -289,20 +302,20 @@ export default function Header() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search index"
-              className="w-48 lg:w-60 rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-16 text-xs font-sans text-[#EDEEEA] placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all"
+              className="w-56 lg:w-64 xl:w-72 rounded-lg border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-16 text-xs font-sans text-[#EDEEEA] placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all"
             />
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
-              title="Command Palette (Ctrl + K)"
-              className="absolute right-7 top-1.5 flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1 py-0.5 text-[9px] font-mono text-slate-400 hover:text-white hover:border-[#8FBF3F]/40 transition-colors cursor-pointer"
+              title={`Command Palette (${isMac ? "⌘K" : "Ctrl + K"})`}
+              className="absolute right-7 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-400 hover:text-white hover:border-[#8FBF3F]/40 transition-colors cursor-pointer shrink-0 select-none"
             >
-              ⌘K
+              {isMac ? "⌘K" : "Ctrl K"}
             </button>
             <button
               type="submit"
               aria-label="Submit search"
-              className="absolute right-2.5 top-2.5 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors cursor-pointer flex items-center justify-center"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -335,6 +348,7 @@ export default function Header() {
                   aria-label="User account dropdown"
                 >
                   {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img 
                       src={user.user_metadata.avatar_url || user.user_metadata.picture} 
                       alt="Profile" 
@@ -494,6 +508,7 @@ export default function Header() {
               <div className="flex flex-col space-y-2">
                 <div className="px-3 py-1 flex items-center gap-2 font-mono text-[10px] text-slate-500">
                   {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img 
                       src={user.user_metadata.avatar_url || user.user_metadata.picture} 
                       alt="Profile" 
