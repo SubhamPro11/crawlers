@@ -2,8 +2,19 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: false,
+  compress: true,
+  poweredByHeader: false,
   async headers() {
     return [
+      {
+        source: "/(.*)\\.(svg|ico|png|jpg|jpeg|webp|avif|woff2)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [
