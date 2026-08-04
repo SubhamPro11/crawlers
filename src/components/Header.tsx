@@ -282,39 +282,33 @@ export default function Header() {
         {/* Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Quick Search Input (Desktop xl+) */}
-          <div 
-            onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                window.dispatchEvent(new CustomEvent("toggle-command-palette"));
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Open command palette"
-            className="relative hidden xl:block cursor-pointer shrink-0"
-          >
+          <form onSubmit={handleSearchSubmit} className="relative hidden xl:flex items-center shrink-0">
             <input
               type="text"
-              placeholder="Search index... (Ctrl + K)"
-              readOnly
-              onClick={(e) => {
-                e.stopPropagation();
-                window.dispatchEvent(new CustomEvent("toggle-command-palette"));
-              }}
+              placeholder="Search tools by task..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search index"
-              className="w-48 lg:w-56 cursor-pointer rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-14 text-xs font-sans text-[#EDEEEA] placeholder-slate-600 outline-none hover:border-[#8FBF3F]/60 transition-all"
+              className="w-48 lg:w-60 rounded-md border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-16 text-xs font-sans text-[#EDEEEA] placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all"
             />
-            <div className="absolute right-8 top-1.5 pointer-events-none flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-500">
-              <span>⌘</span><span>K</span>
-            </div>
-            <div className="absolute right-2.5 top-2.5 text-[#8A8F87] pointer-events-none">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
+              title="Command Palette (Ctrl + K)"
+              className="absolute right-7 top-1.5 flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1 py-0.5 text-[9px] font-mono text-slate-400 hover:text-white hover:border-[#8FBF3F]/40 transition-colors cursor-pointer"
+            >
+              ⌘K
+            </button>
+            <button
+              type="submit"
+              aria-label="Submit search"
+              className="absolute right-2.5 top-2.5 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors cursor-pointer"
+            >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </div>
-          </div>
+            </button>
+          </form>
 
           {/* Quick Search Icon Button (< xl) */}
           <button 

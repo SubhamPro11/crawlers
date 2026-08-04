@@ -22,8 +22,10 @@ export default function CollectionDetailPageClient({ slug }: { slug: string }) {
   useEffect(() => {
     let active = true;
     if (!slug) return;
-    fetchCollectionData().then(() => {
-      if (!active) return;
+    Promise.resolve().then(() => {
+      if (active) {
+        fetchCollectionData();
+      }
     });
     return () => {
       active = false;

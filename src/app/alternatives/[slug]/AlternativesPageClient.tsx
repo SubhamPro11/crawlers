@@ -28,8 +28,10 @@ export default function AlternativesPageClient({ slug }: { slug: string }) {
   useEffect(() => {
     let active = true;
     if (!slug) return;
-    loadData().then(() => {
-      if (!active) return;
+    Promise.resolve().then(() => {
+      if (active) {
+        loadData();
+      }
     });
     return () => {
       active = false;

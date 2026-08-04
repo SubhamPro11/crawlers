@@ -94,9 +94,10 @@ export default function MyCollectionsClient() {
   useEffect(() => {
     let active = true;
     if (!selectedCollection) return;
-    
-    loadCollectionTools(selectedCollection.id).then(() => {
-      if (!active) return;
+    Promise.resolve().then(() => {
+      if (active) {
+        loadCollectionTools(selectedCollection.id);
+      }
     });
 
     return () => {

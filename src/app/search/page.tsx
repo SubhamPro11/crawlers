@@ -13,7 +13,6 @@ function SearchContent() {
   const router = useRouter();
   const query = searchParams.get("q") || "";
   
-  const [prevQuery, setPrevQuery] = useState(query);
   const [searchInput, setSearchInput] = useState(query);
   const [results, setResults] = useState<Tool[]>([]);
 
@@ -30,17 +29,17 @@ function SearchContent() {
 
   const { selectedIndex } = useVimNavigation(results.length, handleSelectTool);
 
-  if (query !== prevQuery) {
-    setPrevQuery(query);
-    setSearchInput(query);
-  }
-
   useEffect(() => {
-    const performSearch = async () => {
-      const searchResults = await mockDb.searchTools(query);
-      setResults(searchResults);
+    let active = true;
+    mockDb.searchTools(query).then((searchResults) => {
+      if (active) {
+        setSearchInput(query);
+        setResults(searchResults);
+      }
+    });
+    return () => {
+      active = false;
     };
-    performSearch();
   }, [query]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
