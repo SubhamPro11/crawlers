@@ -869,7 +869,7 @@ export default function Home() {
               A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
             </p>
 
-            <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
+            <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative" role="search">
               <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-2xl shadow-black/40 transition-all duration-200 gap-2 font-mono">
                 <div className="flex items-center flex-1 min-w-0 relative">
                   <span className="pl-3 font-mono text-[#8FBF3F] font-bold text-sm sm:text-base select-none shrink-0">&gt;</span>
@@ -954,6 +954,9 @@ export default function Home() {
                             }}
                             className="suggestion-row flex items-center justify-between mx-2 my-1 px-3 py-2 text-xs text-[#EDEEEA] border border-transparent hover:border-[#8FBF3F]/35 hover:bg-[#8FBF3F]/5 rounded-lg cursor-pointer transition-colors duration-[100ms] group"
                             style={{ animationDelay: `${index * 20}ms` }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Go to ${item.type}: ${item.name}`}
                           >
                             <div className="flex items-center gap-2 truncate">
                               {isTool ? (
@@ -1081,6 +1084,9 @@ export default function Home() {
                   }
                 }}
                 className="snap-start flex-shrink-0 w-80 rounded-xl border border-[#212623] bg-gradient-to-br from-[#131615] to-[#0A0D0B] p-6 shadow-lg hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5 transition-all duration-300 group cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`View details for ${tool.name}`}
               >
                 <div className="flex justify-between items-start gap-2 mb-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs">
@@ -1196,6 +1202,7 @@ export default function Home() {
               <button
                 onClick={() => setCategorySearchQuery("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
+                aria-label="Clear category search"
               >
                 ✕
               </button>
@@ -1204,7 +1211,7 @@ export default function Home() {
         </div>
 
         {/* Sticky Group Jump Nav */}
-        <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative">
+        <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative" role="navigation" aria-label="Category section navigation">
           {showLeftFade && (
             <>
               <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-25" />
@@ -1289,6 +1296,7 @@ export default function Home() {
             <button
               onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
               className="text-xs text-rose-400 hover:text-rose-300 font-sans font-semibold transition-colors"
+              aria-label="Clear active category filter"
             >
               Clear filter
             </button>

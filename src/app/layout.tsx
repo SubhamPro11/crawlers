@@ -49,11 +49,20 @@ export const metadata: Metadata = {
     siteName: "Crawlers",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/crawlers-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Crawlers — AI tools directory organized by use case",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Crawlers — Find the Exact AI Tool for the Job by Use Case",
     description: "Curated AI tools directory indexing 170+ categories and 1,400+ AI tools by use case. Search and find the exact AI tool for writing, design, audio, and developer workflows.",
+    images: ["/crawlers-preview.png"],
   },
   robots: {
     index: true,
