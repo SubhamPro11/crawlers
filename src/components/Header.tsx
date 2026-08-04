@@ -118,7 +118,7 @@ export default function Header() {
             <span>crawlers //</span>
             <span className="h-3 w-1.5 bg-[#8FBF3F] cursor-blink inline-block" />
           </Link>
-          <nav className="hidden xl:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6">
             {/* Interactive Category Jump Dropdown */}
             <div className="relative" ref={exploreRef}>
               <button
@@ -310,7 +310,7 @@ export default function Header() {
             </button>
           </form>
 
-          {/* Quick Search Icon Button (< xl) */}
+          {/* Search Toggle Mobile */}
           <button 
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))} 
@@ -323,8 +323,8 @@ export default function Header() {
             </svg>
           </button>
 
-          {/* Auth section & Submit Link - Always visible at all screen widths */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Desktop Auth section & Submit Link */}
+          <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -351,7 +351,7 @@ export default function Header() {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-md border border-[#212623] bg-[#131615] py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                  <div className="absolute right-0 mt-2 w-48 rounded-md border border-[#212623] bg-[#131615] py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="px-4 py-2 border-b border-[#212623]/80 text-[10px] text-slate-500 truncate max-w-full font-mono">
                       {user.email}
                     </div>
@@ -375,39 +375,39 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleSignIn}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-2.5 sm:px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200 shrink-0"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200"
               >
                 <svg className="h-3.5 w-3.5 text-[#8FBF3F] pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.68 0-8.473-3.882-8.473-8.514 0-4.632 3.793-8.515 8.473-8.515 2.502 0 4.263.957 5.372 2.036l3.12-3.12C18.665.926 15.69 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c6.96 0 11.52-4.896 11.52-11.724 0-.785-.078-1.547-.22-2.22H12.24z"/>
                 </svg>
-                <span className="hidden sm:inline">Sign In</span>
+                <span>Sign In</span>
               </button>
             )}
 
             <Link
               href="/submit"
-              className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-2.5 sm:px-3.5 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] active:bg-[#6c9130] transition-colors duration-[100ms] shrink-0 whitespace-nowrap"
+              className="inline-flex h-8 items-center justify-center rounded-md bg-[#8FBF3F] px-4 text-xs font-sans font-bold text-[#0D0F0E] hover:bg-[#7ba235] active:bg-[#6c9130] transition-colors duration-[100ms]"
             >
               Submit Bot
             </Link>
           </div>
 
-          {/* Hamburger Menu Toggle (< xl) */}
+          {/* Hamburger Menu Toggle (Mobile/Tablet) */}
           <button
             type="button"
             onClick={() => {
               setMobileMenuOpen(!mobileMenuOpen);
               setSearchOpen(false);
             }}
-            className="xl:hidden flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors shrink-0"
+            className="md:hidden flex items-center justify-center h-11 w-11 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
@@ -441,7 +441,7 @@ export default function Header() {
 
       {/* Mobile Menu Dropdown Overlay */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-t border-[#212623] bg-[#0D0F0E] px-4 py-4 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="md:hidden border-t border-[#212623] bg-[#0D0F0E] px-4 py-4 space-y-4">
           {/* Mobile Navigation Links */}
           <div className="flex flex-col space-y-2 font-mono text-xs">
             <Link 

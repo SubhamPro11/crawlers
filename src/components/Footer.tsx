@@ -3,16 +3,16 @@ import { CATEGORY_GROUPS } from "@/data/mockDb";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#212623] bg-[#0A0C0B] py-10 sm:py-12 text-[#8A8F87]">
+    <footer className="border-t border-[#212623] bg-[#0A0C0B] py-12 text-[#8A8F87]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Logo & Description */}
-          <div className="md:col-span-2 space-y-3">
-            <Link href="/" className="inline-flex items-center gap-1.5 font-mono text-sm font-bold tracking-tight text-white group">
-              <span className="text-[#8FBF3F] group-hover:translate-x-0.5 transition-transform duration-200">&gt;</span>
+          <div className="md:col-span-2">
+            <Link href="/" className="flex items-center gap-1.5 font-mono text-sm font-bold tracking-tight text-white mb-4">
+              <span className="text-[#8FBF3F]">&gt;</span>
               <span>crawlers //</span>
             </Link>
-            <p className="text-xs leading-relaxed max-w-md text-[#8A8F87] font-sans">
+            <p className="text-xs leading-5 max-w-xs text-[#8A8F87] font-sans">
               Discover AI bots and command utilities organized strictly by the job to be done. We index, verify, and link directly to external creators.
             </p>
           </div>
@@ -47,8 +47,8 @@ export default function Footer() {
 
           {/* Legal / Policy */}
           <div>
-            <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-3">Compliance</h3>
-            <p className="text-[11px] leading-relaxed text-[#8A8F87]/80 font-sans">
+            <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-4">Compliance</h3>
+            <p className="text-[10px] leading-relaxed text-[#8A8F87]/80 font-sans">
               We built Crawlers to catalog AI tools by use case. Our crawler searches Product Hunt and GitHub feeds, checks robots.txt to respect site policies, and paraphrases marketing copy in our own words to avoid copyright issues. We don&apos;t embed or iframe external tools — we link you straight to the source.
             </p>
           </div>
@@ -69,7 +69,6 @@ export default function Footer() {
               Submit Entry
             </Link>
             <span className="text-[#212623]">|</span>
-            <span className="text-[#8A8F87]/60 font-normal">Link-out Only</span>
           </div>
         </div>
       </div>

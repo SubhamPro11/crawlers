@@ -2,19 +2,14 @@
 
 > crawlers // A curated AI tools directory index organized by use case, not by brand.
 
-## Description
-Crawlers aggregates and indexes active AI tools, platforms, and conversational agents. It groups them logically into directory sections (such as Text & Writing, Developer & Tech Tools, Data, Models & Security) to help users and AI agents find exact tools for specific workflows.
+## Purpose
+Crawlers aggregates and indexes active AI tools, platforms, and conversational agents. It groups them logically into 10 high-level sections (such as Text & Writing, Developer & Tech Tools, Data, Models & Security) to help users find exact solutions based on their task requirements.
 
-## Key Resources
-- [Homepage](https://crawlers.dpdns.org/): Main index and search interface.
-- [AI Extensions](https://crawlers.dpdns.org/category/ai-extensions): Curated browser extensions and plugins.
-- [API Index](https://crawlers.dpdns.org/api): Machine-readable endpoints for categories and tools.
-- [Tool Comparison](https://crawlers.dpdns.org/compare): Side-by-side AI tool capability matrix.
-- [Sitemap](https://crawlers.dpdns.org/sitemap.xml): Full XML index of active categories and tools.
-
-## API Endpoints
-- Category Index: `GET https://crawlers.dpdns.org/api/v1/categories`
-- Tools Index: `GET https://crawlers.dpdns.org/api/v1/tools`
+## Site Structure
+- Homepage: https://crawlers.dpdns.org/ — Main index and search interface.
+- Categories: https://crawlers.dpdns.org/category/[slug] — Detailed list of indexed tools for a specific usecase (e.g. copywriting, code-assistant, models).
+- Tools: https://crawlers.dpdns.org/tool/[id] — Reviews, stats, pricing models, and direct connection references for individual AI platforms.
+- Tags: https://crawlers.dpdns.org/tag/[tag-name] — Cross-category tag search matching specific technology stacks or fields (e.g. llm, web3, voice).
 
 ## Compliance & Policy
-Crawlers indexes tools via automated crawlers respecting robots.txt directives, paraphrasing descriptions to maintain originality. Direct link-out only to original sources.
+Crawlers crawls public indexes respecting robots.txt directives, paraphrasing descriptions to maintain originality. It contains link-out references directly to tool sources.

@@ -111,19 +111,19 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
       {/* Statistics Counters */}
       <div 
         ref={containerRef}
-        className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 rounded-xl border border-[#212623]/80 bg-[#131615]/40 text-center"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-xl border border-[#212623]/80 bg-[#131615]/40 text-center"
       >
         {stats.map((s, idx) => (
           <div 
             key={idx} 
-            className={`space-y-1 transition-opacity duration-500 flex flex-col justify-center items-center py-2 ${
+            className={`space-y-1 transition-opacity duration-500 ${
               !s.isNumeric && !hasTriggered ? "opacity-0" : "opacity-100"
             }`}
           >
-            <div className={`text-xl xs:text-2xl sm:text-3xl font-bold font-serif ${s.isDate ? "text-white/80 text-base sm:text-2xl" : "text-[#8FBF3F]"}`}>
+            <div className={`text-2xl sm:text-3xl font-bold font-serif ${s.isDate ? "text-white/80" : "text-[#8FBF3F]"}`}>
               {s.value}
             </div>
-            <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-500">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
               {s.label}
             </div>
           </div>

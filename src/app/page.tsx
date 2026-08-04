@@ -393,7 +393,7 @@ export default function Home() {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
-  const [showRightFade, setShowRightFade] = useState(true);
+  const [showRightFade, setShowRightFade] = useState(false);
 
   const checkScroll = useCallback(() => {
     const el = scrollContainerRef.current;
@@ -423,12 +423,8 @@ export default function Home() {
 
   useEffect(() => {
     checkScroll();
-    const timer = setTimeout(checkScroll, 100);
     window.addEventListener("resize", checkScroll);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", checkScroll);
-    };
+    return () => window.removeEventListener("resize", checkScroll);
   }, [checkScroll, filteredCategories]);
 
   const loadData = useCallback(async () => {
@@ -776,18 +772,17 @@ export default function Home() {
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
 
         <div className="relative mx-auto max-w-3xl">
-          <h1 className="font-serif text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-white mb-4 sm:mb-6 min-h-[1.2em]">
+          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6 min-h-[1.2em]">
             {renderTypedHeading()}
           </h1>
           
           <div className={`transition-opacity duration-[200ms] ${
             isTypingComplete ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}>
-            <p className="text-slate-400 text-xs sm:text-base lg:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans px-2">
+            <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
               A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
             </p>
 
-            {/* Large Use-case Search Bar */}
             <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative">
               <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-2xl shadow-black/40 transition-all duration-200 gap-2 sm:gap-0 font-mono">
                 <div className="flex items-center flex-1 w-full relative">
@@ -827,8 +822,6 @@ export default function Home() {
                       Ctrl K
                     </kbd>
                   )}
-                </div>
-
                 <button
                   type="submit"
                   className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm transition-colors duration-[100ms] font-mono cursor-pointer"
@@ -836,10 +829,11 @@ export default function Home() {
                   Search
                 </button>
               </div>
+            </div>
 
               {/* Suggestions Dropdown */}
               {isDropdownOpen && searchQuery.trim() && (
-                <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left max-h-[60vh] overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left">
                   {searchQuery.trim() !== debouncedQuery.trim() ? (
                     <div className="px-4 py-4 text-xs text-slate-500 font-mono flex items-center gap-1">
                       <span>querying_index</span>
@@ -899,8 +893,8 @@ export default function Home() {
 
             {/* Quick Filter Chips */}
             {popularQueries.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-5 font-mono text-[10px] text-[#8A8F87] px-2">
-                <span className="text-[9px] uppercase font-bold text-slate-500 mr-1">popular:</span>
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-5 font-mono text-[10px] text-[#8A8F87]">
+                <span className="text-[9px] uppercase font-bold text-slate-500">popular:</span>
                 {popularQueries.map((queryText, idx) => (
                   <button
                     key={idx}
