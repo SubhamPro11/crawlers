@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
@@ -140,6 +140,203 @@ const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
   ]
 };
 
+// Explicit mapping of category slugs to unique, hand-picked Lucide icons
+const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  // Text & Writing
+  "writing-assistants": PenTool,
+  "copywriting": Type,
+  "storytelling": BookOpen,
+  "transcription": Mic,
+  "translator": Languages,
+  "localization": Globe,
+  "resume-tools": Briefcase,
+  "document-ai": FileSearch,
+  "documentation": Book,
+  "note-taking-apps": StickyNote,
+  "newsletters": Mail,
+  "ai-newsletters": Inbox,
+
+  // Audio, Video & Media
+  "video": Film,
+  "video-editor": Scissors,
+  "video-generator": Clapperboard,
+  "video-enhancer": Wand2,
+  "video-subtitling": Captions,
+  "talking-avatar-generator": Tv,
+  "animation": Sparkles,
+  "music-generation": Music,
+  "audio": Volume2,
+  "voice-cloning": Waves,
+  "podcast": Podcast,
+  "dubbing": Mic2,
+  "text-to-speech": AudioLines,
+
+  // Design & 3D Creative
+  "image-generation": ImageIcon,
+  "image-editing": Paintbrush,
+  "background-remover": Eraser,
+  "logo-generator": Shapes,
+  "character-design": User,
+  "infographics": PieChart,
+  "graphic-design": Palette,
+  "fashion": Shirt,
+  "architecture": Compass,
+  "ar-vr": Glasses,
+  "3d": Box,
+  "3d-printing": Printer,
+  "meme-generator": Laugh,
+  "creative-media": Layers,
+
+  // Productivity & Business
+  "productivity": Timer,
+  "project-management": ListTodo,
+  "calendar-scheduling": Calendar,
+  "meeting-assistants": Users,
+  "crm": HeartHandshake,
+  "hr": UserPlus,
+  "recruiting": UserSearch,
+  "compliance": Scale,
+  "tax-accounting": Calculator,
+  "contract-management": FileSignature,
+  "business-tools": Briefcase,
+  "email-assistants": Send,
+  "spreadsheets": Table,
+  "mind-mapping": Network,
+  "automation": Zap,
+  "workflow-automation": Workflow,
+  "diagramming": GitFork,
+  "events": Ticket,
+  "nonprofit": Heart,
+  "presentation": Presentation,
+  "finance": Landmark,
+  "fintech": Coins,
+  "knowledge-management": FolderOpen,
+
+  // Developer & Tech Tools
+  "developer-tools": Terminal,
+  "devtools": Command,
+  "code-assistant": Code,
+  "software-testing": BugPlay,
+  "no-code": Blocks,
+  "app-builders": Smartphone,
+  "website-builders": Laptop,
+  "cloud-management": Cloud,
+  "debugging": Bug,
+  "web3": Coins,
+  "robotics": Cpu,
+  "iot": Wifi,
+  "prompt-tools": Wrench,
+  "api-tools": Plug,
+  "ai-extensions": Puzzle,
+  "extensions-chatgpt": Puzzle,
+
+  // Data, Models & Security
+  "database-tools": Database,
+  "observability": Activity,
+  "cybersecurity": Lock,
+  "privacy": EyeOff,
+  "identity": Fingerprint,
+  "synthetic-data": Copy,
+  "data-labeling": Tag,
+  "data": Folder,
+  "models": GitBranch,
+  "leaderboards-benchmarks": Trophy,
+  "computer-vision": Eye,
+  "content-moderation": ShieldAlert,
+
+  // Marketing, Sales & SEO
+  "marketing": Megaphone,
+  "sales-tools": DollarSign,
+  "lead-generation": Magnet,
+  "seo": TrendingUp,
+  "social-media-tools": Share2,
+  "ad-generator": Award,
+  "e-commerce": ShoppingBag,
+  "market-research": BarChart3,
+
+  // Search, Chat & AI Agents
+  "search-research": Search,
+  "search-engines": Globe,
+  "local-search-engines": MapPin,
+  "ai-directories": FolderOpen,
+  "chatbot-builders": Settings,
+  "chatbots": MessageSquare,
+  "ai-agents": Bot,
+  "personal-assistants": UserCheck,
+  "ai-companion": Smile,
+  "customer-support": LifeBuoy,
+  "general-reasoning": Brain,
+  "sentiment-analysis": Gauge,
+  "research-tools": Notebook,
+
+  // Education & Lifestyle
+  "academia": GraduationCap,
+  "learning-tools": Library,
+  "language-learning": Languages,
+  "reading": BookOpen,
+  "parenting": Users,
+  "dating": Heart,
+  "wellness": Leaf,
+  "fitness": Dumbbell,
+  "sports-analytics": Activity,
+  "pets": PawPrint,
+  "travel": Compass,
+  "others": HelpCircle,
+  "accessibility": UserCheck,
+  "food": Apple,
+  "gaming": Gamepad2,
+  "job-tools": Briefcase,
+  "nutrition": Utensils,
+  "mental-health": Brain,
+
+  // Science, Health & Industry
+  "farming": Sprout,
+  "construction": Hammer,
+  "manufacturing": Factory,
+  "real-estate": HomeIcon,
+  "home-design": Layout,
+  "insurance": ShieldCheck,
+  "government": Building,
+  "healthcare": Stethoscope,
+  "telemedicine": HeartPulse,
+  "medical-imaging": Heart,
+  "drug-discovery": Pill,
+  "biotech": Dna,
+  "cleantech": Recycle,
+  "energy": Zap,
+  "climate": CloudLightning,
+  "weather": CloudSun,
+  "space-tech": Rocket,
+  "legal-assistants": Scale,
+  "patent-tools": FileText,
+  "fleet-management": Truck,
+  "supply-chain": Package,
+  "geospatial": Globe
+};
+
+// Get icon for categories
+const getCategoryIcon = (slug: string) => {
+  const s = (slug || "").toLowerCase();
+  const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
+
+  let IconComponent = CATEGORY_ICON_MAP[s];
+
+  if (!IconComponent) {
+    if (s.includes("code") || s.includes("dev") || s.includes("script") || s.includes("program")) IconComponent = Code;
+    else if (s.includes("search") || s.includes("find") || s.includes("query")) IconComponent = Search;
+    else if (s.includes("chat") || s.includes("agent") || s.includes("bot")) IconComponent = Bot;
+    else if (s.includes("write") || s.includes("text") || s.includes("doc") || s.includes("note")) IconComponent = FileText;
+    else if (s.includes("image") || s.includes("photo") || s.includes("art") || s.includes("draw")) IconComponent = ImageIcon;
+    else if (s.includes("audio") || s.includes("voice") || s.includes("sound") || s.includes("music")) IconComponent = AudioLines;
+    else if (s.includes("data") || s.includes("db") || s.includes("analytic")) IconComponent = Database;
+    else if (s.includes("security") || s.includes("shield") || s.includes("lock") || s.includes("privat")) IconComponent = Lock;
+    else if (s.includes("market") || s.includes("sale") || s.includes("ad") || s.includes("lead")) IconComponent = Megaphone;
+    else IconComponent = Sparkles;
+  }
+
+  return <IconComponent className={baseClass} strokeWidth={2} />;
+};
+
 interface CategoryGroupSectionProps {
   group: { id: string; name: string };
   groupCategories: Category[];
@@ -148,7 +345,7 @@ interface CategoryGroupSectionProps {
   getCategoryIcon: (slug: string) => React.ReactNode;
 }
 
-function CategoryGroupSection({
+const CategoryGroupSection = memo(function CategoryGroupSection({
   group,
   groupCategories,
   sortedGroupCategories,
@@ -263,7 +460,7 @@ function CategoryGroupSection({
       )}
     </div>
   );
-}
+});
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -468,18 +665,24 @@ export default function Home() {
   }, [filteredCategories, toolCounts]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollTickingRef = useRef(false);
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(false);
 
   const checkScroll = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (el) {
-      const { scrollLeft, scrollWidth, clientWidth } = el;
-      const nextLeft = scrollLeft > 2;
-      const nextRight = scrollLeft < scrollWidth - clientWidth - 2;
-      setShowLeftFade(prev => prev !== nextLeft ? nextLeft : prev);
-      setShowRightFade(prev => prev !== nextRight ? nextRight : prev);
-    }
+    if (scrollTickingRef.current) return;
+    scrollTickingRef.current = true;
+    requestAnimationFrame(() => {
+      const el = scrollContainerRef.current;
+      if (el) {
+        const { scrollLeft, scrollWidth, clientWidth } = el;
+        const nextLeft = scrollLeft > 2;
+        const nextRight = scrollLeft < scrollWidth - clientWidth - 2;
+        setShowLeftFade(prev => prev !== nextLeft ? nextLeft : prev);
+        setShowRightFade(prev => prev !== nextRight ? nextRight : prev);
+      }
+      scrollTickingRef.current = false;
+    });
   }, []);
 
   const handleScroll = () => {
@@ -646,203 +849,6 @@ export default function Home() {
 
     return list.slice(0, 5);
   }, [debouncedQuery, categories, recentTools]);
-
-  // Explicit mapping of category slugs to unique, hand-picked Lucide icons
-  const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
-    // Text & Writing
-    "writing-assistants": PenTool,
-    "copywriting": Type,
-    "storytelling": BookOpen,
-    "transcription": Mic,
-    "translator": Languages,
-    "localization": Globe,
-    "resume-tools": Briefcase,
-    "document-ai": FileSearch,
-    "documentation": Book,
-    "note-taking-apps": StickyNote,
-    "newsletters": Mail,
-    "ai-newsletters": Inbox,
-
-    // Audio, Video & Media
-    "video": Film,
-    "video-editor": Scissors,
-    "video-generator": Clapperboard,
-    "video-enhancer": Wand2,
-    "video-subtitling": Captions,
-    "talking-avatar-generator": Tv,
-    "animation": Sparkles,
-    "music-generation": Music,
-    "audio": Volume2,
-    "voice-cloning": Waves,
-    "podcast": Podcast,
-    "dubbing": Mic2,
-    "text-to-speech": AudioLines,
-
-    // Design & 3D Creative
-    "image-generation": ImageIcon,
-    "image-editing": Paintbrush,
-    "background-remover": Eraser,
-    "logo-generator": Shapes,
-    "character-design": User,
-    "infographics": PieChart,
-    "graphic-design": Palette,
-    "fashion": Shirt,
-    "architecture": Compass,
-    "ar-vr": Glasses,
-    "3d": Box,
-    "3d-printing": Printer,
-    "meme-generator": Laugh,
-    "creative-media": Layers,
-
-    // Productivity & Business
-    "productivity": Timer,
-    "project-management": ListTodo,
-    "calendar-scheduling": Calendar,
-    "meeting-assistants": Users,
-    "crm": HeartHandshake,
-    "hr": UserPlus,
-    "recruiting": UserSearch,
-    "compliance": Scale,
-    "tax-accounting": Calculator,
-    "contract-management": FileSignature,
-    "business-tools": Briefcase,
-    "email-assistants": Send,
-    "spreadsheets": Table,
-    "mind-mapping": Network,
-    "automation": Zap,
-    "workflow-automation": Workflow,
-    "diagramming": GitFork,
-    "events": Ticket,
-    "nonprofit": Heart,
-    "presentation": Presentation,
-    "finance": Landmark,
-    "fintech": Coins,
-    "knowledge-management": FolderOpen,
-
-    // Developer & Tech Tools
-    "developer-tools": Terminal,
-    "devtools": Command,
-    "code-assistant": Code,
-    "software-testing": BugPlay,
-    "no-code": Blocks,
-    "app-builders": Smartphone,
-    "website-builders": Laptop,
-    "cloud-management": Cloud,
-    "debugging": Bug,
-    "web3": Coins,
-    "robotics": Cpu,
-    "iot": Wifi,
-    "prompt-tools": Wrench,
-    "api-tools": Plug,
-    "ai-extensions": Puzzle,
-    "extensions-chatgpt": Puzzle,
-
-    // Data, Models & Security
-    "database-tools": Database,
-    "observability": Activity,
-    "cybersecurity": Lock,
-    "privacy": EyeOff,
-    "identity": Fingerprint,
-    "synthetic-data": Copy,
-    "data-labeling": Tag,
-    "data": Folder,
-    "models": GitBranch,
-    "leaderboards-benchmarks": Trophy,
-    "computer-vision": Eye,
-    "content-moderation": ShieldAlert,
-
-    // Marketing, Sales & SEO
-    "marketing": Megaphone,
-    "sales-tools": DollarSign,
-    "lead-generation": Magnet,
-    "seo": TrendingUp,
-    "social-media-tools": Share2,
-    "ad-generator": Award,
-    "e-commerce": ShoppingBag,
-    "market-research": BarChart3,
-
-    // Search, Chat & AI Agents
-    "search-research": Search,
-    "search-engines": Globe,
-    "local-search-engines": MapPin,
-    "ai-directories": FolderOpen,
-    "chatbot-builders": Settings,
-    "chatbots": MessageSquare,
-    "ai-agents": Bot,
-    "personal-assistants": UserCheck,
-    "ai-companion": Smile,
-    "customer-support": LifeBuoy,
-    "general-reasoning": Brain,
-    "sentiment-analysis": Gauge,
-    "research-tools": Notebook,
-
-    // Education & Lifestyle
-    "academia": GraduationCap,
-    "learning-tools": Library,
-    "language-learning": Languages,
-    "reading": BookOpen,
-    "parenting": Users,
-    "dating": Heart,
-    "wellness": Leaf,
-    "fitness": Dumbbell,
-    "sports-analytics": Activity,
-    "pets": PawPrint,
-    "travel": Compass,
-    "others": HelpCircle,
-    "accessibility": UserCheck,
-    "food": Apple,
-    "gaming": Gamepad2,
-    "job-tools": Briefcase,
-    "nutrition": Utensils,
-    "mental-health": Brain,
-
-    // Science, Health & Industry
-    "farming": Sprout,
-    "construction": Hammer,
-    "manufacturing": Factory,
-    "real-estate": HomeIcon,
-    "home-design": Layout,
-    "insurance": ShieldCheck,
-    "government": Building,
-    "healthcare": Stethoscope,
-    "telemedicine": HeartPulse,
-    "medical-imaging": Heart,
-    "drug-discovery": Pill,
-    "biotech": Dna,
-    "cleantech": Recycle,
-    "energy": Zap,
-    "climate": CloudLightning,
-    "weather": CloudSun,
-    "space-tech": Rocket,
-    "legal-assistants": Scale,
-    "patent-tools": FileText,
-    "fleet-management": Truck,
-    "supply-chain": Package,
-    "geospatial": Globe
-  };
-
-  // Get icon for categories
-  const getCategoryIcon = (slug: string) => {
-    const s = (slug || "").toLowerCase();
-    const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
-
-    let IconComponent = CATEGORY_ICON_MAP[s];
-
-    if (!IconComponent) {
-      if (s.includes("code") || s.includes("dev") || s.includes("script") || s.includes("program")) IconComponent = Code;
-      else if (s.includes("search") || s.includes("find") || s.includes("query")) IconComponent = Search;
-      else if (s.includes("chat") || s.includes("agent") || s.includes("bot")) IconComponent = Bot;
-      else if (s.includes("write") || s.includes("text") || s.includes("doc") || s.includes("note")) IconComponent = FileText;
-      else if (s.includes("image") || s.includes("photo") || s.includes("art") || s.includes("draw")) IconComponent = ImageIcon;
-      else if (s.includes("audio") || s.includes("voice") || s.includes("sound") || s.includes("music")) IconComponent = AudioLines;
-      else if (s.includes("data") || s.includes("db") || s.includes("analytic")) IconComponent = Database;
-      else if (s.includes("security") || s.includes("shield") || s.includes("lock") || s.includes("privat")) IconComponent = Lock;
-      else if (s.includes("market") || s.includes("sale") || s.includes("ad") || s.includes("lead")) IconComponent = Megaphone;
-      else IconComponent = Sparkles;
-    }
-
-    return <IconComponent className={baseClass} strokeWidth={2} />;
-  };
 
   return (
     <div className="flex flex-col flex-1">

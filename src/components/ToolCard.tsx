@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Tool, mockDb, slugify } from "@/data/mockDb";
@@ -31,7 +31,7 @@ interface ToolCardProps {
   isFocused?: boolean;
 }
 
-export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: ToolCardProps) {
+function ToolCard({ tool, categoryName, onRefresh, isFocused }: ToolCardProps) {
   const router = useRouter();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
@@ -243,3 +243,5 @@ export default function ToolCard({ tool, categoryName, onRefresh, isFocused }: T
     </>
   );
 }
+
+export default memo(ToolCard);
