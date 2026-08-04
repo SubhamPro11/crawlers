@@ -11,7 +11,7 @@ const eslintConfig = [
       "**/build/**",
       "next-env.d.ts",
       "inspect_tools.js",
-      "scripts/importMd.js"
+      "scripts/**"
     ]
   },
   ...nextVitals,

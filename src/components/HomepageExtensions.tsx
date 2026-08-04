@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { Tool, Category } from "@/data/mockDb";
 
 interface HomepageExtensionsProps {
   totalTools: number;
@@ -15,12 +13,6 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
   const [displayCategories, setDisplayCategories] = useState(totalCategories);
   const [hasTriggered, setHasTriggered] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setDisplayTools(totalTools);
-    setDisplayCategories(totalCategories);
-    setHasTriggered(true);
-  }, [totalTools, totalCategories]);
 
   useEffect(() => {
     if (hasTriggered) return;

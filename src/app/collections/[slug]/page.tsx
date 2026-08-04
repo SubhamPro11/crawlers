@@ -62,7 +62,7 @@ export async function generateStaticParams() {
     return collections.map((col) => ({
       slug: col.slug,
     }));
-  } catch (err) {
+  } catch (_err) {
     return [];
   }
 }

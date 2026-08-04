@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchStackBySlug, Stack } from "@/lib/stacks";
 import ToolCard from "@/components/ToolCard";
@@ -8,21 +8,20 @@ import { TerminalLoader } from "@/components/TerminalLoader";
 
 export default function StackDetailPageClient({ slug }: { slug: string }) {
   const [stack, setStack] = useState<Stack | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadStack = useCallback(async () => {
-    if (!slug) {
-      setIsLoading(false);
-      return;
-    }
-    const res = await fetchStackBySlug(slug);
-    setStack(res);
-    setIsLoading(false);
-  }, [slug]);
+  const [isLoading, setIsLoading] = useState<boolean>(Boolean(slug));
 
   useEffect(() => {
-    loadStack();
-  }, [loadStack]);
+    let active = true;
+    if (!slug) return;
+    fetchStackBySlug(slug).then((res) => {
+      if (!active) return;
+      setStack(res);
+      setIsLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [slug]);
 
   if (isLoading) {
     return <TerminalLoader message="loading_workflow_stack" />;

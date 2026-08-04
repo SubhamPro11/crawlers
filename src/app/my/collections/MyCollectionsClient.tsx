@@ -78,7 +78,6 @@ export default function MyCollectionsClient() {
     return () => subscription.unsubscribe();
   }, [loadCollections]);
 
-  // Load tools for selected collection
   const loadCollectionTools = useCallback(async (colId: string) => {
     setIsToolsLoading(true);
     const toolIds = await fetchCollectionToolIds(colId);
@@ -88,15 +87,21 @@ export default function MyCollectionsClient() {
       return;
     }
     const allTools = await mockDb.getTools();
-    const matched = allTools.filter(t => toolIds.includes(t.id));
-    setCollectionTools(matched);
+    setCollectionTools(allTools.filter(t => toolIds.includes(t.id)));
     setIsToolsLoading(false);
   }, []);
 
   useEffect(() => {
-    if (selectedCollection) {
-      loadCollectionTools(selectedCollection.id);
-    }
+    let active = true;
+    if (!selectedCollection) return;
+    
+    loadCollectionTools(selectedCollection.id).then(() => {
+      if (!active) return;
+    });
+
+    return () => {
+      active = false;
+    };
   }, [selectedCollection, loadCollectionTools]);
 
   const handleCreateCollection = async (e: React.FormEvent) => {

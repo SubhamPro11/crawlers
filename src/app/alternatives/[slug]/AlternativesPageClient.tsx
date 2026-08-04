@@ -12,14 +12,10 @@ export default function AlternativesPageClient({ slug }: { slug: string }) {
   const [categorySlug, setCategorySlug] = useState<string>("");
   const [alternatives, setAlternatives] = useState<Tool[]>([]);
   const [totalCategoryCount, setTotalCategoryCount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(Boolean(slug));
 
   const loadData = useCallback(async () => {
-    if (!slug) {
-      setIsLoading(false);
-      return;
-    }
-
+    if (!slug) return;
     const res = await mockDb.getAlternativesForTool(slug);
     setTargetTool(res.targetTool);
     setCategoryName(res.categoryName);
@@ -30,8 +26,15 @@ export default function AlternativesPageClient({ slug }: { slug: string }) {
   }, [slug]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let active = true;
+    if (!slug) return;
+    loadData().then(() => {
+      if (!active) return;
+    });
+    return () => {
+      active = false;
+    };
+  }, [slug, loadData]);
 
   if (isLoading) {
     return <TerminalLoader message="querying_alternatives_index" />;

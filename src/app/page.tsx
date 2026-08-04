@@ -237,18 +237,24 @@ function CategoryGroupSection({
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      localStorage.removeItem("crawlers_cached_tools");
+      const cachedCats = localStorage.getItem("crawlers_cached_categories");
+      return cachedCats ? JSON.parse(cachedCats) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState<boolean>(categories.length === 0);
   const [recentTools, setRecentTools] = useState<Tool[]>([]);
   const [toolCounts, setToolCounts] = useState<Record<string, number>>({});
-  
-  const [favoriteTools, setFavoriteTools] = useState<Tool[]>([]);
-  const [recentToolsList, setRecentToolsList] = useState<Tool[]>([]);
+  const [favoriteTools, _setFavoriteTools] = useState<Tool[]>([]);
+  const [recentToolsList, _setRecentToolsList] = useState<Tool[]>([]);
   const [trendingTools, setTrendingTools] = useState<Tool[]>([]);
   const [totalToolsCount, setTotalToolsCount] = useState<number>(0);
   const [lastUpdatedStr, setLastUpdatedStr] = useState<string>("today");
-
-  const [tools, setTools] = useState<Tool[]>([]);
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [popularQueries, setPopularQueries] = useState<string[]>([]);
@@ -425,21 +431,6 @@ export default function Home() {
     };
   }, [checkScroll, filteredCategories]);
 
-  // Load lightweight cached categories instantly on mount
-  useEffect(() => {
-    try {
-      localStorage.removeItem("crawlers_cached_tools"); // Cleanup legacy heavy memory blob
-      const cachedCats = localStorage.getItem("crawlers_cached_categories");
-      if (cachedCats) {
-        const cats = JSON.parse(cachedCats) as Category[];
-        setCategories(cats);
-        setIsCategoriesLoading(false);
-      }
-    } catch (e) {
-      console.error("Error reading categories cache on mount:", e);
-    }
-  }, []);
-
   const loadData = useCallback(async () => {
     try {
       const [dbCategories, counts, recent, totalCount, queries] = await Promise.all([
@@ -557,7 +548,7 @@ export default function Home() {
     });
 
     // 2. Tools matches
-    tools.forEach(tool => {
+    recentTools.forEach(tool => {
       const name = tool.name.toLowerCase();
       const desc = tool.short_description.toLowerCase();
       const matchesTag = tool.tags?.some(t => t.toLowerCase().includes(query)) || false;
@@ -578,7 +569,7 @@ export default function Home() {
     });
 
     return list.slice(0, 5);
-  }, [debouncedQuery, categories, tools]);
+  }, [debouncedQuery, categories, recentTools]);
 
   // Explicit mapping of category slugs to unique, hand-picked Lucide icons
   const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {

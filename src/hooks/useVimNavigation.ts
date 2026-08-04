@@ -6,12 +6,7 @@ export function useVimNavigation(
 ) {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
-  // Reset index if itemCount changes
-  useEffect(() => {
-    if (selectedIndex >= itemCount) {
-      setSelectedIndex(itemCount > 0 ? 0 : -1);
-    }
-  }, [itemCount, selectedIndex]);
+  const effectiveIndex = itemCount <= 0 ? -1 : (selectedIndex >= itemCount ? 0 : selectedIndex);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,18 +35,18 @@ export function useVimNavigation(
       } else if (e.key === "k" || e.key === "K") {
         e.preventDefault();
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : itemCount - 1));
-      } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < itemCount) {
+      } else if (e.key === "Enter" && effectiveIndex >= 0 && effectiveIndex < itemCount) {
         e.preventDefault();
-        onSelect(selectedIndex);
+        onSelect(effectiveIndex);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [itemCount, selectedIndex, onSelect]);
+  }, [itemCount, effectiveIndex, onSelect]);
 
   return {
-    selectedIndex,
+    selectedIndex: effectiveIndex,
     setSelectedIndex,
   };
 }

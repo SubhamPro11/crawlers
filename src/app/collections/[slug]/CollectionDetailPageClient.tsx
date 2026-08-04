@@ -9,13 +9,10 @@ import { TerminalLoader } from "@/components/TerminalLoader";
 export default function CollectionDetailPageClient({ slug }: { slug: string }) {
   const [collection, setCollection] = useState<Collection | null>(null);
   const [tools, setTools] = useState<Tool[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(Boolean(slug));
 
   const fetchCollectionData = useCallback(async () => {
-    if (!slug) {
-      setIsLoading(false);
-      return;
-    }
+    if (!slug) return;
     const res = await mockDb.getCollectionBySlug(slug);
     setCollection(res.collection);
     setTools(res.tools);
@@ -23,8 +20,15 @@ export default function CollectionDetailPageClient({ slug }: { slug: string }) {
   }, [slug]);
 
   useEffect(() => {
-    fetchCollectionData();
-  }, [fetchCollectionData]);
+    let active = true;
+    if (!slug) return;
+    fetchCollectionData().then(() => {
+      if (!active) return;
+    });
+    return () => {
+      active = false;
+    };
+  }, [slug, fetchCollectionData]);
 
   if (isLoading) {
     return <TerminalLoader message="querying_collection_index" />;

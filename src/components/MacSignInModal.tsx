@@ -1,14 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { User } from "@supabase/supabase-js";
 import { Sparkles, Bookmark, Cpu, ShieldCheck, ArrowRight, X } from "lucide-react";
 
 export default function MacSignInModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
-  const [user, setUser] = useState<any>(null);
+  const handleClose = useCallback(() => {
+    setIsAnimating(false);
+    setTimeout(() => {
+      setIsOpen(false);
+      sessionStorage.setItem("crawlers_mac_signin_dismissed", "true");
+    }, 200);
+  }, []);
 
   useEffect(() => {
     // 1. Fetch user session on mount
@@ -65,15 +73,7 @@ export default function MacSignInModal() {
       window.removeEventListener("keydown", handleKeyDown);
       clearTimeout(timer);
     };
-  }, [user]);
-
-  const handleClose = () => {
-    setIsAnimating(false);
-    setTimeout(() => {
-      setIsOpen(false);
-      sessionStorage.setItem("crawlers_mac_signin_dismissed", "true");
-    }, 200);
-  };
+  }, [user, handleClose]);
 
   const handleGoogleSignIn = async () => {
     try {
