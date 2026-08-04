@@ -239,6 +239,8 @@ export default function CommandPalette() {
         <div className="flex items-center border-b border-[#212623] px-3 bg-[#0D0F0E]">
           <span className="text-[#8FBF3F] font-mono text-sm shrink-0 select-none mr-2">&gt;_</span>
           <input
+            id="command-palette-search-input"
+            name="command_search"
             ref={inputRef}
             type="text"
             aria-label="Search command palette"

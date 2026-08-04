@@ -167,6 +167,9 @@ export default function Header() {
                   {/* Filter Search Input */}
                   <div className="relative mb-3">
                     <input
+                      id="header-category-filter"
+                      name="category_filter"
+                      aria-label="Filter categories by name"
                       type="text"
                       placeholder="Type to filter categories..."
                       value={catFilter}
@@ -176,6 +179,7 @@ export default function Header() {
                     {catFilter && (
                       <button
                         type="button"
+                        aria-label="Clear category filter"
                         onClick={() => setCatFilter("")}
                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
                       >
@@ -297,15 +301,18 @@ export default function Header() {
           {/* Quick Search Input (Desktop xl+) */}
           <form onSubmit={handleSearchSubmit} className="relative hidden xl:flex items-center shrink-0">
             <input
+              id="desktop-quick-search-input"
+              name="search"
               type="text"
               placeholder="Search tools by task..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search index"
+              aria-label="Search AI tools index"
               className="w-56 lg:w-64 xl:w-72 rounded-lg border border-[#212623] bg-[#131615] py-1.5 pl-3 pr-16 text-xs font-sans text-[#EDEEEA] placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all"
             />
             <button
               type="button"
+              aria-label="Open command palette search"
               onClick={() => window.dispatchEvent(new CustomEvent("toggle-command-palette"))}
               title={`Command Palette (${isMac ? "⌘K" : "Ctrl + K"})`}
               className="absolute right-7 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded border border-[#212623] bg-[#0D0F0E] px-1.5 py-0.5 text-[9px] font-mono text-slate-400 hover:text-white hover:border-[#8FBF3F]/40 transition-colors cursor-pointer shrink-0 select-none"
@@ -434,6 +441,9 @@ export default function Header() {
         <div className="sm:hidden border-t border-[#212623] bg-[#0D0F0E] px-4 py-3">
           <form onSubmit={handleSearchSubmit} className="relative">
             <input
+              id="mobile-search-overlay-input"
+              name="search"
+              aria-label="Search AI tools by task"
               type="text"
               placeholder="Query index..."
               value={searchQuery}
@@ -443,6 +453,7 @@ export default function Header() {
             />
             <button
               type="submit"
+              aria-label="Submit search"
               className="absolute right-3 top-2.5 text-[#8A8F87]"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -206,6 +206,9 @@ export default function MyCollectionsClient() {
       {isCreating && (
         <form onSubmit={handleCreateCollection} className="mb-8 rounded-xl border border-[#8FBF3F]/30 bg-[#131615] p-4 flex flex-col sm:flex-row items-center gap-3">
           <input
+            id="new-collection-name-input"
+            name="collection_name"
+            aria-label="New collection name"
             type="text"
             placeholder="Collection name (e.g. My AI Writing Stack)"
             value={newCollectionName}
@@ -270,14 +273,17 @@ export default function MyCollectionsClient() {
                       className="flex items-center gap-1 p-1 bg-[#131615] rounded-xl border border-[#8FBF3F]/40"
                     >
                       <input
+                        id={`edit-collection-${col.id}`}
+                        name="edit_collection_name"
+                        aria-label="Edit collection name"
                         type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         autoFocus
                         className="w-full bg-[#0D0F0E] border border-[#212623] rounded px-2 py-1 text-xs text-white outline-none focus:border-[#8FBF3F]"
                       />
-                      <button type="submit" className="text-[#8FBF3F] text-xs px-1.5 font-bold">✓</button>
-                      <button type="button" onClick={() => setEditingCollectionId(null)} className="text-slate-500 text-xs px-1">✕</button>
+                      <button type="submit" aria-label="Confirm rename" className="text-[#8FBF3F] text-xs px-1.5 font-bold">✓</button>
+                      <button type="button" aria-label="Cancel rename" onClick={() => setEditingCollectionId(null)} className="text-slate-500 text-xs px-1">✕</button>
                     </form>
                   );
                 }

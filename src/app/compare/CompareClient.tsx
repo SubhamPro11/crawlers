@@ -298,9 +298,12 @@ export default function CompareClient() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         {/* Selector A */}
         <div className="relative">
-          <label className="block text-xs font-mono uppercase text-[#8A8F87] tracking-wider mb-2">First Tool</label>
+          <label htmlFor="compare-tool-a-input" className="block text-xs font-mono uppercase text-[#8A8F87] tracking-wider mb-2">First Tool</label>
           <div ref={containerRefA} className="relative">
             <input
+              id="compare-tool-a-input"
+              name="tool_a"
+              aria-label="Select first tool to compare"
               type="text"
               value={searchA}
               onChange={(e) => {
@@ -342,9 +345,12 @@ export default function CompareClient() {
 
         {/* Selector B */}
         <div className="relative">
-          <label className="block text-xs font-mono uppercase text-[#8A8F87] tracking-wider mb-2">Second Tool</label>
+          <label htmlFor="compare-tool-b-input" className="block text-xs font-mono uppercase text-[#8A8F87] tracking-wider mb-2">Second Tool</label>
           <div ref={containerRefB} className="relative">
             <input
+              id="compare-tool-b-input"
+              name="tool_b"
+              aria-label="Select second tool to compare"
               type="text"
               value={searchB}
               onChange={(e) => {

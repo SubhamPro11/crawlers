@@ -605,6 +605,9 @@ export default function ApiDirectoryClient() {
             &gt;
           </span>
           <input
+            id="api-directory-search-input"
+            name="api_search"
+            aria-label="Search API endpoints and models"
             type="text"
             placeholder="Search keys, models, or tags..."
             value={searchQuery}
@@ -613,6 +616,8 @@ export default function ApiDirectoryClient() {
           />
           {searchQuery ? (
             <button
+              type="button"
+              aria-label="Clear search query"
               onClick={() => setSearchQuery("")}
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white transition-colors"
             >

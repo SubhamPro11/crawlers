@@ -75,6 +75,8 @@ function SearchContent() {
       <div className="mb-10 max-w-xl font-sans">
         <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] transition-all">
           <input
+            id="search-page-query-input"
+            name="q"
             type="text"
             aria-label="Search directory by task"
             placeholder="Type your use case..."

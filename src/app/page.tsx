@@ -874,6 +874,8 @@ export default function Home() {
                 <div className="flex items-center flex-1 min-w-0 relative">
                   <span className="pl-3 font-mono text-[#8FBF3F] font-bold text-sm sm:text-base select-none shrink-0">&gt;</span>
                   <input
+                    id="hero-search-input"
+                    name="search"
                     ref={searchInputRef}
                     type="text"
                     aria-label="Search directory by task"
@@ -1173,6 +1175,8 @@ export default function Home() {
           {/* Category Quick Filter */}
           <div className="relative w-full md:max-w-xs">
             <input
+              id="category-filter-search-input"
+              name="category_search"
               type="text"
               aria-label="Search categories"
               placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}

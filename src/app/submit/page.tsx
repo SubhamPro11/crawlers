@@ -142,6 +142,7 @@ export default function SubmitPage() {
           <input
             type="text"
             id="name"
+            name="name"
             placeholder="e.g. Midjourney"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -158,6 +159,7 @@ export default function SubmitPage() {
           <input
             type="url"
             id="url"
+            name="url"
             placeholder="https://example.com"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
@@ -176,6 +178,7 @@ export default function SubmitPage() {
           </label>
           <select
             id="category"
+            name="category"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white outline-none focus:border-[#8FBF3F] transition-all"
@@ -200,6 +203,7 @@ export default function SubmitPage() {
           </div>
           <textarea
             id="description"
+            name="description"
             rows={3}
             placeholder="Write a brief, 1-sentence summary of what this tool does. Do not copy paste description text verbatim."
             value={description}
@@ -222,6 +226,7 @@ export default function SubmitPage() {
             </label>
             <select
               id="pricing"
+              name="pricing"
               value={pricingModel}
               onChange={(e) => setPricingModel(e.target.value as 'free' | 'freemium' | 'paid' | 'unknown')}
               className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] px-4 py-2.5 text-sm text-white outline-none focus:border-[#8FBF3F] transition-all"
@@ -241,6 +246,7 @@ export default function SubmitPage() {
             <input
               type="text"
               id="tags"
+              name="tags"
               placeholder="e.g. art, vectors, mockup"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
