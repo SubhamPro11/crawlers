@@ -273,7 +273,7 @@ export default function CompareClient() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans min-h-screen text-[#EDEEEA]">
+    <main role="main" className="mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans min-h-screen text-[#EDEEEA]">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
         <Link href="/" className="hover:text-white transition-colors">Home</Link>
@@ -662,6 +662,6 @@ export default function CompareClient() {
           <p className="text-slate-500 text-sm">Please select tools to compare</p>
         </div>
       )}
-    </div>
+    </main>
   );
 }

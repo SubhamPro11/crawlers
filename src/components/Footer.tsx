@@ -3,7 +3,7 @@ import { CATEGORY_GROUPS } from "@/data/mockDb";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#212623] bg-[#0A0C0B] py-12 text-[#8A8F87]">
+    <footer role="contentinfo" className="border-t border-[#212623] bg-[#0A0C0B] py-12 text-[#8A8F87]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Logo & Description */}
@@ -18,7 +18,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Categories / Index Sections */}
-          <div>
+          <nav aria-label="Index sections navigation">
             <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-white mb-3">Index Sections</h3>
             <ul className="space-y-1.5 text-xs font-mono">
               {CATEGORY_GROUPS.map((group) => (
@@ -43,7 +43,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </nav>
 
           {/* Legal / Policy */}
           <div>
@@ -56,7 +56,7 @@ export default function Footer() {
 
         <div className="mt-8 sm:mt-10 border-t border-[#212623]/80 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-center sm:text-left">
           <p className="text-[#8A8F87]/70">&copy; {new Date().getFullYear()} crawlers_index. All rights reserved.</p>
-          <div className="flex flex-wrap items-center justify-center gap-3 font-sans font-semibold" role="navigation" aria-label="Footer links">
+          <nav className="flex flex-wrap items-center justify-center gap-3 font-sans font-semibold" aria-label="Footer links">
             <Link href="/api" className="hover:text-[#8FBF3F] transition-colors">
               API Keys
             </Link>
@@ -69,7 +69,7 @@ export default function Footer() {
               Submit Entry
             </Link>
             <span className="text-[#212623]">|</span>
-          </div>
+          </nav>
         </div>
       </div>
     </footer>

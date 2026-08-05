@@ -111,7 +111,7 @@ export default function SubmitClient({ initialCategories = [] }: SubmitClientPro
   }
 
   return (
-    <div className="flex-1 mx-auto max-w-2xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
+    <main role="main" className="flex-1 mx-auto max-w-2xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
         <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
@@ -274,6 +274,6 @@ export default function SubmitClient({ initialCategories = [] }: SubmitClientPro
           </button>
         </div>
       </form>
-    </div>
+    </main>
   );
 }

@@ -123,7 +123,7 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-[#212623] bg-[#0D0F0E]">
+    <header role="banner" className="fixed top-0 left-0 right-0 z-50 w-full border-b border-[#212623] bg-[#0D0F0E]">
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center gap-8">
@@ -132,7 +132,7 @@ export default function Header() {
             <span>crawlers //</span>
             <span className="h-3 w-1.5 bg-[#8FBF3F] cursor-blink inline-block" />
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
+          <nav role="navigation" aria-label="Main navigation" className="hidden md:flex items-center gap-6">
             {/* Interactive Category Jump Dropdown */}
             <div className="relative" ref={exploreRef}>
               <button

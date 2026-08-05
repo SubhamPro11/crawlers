@@ -733,7 +733,7 @@ export default function HomeClient({
   }, [debouncedQuery, categories, recentTools]);
 
   return (
-    <div className="flex flex-col flex-1">
+    <main role="main" className="flex flex-col flex-1">
       {/* Hero Section */}
       <section className="relative px-4 py-12 sm:py-20 sm:px-6 lg:px-8 text-center overflow-hidden border-b border-[#1E293B] bg-gradient-to-b from-[#0e1627] to-[#0B0F17]">
         <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
@@ -1227,6 +1227,6 @@ export default function HomeClient({
           </div>
         )}
       </section>
-    </div>
+    </main>
   );
 }

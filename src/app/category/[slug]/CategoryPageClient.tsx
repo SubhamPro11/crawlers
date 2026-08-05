@@ -124,7 +124,7 @@ export default function CategoryPageClient({
   const group = getCategoryGroup(category);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 font-sans">
+    <main role="main" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 font-sans">
       {/* Breadcrumb Header */}
       <div className="mb-6 flex flex-wrap items-center gap-2 font-mono text-xs text-[#8A8F87]">
         <Link href="/" className="hover:text-white transition-colors">
@@ -143,31 +143,26 @@ export default function CategoryPageClient({
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <span className="text-2xl font-mono text-[#8FBF3F]">&gt;_</span>
+              <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
                 {category.name}
               </h1>
-              <span className="rounded-full bg-[#131615] border border-[#212623] px-3 py-1 text-xs font-mono font-bold text-[#8FBF3F]">
-                {tools.length} {tools.length === 1 ? 'tool' : 'tools'}
-              </span>
             </div>
-            <p className="text-slate-400 text-sm max-w-3xl leading-relaxed mt-2">
-              {category.description || `Curated index of verified ${category.name} AI platforms, bots, and CLI utilities.`}
-            </p>
+            {category.description && (
+              <p className="text-sm text-slate-400 max-w-2xl font-sans mt-2">
+                {category.description}
+              </p>
+            )}
           </div>
-
-          <div className="flex items-center gap-2 shrink-0 font-mono text-xs">
-            <Link
-              href="/"
-              className="rounded-lg border border-[#212623] bg-[#131615] px-3 py-2 text-[#8A8F87] hover:text-white hover:border-[#8FBF3F]/40 transition-all"
-            >
-              &larr; All Categories
-            </Link>
+          <div className="flex items-center gap-3 font-mono text-xs text-slate-400 bg-[#131615] border border-[#212623] px-3.5 py-2 rounded-lg shrink-0">
+            <span className="text-[#8FBF3F] font-bold">{tools.length}</span>
+            <span>{tools.length === 1 ? 'bot' : 'bots'} in index</span>
           </div>
         </div>
       </div>
 
-      {/* Filter and Sort Toolbar */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212623]/60 pb-4 font-mono text-xs">
+      {/* Filter and Sort Bar */}
+      <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#0D0F0E] border border-[#212623] p-4 rounded-xl font-mono text-xs">
         {/* Pricing Model Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-slate-500 uppercase font-bold text-[10px] mr-1">pricing:</span>
@@ -189,8 +184,11 @@ export default function CategoryPageClient({
 
         {/* Sort selector */}
         <div className="flex items-center gap-2">
-          <span className="text-slate-500 uppercase font-bold text-[10px]">sort:</span>
+          <label htmlFor="sort-by-select" className="text-slate-500 uppercase font-bold text-[10px]">sort:</label>
           <select
+            id="sort-by-select"
+            name="sort_by"
+            aria-label="Sort tools by"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "name" | "recent")}
             className="rounded-lg border border-[#212623] bg-[#131615] px-3 py-1.5 text-white outline-none focus:border-[#8FBF3F] transition-all cursor-pointer font-mono"
@@ -229,6 +227,6 @@ export default function CategoryPageClient({
           </button>
         </div>
       )}
-    </div>
+    </main>
   );
 }

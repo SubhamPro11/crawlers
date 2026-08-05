@@ -59,7 +59,7 @@ export default function SearchClient({
   };
 
   return (
-    <div className="mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
+    <main role="main" className="mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8 font-sans">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
         <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
@@ -140,6 +140,6 @@ export default function SearchClient({
           </Link>
         </div>
       )}
-    </div>
+    </main>
   );
 }

@@ -179,6 +179,9 @@ export default function AddToCollectionModal({
                 <form onSubmit={handleCreateCollection} className="pt-2 border-t border-[#212623] space-y-3">
                   <div className="flex items-center gap-2">
                     <input
+                      id="new-collection-modal-name"
+                      name="new_collection_name"
+                      aria-label="New collection name"
                       type="text"
                       placeholder="Collection name (e.g. My Writing Stack)"
                       value={newCollectionName}
