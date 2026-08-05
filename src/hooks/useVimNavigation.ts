@@ -10,14 +10,21 @@ export function useVimNavigation(
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // 1. Ignore if typing in input, textarea, select, or contenteditable
       const active = document.activeElement;
+
+      // 1. Ignore if user is focused on an interactive element (input, textarea, select, a, button, summary, or element with tabindex)
       if (
         active &&
+        active !== document.body &&
+        active !== document.documentElement &&
         (active.tagName === "INPUT" ||
           active.tagName === "TEXTAREA" ||
           active.tagName === "SELECT" ||
-          (active as HTMLElement).isContentEditable)
+          active.tagName === "A" ||
+          active.tagName === "BUTTON" ||
+          active.tagName === "SUMMARY" ||
+          (active as HTMLElement).isContentEditable ||
+          active.hasAttribute("tabindex"))
       ) {
         return;
       }

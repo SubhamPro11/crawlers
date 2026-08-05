@@ -231,9 +231,9 @@ function ToolCard({ tool, categoryName, onRefresh, isFocused }: ToolCardProps) {
             </div>
 
             <a
-              href={tool.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={tool.url || `/tool/${tool.id}`}
+              target={tool.url ? "_blank" : "_self"}
+              rel={tool.url ? "noopener noreferrer" : undefined}
               onClick={handleVisit}
               className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
             >
