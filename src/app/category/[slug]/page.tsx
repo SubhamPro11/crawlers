@@ -51,7 +51,7 @@ export async function generateMetadata({
   } catch (err) {
     console.error("Error in generateMetadata for category:", err);
     return {
-      title: "Category | Crawlers",
+      title: "Category",
     };
   }
 }

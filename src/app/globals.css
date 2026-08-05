@@ -166,7 +166,6 @@ a, button, input, select, textarea, [role="button"] {
   background: #131615;
   border: 1px solid #212623;
 }
-
 /* Low-end device rendering performance optimization utilities */
 .cv-auto {
   content-visibility: auto;
@@ -203,4 +202,3 @@ a, button, input, select, textarea, [role="button"] {
     background-color: rgba(13, 15, 14, 0.98) !important;
   }
 }
-

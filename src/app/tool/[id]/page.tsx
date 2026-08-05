@@ -30,7 +30,7 @@ export async function generateMetadata({
     const categoryName = tool.categories?.name || "AI Tools";
 
     return {
-      title: `${tool.name} — AI Tool Review & Use Case | Crawlers`,
+      title: `${tool.name} — AI Tool Review & Use Case`,
       description: tool.short_description,
       openGraph: {
         title: `${tool.name} — ${categoryName} | Crawlers`,
@@ -50,7 +50,7 @@ export async function generateMetadata({
   } catch (err) {
     console.error("Error in generateMetadata for tool:", err);
     return {
-      title: "Tool | Crawlers",
+      title: "Tool",
     };
   }
 }

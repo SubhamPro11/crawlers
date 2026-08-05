@@ -2,7 +2,7 @@
 
 export function ToolCardSkeleton() {
   return (
-    <div className="relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615] p-5 h-[278px]">
+    <div className="relative flex flex-col justify-between rounded-xl border border-[#212623] bg-[#131615]/40 backdrop-blur-md p-5 h-[278px]">
       <div>
         {/* Header: Initials + Title */}
         <div className="flex items-start justify-between gap-3 mb-4 pr-8">

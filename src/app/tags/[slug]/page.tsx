@@ -14,7 +14,7 @@ export async function generateMetadata({
     const { tagName } = await mockDb.getToolsByTagSlug(slug);
 
     return {
-      title: `AI Tools tagged [${tagName}] | Crawlers`,
+      title: `AI Tools tagged [${tagName}]`,
       description: `Browse all curated AI platforms and bots tagged under [${tagName}] in our monospace directory.`,
       openGraph: {
         title: `AI Tools Tagged [${tagName}] | Crawlers`,
@@ -34,7 +34,7 @@ export async function generateMetadata({
   } catch (err) {
     console.error("Error in generateMetadata for tag slug:", err);
     return {
-      title: "Tag | Crawlers",
+      title: "Tag",
     };
   }
 }

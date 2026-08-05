@@ -28,8 +28,9 @@ export default function AssistantWidget() {
         className="flex h-12 w-12 items-center justify-center rounded-full border border-[#8FBF3F]/40 bg-[#0D0F0E] text-[#8FBF3F] shadow-lg shadow-[#8FBF3F]/10 hover:border-[#8FBF3F] hover:shadow-[#8FBF3F]/25 hover:scale-105 transition-all duration-300 relative group"
         aria-label="AI Assistant"
       >
-        <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#8FBF3F] shadow-[0_0_8px_rgba(143,191,63,0.8)]"></span>
+        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8FBF3F] opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#8FBF3F]"></span>
         </span>
         <svg className="h-5 w-5 group-hover:rotate-6 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

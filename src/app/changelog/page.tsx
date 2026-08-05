@@ -4,7 +4,7 @@ import ChangelogClient from "./ChangelogClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Directory Changelog | Crawlers",
+  title: "Directory Changelog",
   description: "View the historical log of newly indexed and verified AI tools added to the Crawlers directory.",
   openGraph: {
     title: "Directory Changelog | Crawlers",

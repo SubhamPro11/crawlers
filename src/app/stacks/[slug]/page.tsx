@@ -14,7 +14,7 @@ export async function generateMetadata({
 
   if (!stack) {
     return {
-      title: "Stack Not Found | Crawlers",
+      title: "Stack Not Found",
     };
   }
 
