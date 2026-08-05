@@ -3,7 +3,7 @@
 import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Tool, mockDb, slugify } from "@/data/mockDb";
+import { Tool, mockDb, slugify, formatExternalUrl } from "@/data/mockDb";
 import AddToCollectionModal from "@/components/AddToCollectionModal";
 import { getVerificationStatus } from "@/lib/verification";
 
@@ -230,16 +230,22 @@ function ToolCard({ tool, categoryName, onRefresh, isFocused }: ToolCardProps) {
               <span>&gt; {vStatus.label}</span>
             </div>
 
-            <a
-              href={tool.url || `/tool/${tool.id}`}
-              target={tool.url ? "_blank" : "_self"}
-              rel={tool.url ? "noopener noreferrer" : undefined}
-              onClick={handleVisit}
-              className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
-            >
-              <span>{ctaLabel}</span>
-              <span className="text-[#8A8F87]/60 font-normal">→</span>
-            </a>
+            {(() => {
+              const formattedUrl = formatExternalUrl(tool.url);
+              const isExternal = !!formattedUrl;
+              return (
+                <a
+                  href={isExternal ? formattedUrl : `/tool/${tool.id}`}
+                  target={isExternal ? "_blank" : "_self"}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  onClick={handleVisit}
+                  className="inline-flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-[#8FBF3F] hover:text-[#7ba235] active:text-[#6c9130] transition-colors duration-[100ms] group/btn"
+                >
+                  <span>{ctaLabel}</span>
+                  <span className="text-[#8A8F87]/60 font-normal">→</span>
+                </a>
+              );
+            })()}
           </div>
         );
       })()}

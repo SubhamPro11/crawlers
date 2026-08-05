@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { mockDb, Tool } from "@/data/mockDb";
+import { mockDb, Tool, formatExternalUrl } from "@/data/mockDb";
 import { TerminalLoader } from "@/components/TerminalLoader";
 
 interface ApiBot {
@@ -571,14 +571,15 @@ export default function ApiDirectoryClient({ initialTools = [] }: ApiDirectoryCl
         ))}
       </div>
 
-      <Link
-        href={bot.url}
-        target="_blank"
+      <a
+        href={formatExternalUrl(bot.url) || `/tool/${bot.id}`}
+        target={bot.url ? "_blank" : "_self"}
+        rel={bot.url ? "noopener noreferrer" : undefined}
         onClick={() => handleCardClick(bot.id)}
         className="w-full flex h-10 items-center justify-center rounded-lg bg-slate-900 border border-slate-800 text-xs font-bold text-slate-200 hover:bg-[#8FBF3F] hover:text-slate-950 hover:border-transparent transition-all duration-200 uppercase tracking-wider font-mono"
       >
         Get API Key &rarr;
-      </Link>
+      </a>
     </div>
   );
 

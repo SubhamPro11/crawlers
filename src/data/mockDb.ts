@@ -870,4 +870,14 @@ export function slugify(text: string): string {
     .replace(/-+$/, '');
 }
 
+export function formatExternalUrl(url?: string | null): string {
+  if (!url) return "";
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
 export const mockDb = new MockDb();

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { mockDb, Tool, slugify } from "@/data/mockDb";
+import { mockDb, Tool, slugify, formatExternalUrl } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import { TerminalLoader } from "@/components/TerminalLoader";
 import AddToCollectionModal from "@/components/AddToCollectionModal";
@@ -310,11 +310,14 @@ export default function ToolDetailPageClient({
 
                   const ctaLabel = isExtension ? "get_extension" : "run_bot";
 
+                  const formattedUrl = formatExternalUrl(tool.url);
+                  const isExternal = !!formattedUrl;
+
                   return (
                     <a
-                      href={tool.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={isExternal ? formattedUrl : "#"}
+                      target={isExternal ? "_blank" : "_self"}
+                      rel={isExternal ? "noopener noreferrer" : undefined}
                       onClick={handleVisit}
                       className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#8FBF3F] hover:bg-[#7ba235] px-6 text-sm font-bold text-slate-950 transition-all shadow-md shadow-[#8FBF3F]/15 group font-mono"
                     >

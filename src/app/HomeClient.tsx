@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
+import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup, formatExternalUrl } from "@/data/mockDb";
 import ToolCard, { cleanDescription } from "@/components/ToolCard";
 import { WhyCrawlers } from "@/components/HomepageExtensions";
 import {
@@ -992,11 +992,13 @@ export default function HomeClient({
                       tool.url?.includes("chromewebstore") ||
                       tool.url?.includes("chrome.google.com");
                     const label = isExtension ? "get_extension" : "run_bot";
+                    const formattedUrl = formatExternalUrl(tool.url);
+                    const isExternal = !!formattedUrl;
                     return (
                       <a
-                        href={tool.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={isExternal ? formattedUrl : `/tool/${tool.id}`}
+                        target={isExternal ? "_blank" : "_self"}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
                         className="text-[#8FBF3F] font-bold hover:underline"
                       >
                         {label} &rarr;
