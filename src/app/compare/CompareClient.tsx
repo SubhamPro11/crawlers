@@ -324,13 +324,14 @@ export default function CompareClient() {
                 {filteredA.length > 0 ? (
                   filteredA.map(t => (
                     <button
+                      type="button"
                       key={t.id}
                       onClick={() => {
                         setToolA(t);
                         setSearchA(t.name);
                         setShowDropdownA(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs rounded hover:bg-[#8FBF3F]/10 hover:text-white transition-colors"
+                      className="w-full text-left px-3 py-2 text-xs rounded hover:bg-[#8FBF3F]/10 hover:text-white transition-colors cursor-pointer"
                     >
                       {t.name}
                     </button>
@@ -371,13 +372,14 @@ export default function CompareClient() {
                 {filteredB.length > 0 ? (
                   filteredB.map(t => (
                     <button
+                      type="button"
                       key={t.id}
                       onClick={() => {
                         setToolB(t);
                         setSearchB(t.name);
                         setShowDropdownB(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs rounded hover:bg-[#8FBF3F]/10 hover:text-white transition-colors"
+                      className="w-full text-left px-3 py-2 text-xs rounded hover:bg-[#8FBF3F]/10 hover:text-white transition-colors cursor-pointer"
                     >
                       {t.name}
                     </button>

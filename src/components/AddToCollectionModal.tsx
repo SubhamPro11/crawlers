@@ -109,6 +109,7 @@ export default function AddToCollectionModal({
             <span className="text-slate-400 font-normal truncate max-w-[180px]">[{toolName}]</span>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="text-slate-500 hover:text-white transition-colors text-xs font-mono px-2 py-1 cursor-pointer"
             aria-label="Close modal"
@@ -132,6 +133,7 @@ export default function AddToCollectionModal({
                     You don&apos;t have any personal collections yet.
                   </p>
                   <button
+                    type="button"
                     onClick={() => setIsCreating(true)}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-[#8FBF3F] px-4 py-2 text-xs font-bold text-slate-950 hover:bg-[#7ba235] transition-colors cursor-pointer"
                   >
@@ -144,6 +146,7 @@ export default function AddToCollectionModal({
                     const isChecked = !!membershipMap[col.id];
                     return (
                       <button
+                        type="button"
                         key={col.id}
                         onClick={() => handleToggle(col.id)}
                         className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all text-left cursor-pointer ${

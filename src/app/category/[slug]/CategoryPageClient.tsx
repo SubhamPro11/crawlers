@@ -173,6 +173,7 @@ export default function CategoryPageClient({
           <span className="text-slate-500 uppercase font-bold text-[10px] mr-1">pricing:</span>
           {["all", "free", "freemium", "paid"].map((filter) => (
             <button
+              type="button"
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={`rounded-lg px-3 py-1.5 font-semibold capitalize transition-all cursor-pointer ${
@@ -220,8 +221,9 @@ export default function CategoryPageClient({
             No tools in <span className="text-white font-bold">{category.name}</span> match the selected filter <code className="text-[#8FBF3F]">{activeFilter}</code>.
           </p>
           <button
+            type="button"
             onClick={() => setActiveFilter("all")}
-            className="rounded-lg bg-[#131615] border border-[#212623] px-4 py-2 text-xs font-bold text-[#8FBF3F] hover:border-[#8FBF3F] transition-colors"
+            className="rounded-lg bg-[#131615] border border-[#212623] px-4 py-2 text-xs font-bold text-[#8FBF3F] hover:border-[#8FBF3F] transition-colors cursor-pointer"
           >
             Reset Filters
           </button>

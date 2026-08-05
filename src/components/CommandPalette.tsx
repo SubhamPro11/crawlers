@@ -224,8 +224,9 @@ export default function CommandPalette() {
         <div className="flex items-center justify-between border-b border-white/10 bg-[#1A1E1C]/90 px-4 py-2.5 text-[10px] text-slate-400 select-none">
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => setIsOpen(false)}
-              className="h-3 w-3 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity"
+              className="h-3 w-3 rounded-full bg-[#FF5F56] hover:opacity-80 transition-opacity cursor-pointer"
               aria-label="Close modal"
             />
             <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />

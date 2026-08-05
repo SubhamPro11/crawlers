@@ -642,8 +642,9 @@ export default function ApiDirectoryClient({ initialTools = [] }: ApiDirectoryCl
 
         <div className="border-b border-slate-800/80 pb-1 flex flex-wrap gap-2 overflow-x-auto scrollbar-thin font-mono text-xs">
           <button
+            type="button"
             onClick={() => setSelectedProvider("all")}
-            className={`px-3 py-2 border-b-2 font-bold uppercase transition-all tracking-wider ${
+            className={`px-3 py-2 border-b-2 font-bold uppercase transition-all tracking-wider cursor-pointer ${
               selectedProvider === "all"
                 ? "border-[#8FBF3F] text-[#8FBF3F]"
                 : "border-transparent text-[#8A8F87] hover:text-white"
@@ -653,9 +654,10 @@ export default function ApiDirectoryClient({ initialTools = [] }: ApiDirectoryCl
           </button>
           {providers.map((provider) => (
             <button
+              type="button"
               key={provider}
               onClick={() => setSelectedProvider(provider)}
-              className={`px-3 py-2 border-b-2 font-bold uppercase transition-all tracking-wider ${
+              className={`px-3 py-2 border-b-2 font-bold uppercase transition-all tracking-wider cursor-pointer ${
                 selectedProvider === provider
                   ? "border-[#8FBF3F] text-[#8FBF3F]"
                   : "border-transparent text-[#8A8F87] hover:text-white"

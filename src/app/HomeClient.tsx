@@ -1057,7 +1057,7 @@ export default function HomeClient({
             </p>
           </div>
           
-          {/* Category Quick Filter */}
+            {/* Category Quick Filter */}
           <div className="relative w-full md:max-w-xs">
             <input
               id="category-filter-search-input"
@@ -1079,8 +1079,9 @@ export default function HomeClient({
             </div>
             {categorySearchQuery && (
               <button
+                type="button"
                 onClick={() => setCategorySearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans cursor-pointer"
                 aria-label="Clear category search"
               >
                 ✕
@@ -1112,12 +1113,13 @@ export default function HomeClient({
             className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth pr-10"
           >
             <button
+              type="button"
               onClick={() => {
                 setSelectedLetter("All");
                 setCategorySearchQuery("");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className={`flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold font-sans transition-all ${
+              className={`flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold font-sans transition-all cursor-pointer ${
                 selectedLetter === "All" && !categorySearchQuery
                   ? "bg-[#8FBF3F] text-slate-950"
                   : "bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-white"
@@ -1133,6 +1135,7 @@ export default function HomeClient({
               if (!hasCategoriesInView) return null;
               return (
                 <button
+                  type="button"
                   key={group.id}
                   onClick={() => {
                     const element = document.getElementById(`group-${group.id}`);
@@ -1140,7 +1143,7 @@ export default function HomeClient({
                       element.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
                   }}
-                  className="flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans"
+                  className="flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans cursor-pointer"
                 >
                   {group.name}
                 </button>
@@ -1173,8 +1176,9 @@ export default function HomeClient({
               Found {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
             </div>
             <button
+              type="button"
               onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
-              className="text-xs text-rose-400 hover:text-rose-300 font-sans font-semibold transition-colors"
+              className="text-xs text-rose-400 hover:text-rose-300 font-sans font-semibold transition-colors cursor-pointer"
               aria-label="Clear active category filter"
             >
               Clear filter
@@ -1214,8 +1218,9 @@ export default function HomeClient({
             <h3 className="text-sm font-semibold text-white">No categories found</h3>
             <p className="text-xs text-slate-500 mt-1">Try clearing your filters or typing a different search query</p>
             <button
+              type="button"
               onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
-              className="mt-4 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-white transition-colors duration-200"
+              className="mt-4 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-white transition-colors duration-200 cursor-pointer"
             >
               Reset Search Filter
             </button>

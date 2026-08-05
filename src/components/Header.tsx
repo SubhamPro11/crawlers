@@ -155,7 +155,7 @@ export default function Header() {
               </button>
 
               {exploreOpen && (
-                <div className="absolute left-0 top-full mt-3 w-[440px] rounded-xl border border-[#212623] bg-[#0E100F]/95 backdrop-blur-xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute left-0 top-full mt-3 w-[min(440px,calc(100vw-2rem))] rounded-xl border border-[#212623] bg-[#0E100F]/95 backdrop-blur-xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#212623]">
                     <span className="font-mono text-[10px] uppercase font-bold text-[#8FBF3F] tracking-wider">
                       &gt; category_jump_index //
@@ -382,8 +382,9 @@ export default function Header() {
                       My Collections
                     </Link>
                     <button
+                      type="button"
                       onClick={handleSignOut}
-                      className="flex w-full px-4 py-2 text-xs text-left text-slate-300 hover:bg-[#8FBF3F]/10 hover:text-white transition-colors font-sans font-semibold"
+                      className="flex w-full px-4 py-2 text-xs text-left text-slate-300 hover:bg-[#8FBF3F]/10 hover:text-white transition-colors font-sans font-semibold cursor-pointer"
                     >
                       Sign Out
                     </button>
@@ -394,7 +395,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleSignIn}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#212623] bg-[#131615] px-3 text-xs font-sans font-semibold text-slate-300 hover:text-white hover:border-[#8FBF3F]/60 transition-all duration-200 cursor-pointer"
               >
                 <svg className="h-3.5 w-3.5 text-[#8FBF3F] pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.68 0-8.473-3.882-8.473-8.514 0-4.632 3.793-8.515 8.473-8.515 2.502 0 4.263.957 5.372 2.036l3.12-3.12C18.665.926 15.69 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c6.96 0 11.52-4.896 11.52-11.724 0-.785-.078-1.547-.22-2.22H12.24z"/>
@@ -418,7 +419,7 @@ export default function Header() {
               setMobileMenuOpen(!mobileMenuOpen);
               setSearchOpen(false);
             }}
-            className="md:hidden flex items-center justify-center h-11 w-11 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors"
+            className="md:hidden flex items-center justify-center h-11 w-11 text-[#8A8F87] hover:text-[#8FBF3F] transition-colors cursor-pointer"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -452,7 +453,7 @@ export default function Header() {
             <button
               type="submit"
               aria-label="Submit search"
-              className="absolute right-3 top-2.5 text-[#8A8F87]"
+              className="absolute right-3 top-2.5 text-[#8A8F87] cursor-pointer"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -533,22 +534,24 @@ export default function Header() {
                   <span className="truncate max-w-[180px]">{user.email}</span>
                 </div>
                 <button
+                  type="button"
                   onClick={() => {
                     handleSignOut();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center justify-center h-11 w-full rounded-md border border-[#212623] bg-[#131615] px-4 text-xs font-sans font-semibold text-red-400 hover:text-red-300 transition-colors"
+                  className="flex items-center justify-center h-11 w-full rounded-md border border-[#212623] bg-[#131615] px-4 text-xs font-sans font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
               <button
+                type="button"
                 onClick={() => {
                   handleSignIn();
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center justify-center h-11 w-full gap-2 rounded-md border border-[#212623] bg-[#131615] px-4 text-xs font-sans font-semibold text-slate-300 hover:text-white transition-all"
+                className="flex items-center justify-center h-11 w-full gap-2 rounded-md border border-[#212623] bg-[#131615] px-4 text-xs font-sans font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
               >
                 <svg className="h-4 w-4 text-[#8FBF3F]" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-6.887 4.114-4.68 0-8.473-3.882-8.473-8.514 0-4.632 3.793-8.515 8.473-8.515 2.502 0 4.263.957 5.372 2.036l3.12-3.12C18.665.926 15.69 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c6.96 0 11.52-4.896 11.52-11.724 0-.785-.078-1.547-.22-2.22H12.24z"/>

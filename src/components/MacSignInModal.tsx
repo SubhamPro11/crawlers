@@ -115,6 +115,7 @@ export default function MacSignInModal() {
           {/* macOS Traffic Lights */}
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleClose}
               className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#FF5F56] hover:bg-[#E0443E] active:bg-[#C0322C] transition-colors"
               aria-label="Close window"
@@ -122,11 +123,13 @@ export default function MacSignInModal() {
               <X className="h-2 w-2 opacity-0 group-hover:opacity-100 text-black/70 stroke-[3]" />
             </button>
             <button
+              type="button"
               onClick={handleClose}
               className="h-3 w-3 rounded-full bg-[#FFBD2E] hover:bg-[#DEA123] transition-colors"
               aria-label="Minimize window"
             />
             <button
+              type="button"
               className="h-3 w-3 rounded-full bg-[#27C93F] hover:bg-[#1AAB29] transition-colors"
               aria-label="Expand window"
             />
@@ -189,6 +192,7 @@ export default function MacSignInModal() {
           {/* Action Buttons */}
           <div className="space-y-2.5">
             <button
+              type="button"
               onClick={handleGoogleSignIn}
               className="group relative flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#8FBF3F]/40 bg-[#8FBF3F] py-3 text-xs sm:text-sm font-bold text-slate-950 shadow-lg shadow-[#8FBF3F]/20 hover:bg-[#7ba235] active:scale-[0.99] transition-all duration-150 font-sans"
             >
@@ -200,6 +204,7 @@ export default function MacSignInModal() {
             </button>
 
             <button
+              type="button"
               onClick={handleClose}
               className="w-full py-2 text-xs font-medium text-slate-400 hover:text-white transition-colors font-sans"
             >
