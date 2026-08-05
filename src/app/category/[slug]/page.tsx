@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { mockDb } from "@/data/mockDb";
+import { mockDb, Category, Tool } from "@/data/mockDb";
 import CategoryPageClient from "./CategoryPageClient";
 
 export const dynamic = "force-dynamic";
@@ -62,58 +62,64 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   let slug = "";
+  let category: Category | null = null;
+  let tools: Tool[] = [];
   let jsonLd = null;
+
   try {
     const resolvedParams = await params;
     slug = resolvedParams.slug;
-    const category = slug ? await mockDb.getCategoryBySlug(slug) : undefined;
+    if (slug) {
+      const cat = await mockDb.getCategoryBySlug(slug);
+      if (cat) {
+        category = cat;
+        tools = await mockDb.getToolsByCategory(cat.id);
 
-    if (category) {
-      const tools = await mockDb.getToolsByCategory(category.id);
-      const collectionSchema = {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": category.name,
-        "description": category.description,
-        "url": `https://crawlers.dpdns.org/category/${slug}`,
-        "mainEntity": {
-          "@type": "ItemList",
-          "numberOfItems": tools.length,
-          "itemListElement": tools.map((tool, index) => ({
-            "@type": "ListItem",
-            "position": index + 1,
-            "url": `https://crawlers.dpdns.org/tool/${tool.id}`,
-            "name": tool.name
-          }))
-        }
-      };
-
-      const breadcrumbSchema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://crawlers.dpdns.org"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Categories",
-            "item": "https://crawlers.dpdns.org/category"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": category.name,
-            "item": `https://crawlers.dpdns.org/category/${slug}`
+        const collectionSchema = {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": category.name,
+          "description": category.description,
+          "url": `https://crawlers.dpdns.org/category/${slug}`,
+          "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": tools.length,
+            "itemListElement": tools.map((tool, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "url": `https://crawlers.dpdns.org/tool/${tool.id}`,
+              "name": tool.name
+            }))
           }
-        ]
-      };
+        };
 
-      jsonLd = [collectionSchema, breadcrumbSchema];
+        const breadcrumbSchema = {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://crawlers.dpdns.org"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Categories",
+              "item": "https://crawlers.dpdns.org/category"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": category.name,
+              "item": `https://crawlers.dpdns.org/category/${slug}`
+            }
+          ]
+        };
+
+        jsonLd = [collectionSchema, breadcrumbSchema];
+      }
     }
   } catch (err) {
     console.error("Error in CategoryPage server component:", err);
@@ -127,7 +133,11 @@ export default async function CategoryPage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <CategoryPageClient slug={slug} />
+      <CategoryPageClient
+        slug={slug}
+        initialCategory={category}
+        initialTools={tools}
+      />
     </>
   );
 }

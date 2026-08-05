@@ -1,0 +1,1227 @@
+"use client";
+
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { mockDb, Category, Tool, CATEGORY_GROUPS, getCategoryGroup } from "@/data/mockDb";
+import ToolCard, { cleanDescription } from "@/components/ToolCard";
+import { WhyCrawlers } from "@/components/HomepageExtensions";
+import {
+  Sparkles, Code, Search, Image as ImageIcon, AudioLines, FileText, Bot, 
+  Workflow, Database, Languages, Settings, Layout, Apple, Scale, 
+  Sprout, GraduationCap, Gamepad2, Landmark, Heart, 
+  MessageSquare, UserCheck, PenTool, Cloud, Cpu, Compass, 
+  Globe, Film, Eye, Music, Smile, HelpCircle, 
+  Users, Activity, Laptop, Scissors, Mic, 
+  TrendingUp, Mail, Calendar, Briefcase, FileSearch, Book, StickyNote,
+  Clapperboard, Wand2, Captions, Tv, Volume2, Waves, Podcast, Mic2,
+  Paintbrush, Eraser, Shapes, User, PieChart, Palette, Shirt, Glasses,
+  Box, Printer, Laugh, Layers, Timer, ListTodo, HeartHandshake, UserPlus,
+  UserSearch, Calculator, FileSignature, Send, Table, GitFork, Ticket,
+  Presentation, Terminal, BugPlay, Blocks, Smartphone, Bug, Coins, Wifi,
+  Wrench, EyeOff, Fingerprint, Copy, Tag, Folder, ShieldAlert,
+  Megaphone, DollarSign, Magnet, Share2, Award, ShoppingBag, MapPin,
+  FolderOpen, LifeBuoy, Gauge, Leaf, Dumbbell, Hammer, Factory,
+  Home as HomeIcon, ShieldCheck, Building, Stethoscope, HeartPulse, Pill, Dna,
+  Recycle, CloudLightning, CloudSun, Rocket, Truck, Package, Zap, GitBranch,
+  Type, Inbox, BarChart3, Notebook, Library, PawPrint, Utensils, Command, Plug, Network, Lock, Trophy, Puzzle,
+  Scroll, MapPinned, HeartCrack, Accessibility, Waypoints, BrainCircuit,
+  BarChartHorizontal, Baby, SatelliteDish, Wallet, BatteryCharging, Banknote, Ratio, Scan,
+  BadgePercent, Microscope
+} from "lucide-react";
+
+const SUB_GROUPS: Record<string, Array<{ name: string; slugs: string[] }>> = {
+  "text-writing": [
+    {
+      name: "Writing & Content Creation",
+      slugs: ["writing-assistants", "copywriting", "storytelling", "newsletters", "ai-newsletters"]
+    },
+    {
+      name: "Translation & Document Intelligence",
+      slugs: ["transcription", "translator", "localization", "resume-tools", "document-ai", "documentation", "note-taking-apps"]
+    }
+  ],
+  "audio-video": [
+    {
+      name: "Video & Animation Production",
+      slugs: ["video", "video-editor", "video-generator", "video-enhancer", "video-subtitling", "talking-avatar-generator", "animation"]
+    },
+    {
+      name: "Audio, Speech & Music Processing",
+      slugs: ["music-generation", "audio", "voice-cloning", "podcast", "dubbing", "text-to-speech"]
+    }
+  ],
+  "design-creative": [
+    {
+      name: "Image & Graphic Design",
+      slugs: ["image-generation", "image-editing", "background-remover", "logo-generator", "character-design", "infographics", "graphic-design", "fashion", "meme-generator", "creative-media"]
+    },
+    {
+      name: "3D, Spatial & Architectural Design",
+      slugs: ["architecture", "ar-vr", "3d", "3d-printing"]
+    }
+  ],
+  "education-lifestyle": [
+    {
+      name: "Education & Career",
+      slugs: ["academia", "learning-tools", "language-learning", "reading", "accessibility", "job-tools"]
+    },
+    {
+      name: "Lifestyle, Health & Recreation",
+      slugs: ["parenting", "dating", "wellness", "fitness", "sports-analytics", "pets", "travel", "food", "gaming", "nutrition", "mental-health", "others"]
+    }
+  ],
+  "productivity-business": [
+    {
+      name: "Productivity & Workflow",
+      slugs: ["productivity", "project-management", "calendar-scheduling", "meeting-assistants", "email-assistants", "spreadsheets", "mind-mapping", "automation", "workflow-automation", "diagramming", "presentation", "knowledge-management"]
+    },
+    {
+      name: "Business, Finance & Operations",
+      slugs: ["crm", "hr", "recruiting", "compliance", "tax-accounting", "contract-management", "business-tools", "events", "nonprofit", "finance", "fintech"]
+    }
+  ],
+  "science-industry": [
+    {
+      name: "Health, Medicine & BioTech",
+      slugs: ["healthcare", "telemedicine", "medical-imaging", "drug-discovery", "biotech", "legal-assistants", "patent-tools"]
+    },
+    {
+      name: "Industry, Energy & Earth Systems",
+      slugs: ["farming", "construction", "manufacturing", "real-estate", "home-design", "insurance", "government", "cleantech", "energy", "climate", "weather", "space-tech", "fleet-management", "supply-chain", "geospatial"]
+    }
+  ],
+  "dev-tech": [
+    {
+      name: "Coding & Frameworks",
+      slugs: ["developer-tools", "devtools", "code-assistant", "software-testing", "prompt-tools", "api-tools"]
+    },
+    {
+      name: "App & Web Builders",
+      slugs: ["no-code", "app-builders", "website-builders", "cloud-management", "debugging", "web3", "robotics", "iot", "ai-extensions", "extensions-chatgpt"]
+    }
+  ],
+  "data-security": [
+    {
+      name: "Data & Observability",
+      slugs: ["database-tools", "observability", "synthetic-data", "data-labeling", "data", "models", "leaderboards-benchmarks"]
+    },
+    {
+      name: "Security & Privacy",
+      slugs: ["cybersecurity", "privacy", "identity", "computer-vision", "content-moderation"]
+    }
+  ],
+  "marketing-sales": [
+    {
+      name: "Marketing & Growth",
+      slugs: ["marketing", "seo", "social-media-tools", "ad-generator", "market-research"]
+    },
+    {
+      name: "Sales & Commerce",
+      slugs: ["sales-tools", "lead-generation", "e-commerce"]
+    }
+  ],
+  "search-agents": [
+    {
+      name: "Search & Discovery",
+      slugs: ["search-research", "search-engines", "local-search-engines", "ai-directories", "research-tools"]
+    },
+    {
+      name: "Chatbots & AI Agents",
+      slugs: ["chatbot-builders", "chatbots", "ai-agents", "personal-assistants", "ai-companion", "customer-support", "general-reasoning", "sentiment-analysis"]
+    }
+  ]
+};
+
+const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  "writing-assistants": PenTool,
+  "copywriting": Type,
+  "storytelling": Scroll,
+  "transcription": Mic,
+  "translator": Languages,
+  "localization": Globe,
+  "resume-tools": Briefcase,
+  "document-ai": FileSearch,
+  "documentation": Book,
+  "note-taking-apps": StickyNote,
+  "newsletters": Mail,
+  "ai-newsletters": Inbox,
+  "video": Film,
+  "video-editor": Scissors,
+  "video-generator": Clapperboard,
+  "video-enhancer": Wand2,
+  "video-subtitling": Captions,
+  "talking-avatar-generator": Tv,
+  "animation": Sparkles,
+  "music-generation": Music,
+  "audio": Volume2,
+  "voice-cloning": Waves,
+  "podcast": Podcast,
+  "dubbing": Mic2,
+  "text-to-speech": AudioLines,
+  "image-generation": ImageIcon,
+  "image-editing": Paintbrush,
+  "background-remover": Eraser,
+  "logo-generator": Shapes,
+  "character-design": User,
+  "infographics": PieChart,
+  "graphic-design": Palette,
+  "fashion": Shirt,
+  "architecture": Compass,
+  "ar-vr": Glasses,
+  "3d": Box,
+  "3d-printing": Printer,
+  "meme-generator": Laugh,
+  "creative-media": Layers,
+  "productivity": Timer,
+  "project-management": ListTodo,
+  "calendar-scheduling": Calendar,
+  "meeting-assistants": Users,
+  "crm": HeartHandshake,
+  "hr": UserPlus,
+  "recruiting": UserSearch,
+  "compliance": Scale,
+  "tax-accounting": Calculator,
+  "contract-management": FileSignature,
+  "business-tools": Landmark,
+  "email-assistants": Send,
+  "spreadsheets": Table,
+  "mind-mapping": Network,
+  "automation": Zap,
+  "workflow-automation": Workflow,
+  "diagramming": GitFork,
+  "events": Ticket,
+  "nonprofit": Banknote,
+  "presentation": Presentation,
+  "finance": DollarSign,
+  "fintech": Coins,
+  "knowledge-management": Waypoints,
+  "developer-tools": Terminal,
+  "devtools": Command,
+  "code-assistant": Code,
+  "software-testing": BugPlay,
+  "no-code": Blocks,
+  "app-builders": Smartphone,
+  "website-builders": Laptop,
+  "cloud-management": Cloud,
+  "debugging": Bug,
+  "web3": Wallet,
+  "robotics": Cpu,
+  "iot": Wifi,
+  "prompt-tools": Wrench,
+  "api-tools": Plug,
+  "ai-extensions": Puzzle,
+  "extensions-chatgpt": Puzzle,
+  "database-tools": Database,
+  "observability": Activity,
+  "cybersecurity": Lock,
+  "privacy": EyeOff,
+  "identity": Fingerprint,
+  "synthetic-data": Copy,
+  "data-labeling": Tag,
+  "data": Folder,
+  "models": GitBranch,
+  "leaderboards-benchmarks": Trophy,
+  "computer-vision": Eye,
+  "content-moderation": ShieldAlert,
+  "marketing": Megaphone,
+  "sales-tools": BadgePercent,
+  "lead-generation": Magnet,
+  "seo": TrendingUp,
+  "social-media-tools": Share2,
+  "ad-generator": Award,
+  "e-commerce": ShoppingBag,
+  "market-research": BarChart3,
+  "search-research": Search,
+  "search-engines": SatelliteDish,
+  "local-search-engines": MapPin,
+  "ai-directories": FolderOpen,
+  "chatbot-builders": Settings,
+  "chatbots": MessageSquare,
+  "ai-agents": Bot,
+  "personal-assistants": UserCheck,
+  "ai-companion": Smile,
+  "customer-support": LifeBuoy,
+  "general-reasoning": BrainCircuit,
+  "sentiment-analysis": Gauge,
+  "research-tools": Notebook,
+  "academia": GraduationCap,
+  "learning-tools": Library,
+  "language-learning": Languages,
+  "reading": Scan,
+  "parenting": Baby,
+  "dating": Heart,
+  "wellness": Leaf,
+  "fitness": Dumbbell,
+  "sports-analytics": BarChartHorizontal,
+  "pets": PawPrint,
+  "travel": MapPinned,
+  "others": HelpCircle,
+  "accessibility": Accessibility,
+  "food": Apple,
+  "gaming": Gamepad2,
+  "job-tools": UserSearch,
+  "nutrition": Utensils,
+  "mental-health": HeartCrack,
+  "farming": Sprout,
+  "construction": Hammer,
+  "manufacturing": Factory,
+  "real-estate": HomeIcon,
+  "home-design": Layout,
+  "insurance": ShieldCheck,
+  "government": Building,
+  "healthcare": Stethoscope,
+  "telemedicine": HeartPulse,
+  "medical-imaging": Microscope,
+  "drug-discovery": Pill,
+  "biotech": Dna,
+  "cleantech": Recycle,
+  "energy": BatteryCharging,
+  "climate": CloudLightning,
+  "weather": CloudSun,
+  "space-tech": Rocket,
+  "legal-assistants": Ratio,
+  "patent-tools": FileText,
+  "fleet-management": Truck,
+  "supply-chain": Package,
+  "geospatial": Globe
+};
+
+const getCategoryIcon = (slug: string) => {
+  const s = (slug || "").toLowerCase();
+  const baseClass = "h-6 w-6 text-[#8FBF3F] group-hover:text-white transition-colors duration-300";
+
+  let IconComponent = CATEGORY_ICON_MAP[s];
+
+  if (!IconComponent) {
+    if (s.includes("code") || s.includes("dev") || s.includes("script") || s.includes("program")) IconComponent = Code;
+    else if (s.includes("search") || s.includes("find") || s.includes("query")) IconComponent = Search;
+    else if (s.includes("chat") || s.includes("agent") || s.includes("bot")) IconComponent = Bot;
+    else if (s.includes("write") || s.includes("text") || s.includes("doc") || s.includes("note")) IconComponent = FileText;
+    else if (s.includes("image") || s.includes("photo") || s.includes("art") || s.includes("draw")) IconComponent = ImageIcon;
+    else if (s.includes("audio") || s.includes("voice") || s.includes("sound") || s.includes("music")) IconComponent = AudioLines;
+    else if (s.includes("data") || s.includes("db") || s.includes("analytic")) IconComponent = Database;
+    else if (s.includes("security") || s.includes("shield") || s.includes("lock") || s.includes("privat")) IconComponent = Lock;
+    else if (s.includes("market") || s.includes("sale") || s.includes("ad") || s.includes("lead")) IconComponent = Megaphone;
+    else IconComponent = Sparkles;
+  }
+
+  return <IconComponent className={baseClass} strokeWidth={2} />;
+};
+
+interface CategoryGroupSectionProps {
+  group: { id: string; name: string };
+  groupCategories: Category[];
+  sortedGroupCategories: Category[];
+  toolCounts: Record<string, number>;
+  getCategoryIcon: (slug: string) => React.ReactNode;
+}
+
+const CategoryGroupSection = memo(function CategoryGroupSection({
+  group,
+  groupCategories,
+  sortedGroupCategories,
+  toolCounts,
+  getCategoryIcon
+}: CategoryGroupSectionProps) {
+  return (
+    <div
+      id={`group-${group.id}`}
+      className="scroll-mt-28 cv-section"
+    >
+      <div className="flex items-center justify-between mb-6 border-b border-slate-800/80 pb-3 font-sans">
+        <div className="flex items-center gap-3">
+          <h2 className="font-serif text-lg font-medium text-white sm:text-xl">
+            {group.name}
+          </h2>
+          <span className="rounded-full bg-slate-900/80 border border-slate-800 px-2.5 py-0.5 text-xs text-slate-400 font-mono font-bold">
+            {groupCategories.length}
+          </span>
+        </div>
+      </div>
+      {SUB_GROUPS[group.id] ? (
+        <div className="space-y-8">
+          {SUB_GROUPS[group.id].map((subGroup) => {
+            const subGroupCats = sortedGroupCategories.filter(cat => subGroup.slugs.includes(cat.slug));
+            if (subGroupCats.length === 0) return null;
+            return (
+              <div key={subGroup.name} className="space-y-4">
+                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <span>&gt;</span>
+                  <span>{subGroup.name.toLowerCase().replace(/ & /g, "_and_").replace(/, /g, "_").replace(/ /g, "_")} {"// "} {subGroupCats.length} categories</span>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {subGroupCats.map((cat) => {
+                    const count = toolCounts[cat.id] || 0;
+                    const isZero = count === 0;
+                    return (
+                      <Link
+                        key={cat.id}
+                        href={`/category/${cat.slug}`}
+                        className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] contain-card cv-card ${
+                          isZero ? "opacity-50 hover:opacity-85" : ""
+                        }`}
+                      >
+                        <div>
+                          <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
+                            {getCategoryIcon(cat.slug)}
+                          </div>
+                          <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
+                            {cat.name}
+                          </h3>
+                          <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                            {cat.description || "Browse curated tools for this domain."}
+                          </p>
+                        </div>
+                        <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
+                          <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
+                            {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
+                          </span>
+                          {!isZero && (
+                            <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              Explore &rarr;
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {sortedGroupCategories.map((cat) => {
+            const count = toolCounts[cat.id] || 0;
+            const isZero = count === 0;
+            return (
+              <Link
+                key={cat.id}
+                href={`/category/${cat.slug}`}
+                className={`group relative flex flex-col justify-between rounded-lg border border-[#212623] bg-[#131615]/50 p-5 sm:p-6 hover:bg-[#131615] hover:border-[#8FBF3F]/40 transition-colors duration-[120ms] contain-card cv-card ${
+                  isZero ? "opacity-50 hover:opacity-85" : ""
+                }`}
+              >
+                <div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] mb-4 group-hover:bg-[#8FBF3F]/10 transition-all duration-300">
+                    {getCategoryIcon(cat.slug)}
+                  </div>
+                  <h3 className="text-base font-bold text-white group-hover:text-[#8FBF3F] transition-colors duration-300 line-clamp-1 font-serif">
+                    {cat.name}
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-2 leading-normal line-clamp-2 font-sans">
+                    {cat.description || "Browse curated tools for this domain."}
+                  </p>
+                </div>
+                <div className="mt-5 flex items-center justify-between text-xs font-medium font-sans">
+                  <span className={isZero ? "text-slate-500/70" : "text-slate-500"}>
+                    {isZero ? "Coming soon" : `${count} ${count === 1 ? 'tool' : 'tools'} available`}
+                  </span>
+                  {!isZero && (
+                    <span className="text-[#8FBF3F] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Explore &rarr;
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+});
+
+interface HomeClientProps {
+  initialCategories: Category[];
+  initialToolCounts: Record<string, number>;
+  initialRecentTools: Tool[];
+  initialTotalToolsCount: number;
+  initialPopularQueries: string[];
+}
+
+export default function HomeClient({
+  initialCategories,
+  initialToolCounts,
+  initialRecentTools,
+  initialTotalToolsCount,
+  initialPopularQueries,
+}: HomeClientProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState<boolean>(false);
+  const [recentTools, setRecentTools] = useState<Tool[]>(initialRecentTools.slice(0, 6));
+  const [toolCounts, setToolCounts] = useState<Record<string, number>>(initialToolCounts);
+  const [favoriteTools] = useState<Tool[]>([]);
+  const [recentToolsList] = useState<Tool[]>([]);
+  const [trendingTools, setTrendingTools] = useState<Tool[]>(initialRecentTools.slice(0, 8));
+  const [totalToolsCount, setTotalToolsCount] = useState<number>(initialTotalToolsCount);
+  const [lastUpdatedStr, setLastUpdatedStr] = useState<string>("today");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [popularQueries, setPopularQueries] = useState<string[]>(initialPopularQueries);
+  const [isMac] = useState(() => {
+    if (typeof window !== "undefined") {
+      return navigator.platform.toUpperCase().indexOf("MAC") >= 0 || navigator.userAgent.includes("Macintosh");
+    }
+    return false;
+  });
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchFormRef = useRef<HTMLFormElement>(null);
+
+  const [isTypingComplete] = useState(true);
+  const [prefersReducedMotion] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
+
+  const renderTypedHeading = () => {
+    if (isTypingComplete) {
+      return (
+        <>
+          Find the exact <span className="italic text-[#8FBF3F]">AI tool</span> by use case
+          {!prefersReducedMotion && (
+            <span className="text-[#8FBF3F] terminal-cursor select-none ml-1">▍</span>
+          )}
+        </>
+      );
+    }
+    return null;
+  };
+
+  const updateLastUpdatedDate = useCallback((toolsList: Tool[]) => {
+    if (!toolsList || toolsList.length === 0) return;
+    const dates = toolsList
+      .map(t => t.created_at ? new Date(t.created_at).getTime() : 0)
+      .filter(t => !isNaN(t) && t > 0);
+    if (dates.length > 0) {
+      const maxTime = Math.max(...dates);
+      const maxDate = new Date(maxTime);
+      const diffDays = Math.floor((Date.now() - maxTime) / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) {
+        setLastUpdatedStr("today");
+      } else if (diffDays === 1) {
+        setLastUpdatedStr("yesterday");
+      } else if (diffDays < 7) {
+        setLastUpdatedStr(`${diffDays} days ago`);
+      } else {
+        setLastUpdatedStr(maxDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    updateLastUpdatedDate(initialRecentTools);
+  }, [initialRecentTools, updateLastUpdatedDate]);
+
+  const router = useRouter();
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [selectedLetter, setSelectedLetter] = useState<string>("All");
+  const [categorySearchQuery, setCategorySearchQuery] = useState<string>("");
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const filteredCategories = useMemo(() => {
+    return categories.filter(cat => {
+      const matchesSearch = cat.name.toLowerCase().includes(categorySearchQuery.toLowerCase()) ||
+                            (cat.description && cat.description.toLowerCase().includes(categorySearchQuery.toLowerCase()));
+      
+      const firstChar = cat.name.charAt(0).toUpperCase();
+      const matchesLetter = selectedLetter === "All" || firstChar === selectedLetter;
+      
+      return matchesSearch && matchesLetter;
+    });
+  }, [categories, selectedLetter, categorySearchQuery]);
+
+  const groupedCategoriesMap = useMemo(() => {
+    const map: Record<string, { groupCategories: Category[]; sortedGroupCategories: Category[] }> = {};
+    
+    filteredCategories.forEach(cat => {
+      const group = getCategoryGroup(cat);
+      if (!map[group.id]) {
+        map[group.id] = { groupCategories: [], sortedGroupCategories: [] };
+      }
+      map[group.id].groupCategories.push(cat);
+    });
+
+    Object.keys(map).forEach(groupId => {
+      const groupCategories = map[groupId].groupCategories;
+      const sorted = [...groupCategories].sort((a, b) => {
+        const countA = toolCounts[a.id] || 0;
+        const countB = toolCounts[b.id] || 0;
+        if (countA > 0 && countB === 0) return -1;
+        if (countA === 0 && countB > 0) return 1;
+        return a.name.localeCompare(b.name);
+      });
+      map[groupId].sortedGroupCategories = sorted;
+    });
+
+    return map;
+  }, [filteredCategories, toolCounts]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollTickingRef = useRef(false);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    if (scrollTickingRef.current) return;
+    scrollTickingRef.current = true;
+    requestAnimationFrame(() => {
+      const el = scrollContainerRef.current;
+      if (el) {
+        const { scrollLeft, scrollWidth, clientWidth } = el;
+        const nextLeft = scrollLeft > 2;
+        const nextRight = scrollLeft < scrollWidth - clientWidth - 2;
+        setShowLeftFade(prev => prev !== nextLeft ? nextLeft : prev);
+        setShowRightFade(prev => prev !== nextRight ? nextRight : prev);
+      }
+      scrollTickingRef.current = false;
+    });
+  }, []);
+
+  const handleScroll = () => {
+    checkScroll();
+  };
+
+  const handleScrollClick = (direction: "left" | "right") => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      const scrollAmount = 240;
+      el.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, [checkScroll, filteredCategories]);
+
+  const refreshData = useCallback(async () => {
+    try {
+      const [dbCategories, counts, recent, totalCount, queries] = await Promise.all([
+        mockDb.getCategories(),
+        mockDb.getCategoryToolCounts(),
+        mockDb.getRecentTools(8),
+        mockDb.getTotalToolsCount(),
+        mockDb.getPopularQueries()
+      ]);
+      
+      setCategories(dbCategories);
+      setToolCounts(counts);
+      setRecentTools(recent.slice(0, 6));
+      setTrendingTools(recent.slice(0, 8));
+      setTotalToolsCount(totalCount);
+      setIsCategoriesLoading(false);
+      setPopularQueries(queries);
+      updateLastUpdatedDate(recent);
+    } catch (err) {
+      console.error("Error loading homepage data:", err);
+      setIsCategoriesLoading(false);
+    }
+  }, [updateLastUpdatedDate]);
+
+  useEffect(() => {
+    const handleFavoritesUpdate = () => {
+      refreshData();
+    };
+    window.addEventListener("favorites-updated", handleFavoritesUpdate);
+    return () => window.removeEventListener("favorites-updated", handleFavoritesUpdate);
+  }, [refreshData]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setIsDropdownOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchFormRef.current && !searchFormRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 150);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  const suggestions = useMemo(() => {
+    const query = debouncedQuery.trim().toLowerCase();
+    if (!query) return [];
+
+    interface SuggestionItem {
+      id: string;
+      name: string;
+      type: "tool" | "category";
+      slugOrUrl: string;
+      description?: string;
+      score: number;
+    }
+
+    const list: SuggestionItem[] = [];
+
+    categories.forEach(cat => {
+      const name = cat.name.toLowerCase();
+      const desc = cat.description?.toLowerCase() || "";
+      if (name.startsWith(query)) {
+        list.push({ id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, description: cat.description, score: 1 });
+      } else if (name.includes(query)) {
+        list.push({ id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, description: cat.description, score: 2 });
+      } else if (desc.includes(query)) {
+        list.push({ id: cat.id, name: cat.name, type: "category", slugOrUrl: cat.slug, description: cat.description, score: 3 });
+      }
+    });
+
+    recentTools.forEach(tool => {
+      const name = tool.name.toLowerCase();
+      const desc = tool.short_description.toLowerCase();
+      const matchesTag = tool.tags?.some(t => t.toLowerCase().includes(query)) || false;
+
+      if (name.startsWith(query)) {
+        list.push({ id: tool.id, name: tool.name, type: "tool", slugOrUrl: tool.id, description: tool.short_description, score: 1 });
+      } else if (name.includes(query)) {
+        list.push({ id: tool.id, name: tool.name, type: "tool", slugOrUrl: tool.id, description: tool.short_description, score: 2 });
+      } else if (desc.includes(query) || matchesTag) {
+        list.push({ id: tool.id, name: tool.name, type: "tool", slugOrUrl: tool.id, description: tool.short_description, score: 3 });
+      }
+    });
+
+    list.sort((a, b) => {
+      if (a.score !== b.score) return a.score - b.score;
+      return a.name.localeCompare(b.name);
+    });
+
+    return list.slice(0, 5);
+  }, [debouncedQuery, categories, recentTools]);
+
+  return (
+    <div className="flex flex-col flex-1">
+      {/* Hero Section */}
+      <section className="relative px-4 py-12 sm:py-20 sm:px-6 lg:px-8 text-center overflow-hidden border-b border-[#1E293B] bg-gradient-to-b from-[#0e1627] to-[#0B0F17]">
+        <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#8FBF3F]/5 blur-3xl" />
+
+        <div className="relative mx-auto max-w-3xl">
+          <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl lg:text-6xl mb-4 sm:mb-6 min-h-[1.2em]">
+            {renderTypedHeading()}
+          </h1>
+          
+          <div className={`transition-opacity duration-[200ms] ${
+            isTypingComplete ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}>
+            <p className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-sans">
+              A curated AI tools directory of platforms and bots categorized by what they do. Search by use case or task to find the exact tool for your workflow.
+            </p>
+
+            <form ref={searchFormRef} onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl relative" role="search">
+              <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-[#131615] border border-[#212623] p-2 focus-within:border-[#8FBF3F] focus-within:ring-1 focus-within:ring-[#8FBF3F] shadow-2xl shadow-black/40 transition-all duration-200 gap-2 font-mono">
+                <div className="flex items-center flex-1 min-w-0 relative">
+                  <span className="pl-3 font-mono text-[#8FBF3F] font-bold text-sm sm:text-base select-none shrink-0">&gt;</span>
+                  <input
+                    id="hero-search-input"
+                    name="search"
+                    ref={searchInputRef}
+                    type="text"
+                    aria-label="Search directory by task"
+                    placeholder={isMobile ? "search tools by task..." : "search tools by task (e.g. summarize video)..."}
+                    value={searchQuery}
+                    onFocus={() => setIsDropdownOpen(true)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsDropdownOpen(true);
+                    }}
+                    className="w-full min-w-0 bg-transparent pl-2 pr-2 py-2.5 sm:py-3 text-sm sm:text-base text-white placeholder-slate-500 outline-none font-mono"
+                  />
+
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        searchInputRef.current?.focus();
+                      }}
+                      className="p-1.5 text-slate-500 hover:text-white transition-colors cursor-pointer mr-1 shrink-0"
+                      aria-label="Clear search"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+
+                  {!searchQuery && (
+                    <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-[#212623] bg-[#0D0F0E] px-2 py-0.5 text-[10px] text-slate-400 font-mono select-none mr-2 shrink-0">
+                      {isMac ? "⌘K" : "Ctrl K"}
+                    </kbd>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto shrink-0 rounded-lg bg-[#8FBF3F] hover:bg-[#7ba235] active:bg-[#6c9130] text-slate-950 font-bold px-6 py-2.5 sm:py-3 text-sm transition-colors duration-[100ms] font-mono cursor-pointer"
+                >
+                  Search
+                </button>
+              </div>
+
+              {/* Suggestions Dropdown */}
+              {isDropdownOpen && searchQuery.trim() && (
+                <div className="absolute top-full left-0 right-0 z-20 mt-2 rounded-xl border border-[#212623] bg-[#0D0F0E] shadow-2xl overflow-hidden font-mono text-left">
+                  {searchQuery.trim() !== debouncedQuery.trim() ? (
+                    <div className="px-4 py-4 text-xs text-slate-500 font-mono flex items-center gap-1">
+                      <span>querying_index</span>
+                      <span className="terminal-dots text-[#8FBF3F]"></span>
+                    </div>
+                  ) : suggestions.length === 0 ? (
+                    <div className="px-4 py-4 text-xs text-slate-500 flex flex-col gap-1.5">
+                      <span>No matches found.</span>
+                      <button
+                        type="submit"
+                        className="text-[#8FBF3F] hover:text-[#7ba235] text-[10px] text-left underline font-mono cursor-pointer"
+                      >
+                        Press Enter to search the full index &gt;_
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="py-2 bg-[#0E100F]">
+                      {suggestions.map((item, index) => {
+                        const isTool = item.type === "tool";
+                        return (
+                          <div
+                            key={`${item.type}-${item.id}`}
+                            onClick={() => {
+                              if (item.type === "category") {
+                                router.push(`/category/${item.slugOrUrl}`);
+                              } else {
+                                router.push(`/tool/${item.slugOrUrl}`);
+                              }
+                            }}
+                            className="suggestion-row flex items-center justify-between mx-2 my-1 px-3 py-2 text-xs text-[#EDEEEA] border border-transparent hover:border-[#8FBF3F]/35 hover:bg-[#8FBF3F]/5 rounded-lg cursor-pointer transition-colors duration-[100ms] group"
+                            style={{ animationDelay: `${index * 20}ms` }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Go to ${item.type}: ${item.name}`}
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              {isTool ? (
+                                <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">🤖</span>
+                              ) : (
+                                <span className="shrink-0 text-slate-500 group-hover:text-[#8FBF3F]">&gt;</span>
+                              )}
+                              <span className="font-semibold truncate">{item.name}</span>
+                              {item.description && (
+                                <span className="text-[10px] text-slate-500 truncate max-w-[200px] sm:max-w-xs group-hover:text-[#8A8F87]">
+                                  — {item.description}
+                                </span>
+                              )}
+                            </div>
+                            <span className="shrink-0 rounded bg-[#131615] border border-[#212623] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#8A8F87] group-hover:border-[#8FBF3F]/30 group-hover:text-[#8FBF3F] font-mono">
+                              {item.type}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </form>
+
+            {/* Quick Filter Chips */}
+            {popularQueries.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-5 font-mono text-[10px] text-[#8A8F87]">
+                <span className="text-[9px] uppercase font-bold text-slate-500">popular:</span>
+                {popularQueries.map((queryText, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery(queryText);
+                      setIsDropdownOpen(false);
+                      router.push(`/search?q=${encodeURIComponent(queryText)}`);
+                    }}
+                    className="rounded-lg bg-[#131615] border border-[#212623] hover:border-[#8FBF3F]/35 hover:text-[#8FBF3F] active:bg-[#0e100f] active:border-[#8FBF3F]/50 px-2.5 py-1 transition-colors duration-[100ms] cursor-pointer"
+                  >
+                    {queryText}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Personalized Welcome, Continue Exploring & Favorite Tools */}
+      {(recentToolsList.length > 0 || favoriteTools.length > 0) && (
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 border-b border-slate-900">
+          <div className="mb-6 font-sans">
+            <h2 className="font-serif text-2xl font-medium text-white tracking-tight">
+              Welcome back
+            </h2>
+            <p className="text-slate-500 text-xs mt-1 font-mono">
+              &gt; personalized_explorer_panel
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {recentToolsList.length > 0 ? (
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
+                  <span className="h-1 w-1 rounded-full bg-[#8FBF3F]" />
+                  continue_exploring (recently viewed)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {recentToolsList.slice(0, 4).map((tool) => (
+                    <ToolCard
+                      key={`recent-${tool.id}`}
+                      tool={tool}
+                      categoryName={categories.find(c => c.id === tool.category_id)?.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {favoriteTools.length > 0 ? (
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#8FBF3F] fill-current" />
+                  bookmarked_tools (favorites)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {favoriteTools.slice(0, 4).map((tool) => (
+                    <ToolCard
+                      key={`fav-home-${tool.id}`}
+                      tool={tool}
+                      categoryName={categories.find(c => c.id === tool.category_id)?.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      )}
+
+      {/* Trending Carousel Section */}
+      {trendingTools.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 border-b border-slate-900">
+          <div className="mb-6 font-sans">
+            <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
+              Recently Verified
+            </h2>
+            <p className="text-[#8FBF3F] text-xs mt-1 font-mono">
+              &gt; sorted_by_verification_date
+            </p>
+          </div>
+
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory scroll-smooth">
+            {trendingTools.map((tool) => (
+              <div 
+                key={`trending-${tool.id}`} 
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (!target.closest("a") && !target.closest("button")) {
+                    router.push(`/tool/${tool.id}`);
+                  }
+                }}
+                className="snap-start flex-shrink-0 w-80 rounded-xl border border-[#212623] bg-gradient-to-br from-[#131615] to-[#0A0D0B] p-6 shadow-lg hover:border-[#8FBF3F]/35 hover:shadow-2xl hover:shadow-[#8FBF3F]/5 transition-all duration-300 group cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`View details for ${tool.name}`}
+              >
+                <div className="flex justify-between items-start gap-2 mb-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#212623] bg-[#0D0F0E] text-[#8FBF3F] font-mono font-bold text-xs">
+                    {tool.name.substring(0, 2).toLowerCase()}
+                  </div>
+                </div>
+                <Link href={`/tool/${tool.id}`} className="block mb-2">
+                  <h4 className="font-serif text-base font-semibold text-white group-hover:text-[#8FBF3F] transition-colors leading-tight line-clamp-1">
+                    {tool.name}
+                  </h4>
+                </Link>
+                <p className="text-slate-400 text-xs leading-relaxed mb-4 line-clamp-2 h-8">
+                  {cleanDescription(tool.short_description)}
+                </p>
+                <div className="flex items-center justify-between border-t border-[#212623]/60 pt-3 text-[10px] font-mono">
+                  <span className="text-[#8A8F87] uppercase tracking-wider truncate max-w-[150px]">
+                    {categories.find(c => c.id === tool.category_id)?.name || "bot"}
+                  </span>
+                  {(() => {
+                    const catName = categories.find(c => c.id === tool.category_id)?.name;
+                    const isExtension = catName?.toLowerCase().includes("extension") ||
+                      tool.category_id === "fe1ee758-4faf-4b9f-873a-bb95a5939552" ||
+                      tool.tags?.some(t => t.toLowerCase().includes("extension")) ||
+                      tool.url?.includes("chromewebstore") ||
+                      tool.url?.includes("chrome.google.com");
+                    const label = isExtension ? "get_extension" : "run_bot";
+                    return (
+                      <a
+                        href={tool.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#8FBF3F] font-bold hover:underline"
+                      >
+                        {label} &rarr;
+                      </a>
+                    );
+                  })()}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Featured / Recently Indexed Section */}
+      {recentTools.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8 font-sans">
+            <div>
+              <h2 className="font-serif text-xl font-medium tracking-tight text-white sm:text-2xl">
+                Recently Indexed
+              </h2>
+              <p className="text-slate-400 text-xs mt-1 font-sans">
+                Latest verified additions to the directory
+              </p>
+            </div>
+            <div className="h-[1px] flex-1 bg-slate-800/80 mx-6 hidden sm:block" />
+            <Link 
+              href="/search" 
+              className="text-[#8FBF3F] hover:text-[#7ba235] text-sm font-semibold transition-colors"
+            >
+              Browse All Tools &rarr;
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {recentTools.map((tool) => (
+              <ToolCard 
+                key={tool.id} 
+                tool={tool} 
+                categoryName={categories.find(c => c.id === tool.category_id)?.name}
+                onRefresh={refreshData}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <WhyCrawlers totalTools={totalToolsCount || 1417} totalCategories={categories.length || 170} lastUpdated={lastUpdatedStr} />
+
+      {/* Category Indexing Section */}
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-t border-slate-900">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 font-sans">
+          <div>
+            <h2 className="font-serif text-2xl font-medium tracking-tight text-white sm:text-3xl">
+              Browse Directory Index
+            </h2>
+            <p className="text-slate-400 text-sm mt-1">
+              Filter by section or search to discover use-case collections
+            </p>
+          </div>
+          
+          {/* Category Quick Filter */}
+          <div className="relative w-full md:max-w-xs">
+            <input
+              id="category-filter-search-input"
+              name="category_search"
+              type="text"
+              aria-label="Search categories"
+              placeholder={categories.length > 0 ? `Search ${categories.length} categories...` : "Search categories..."}
+              value={categorySearchQuery}
+              onChange={(e) => {
+                setCategorySearchQuery(e.target.value);
+                setSelectedLetter("All");
+              }}
+              className="w-full rounded-lg border border-[#212623] bg-[#0D0F0E] pl-10 pr-8 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#8FBF3F] transition-all font-sans"
+            />
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            {categorySearchQuery && (
+              <button
+                onClick={() => setCategorySearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs font-sans"
+                aria-label="Clear category search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Sticky Group Jump Nav */}
+        <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:mx-0 sm:px-0 bg-[#0B0F17]/90 backdrop-blur-md border-b border-slate-900/60 relative" role="navigation" aria-label="Category section navigation">
+          {showLeftFade && (
+            <>
+              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-25" />
+              <button
+                type="button"
+                onClick={() => handleScrollClick("left")}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-35 flex h-7 w-7 items-center justify-center rounded-full border border-[#212623] bg-[#0E100F]/90 text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all shadow-md shadow-black/50 cursor-pointer"
+                aria-label="Scroll Left"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            </>
+          )}
+          <div 
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="flex flex-nowrap items-center gap-2 overflow-x-auto py-4 scrollbar-none snap-x snap-mandatory scroll-smooth pr-10"
+          >
+            <button
+              onClick={() => {
+                setSelectedLetter("All");
+                setCategorySearchQuery("");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold font-sans transition-all ${
+                selectedLetter === "All" && !categorySearchQuery
+                  ? "bg-[#8FBF3F] text-slate-950"
+                  : "bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-white"
+              }`}
+            >
+              All Categories
+            </button>
+            
+            <div className="h-5 w-[1px] bg-slate-850 flex-shrink-0 mx-1 snap-start" />
+            
+            {CATEGORY_GROUPS.map((group) => {
+              const hasCategoriesInView = filteredCategories.some(cat => getCategoryGroup(cat).id === group.id);
+              if (!hasCategoriesInView) return null;
+              return (
+                <button
+                  key={group.id}
+                  onClick={() => {
+                    const element = document.getElementById(`group-${group.id}`);
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  }}
+                  className="flex-shrink-0 snap-start px-4 py-2.5 rounded-lg text-xs font-semibold bg-slate-900/60 border border-[#212623] text-slate-300 hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 transition-all font-sans"
+                >
+                  {group.name}
+                </button>
+              );
+            })}
+          </div>
+          {showRightFade && (
+            <>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F17] via-[#0B0F17]/85 to-transparent z-25" />
+              <button
+                type="button"
+                onClick={() => handleScrollClick("right")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-35 flex h-7 w-7 items-center justify-center rounded-full border border-[#212623] bg-[#0E100F]/90 text-[#8A8F87] hover:text-[#8FBF3F] hover:border-[#8FBF3F]/40 active:scale-95 transition-all shadow-md shadow-black/50 cursor-pointer"
+                aria-label="Scroll Right"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Active Filters Display */}
+        {(selectedLetter !== "All" || categorySearchQuery) && (
+          <div className="flex items-center justify-between text-xs text-slate-400 mb-6 font-mono bg-slate-900/30 border border-slate-900 px-4 py-2.5 rounded-lg">
+            <div>
+              Active Index filter: <span className="text-[#8FBF3F] font-sans font-bold">{selectedLetter !== "All" ? `Letter "${selectedLetter}"` : `Search "${categorySearchQuery}"`}</span>
+              <span className="text-slate-600 mx-2">|</span>
+              Found {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
+            </div>
+            <button
+              onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
+              className="text-xs text-rose-400 hover:text-rose-300 font-sans font-semibold transition-colors"
+              aria-label="Clear active category filter"
+            >
+              Clear filter
+            </button>
+          </div>
+        )}
+
+        {/* Grouped Categories Grid */}
+        {isCategoriesLoading && categories.length === 0 ? (
+          <div className="py-16 text-center text-xs font-mono text-slate-500 flex items-center justify-center gap-2 border border-[#212623] rounded-2xl bg-[#131615]">
+            <span className="h-2 w-2 rounded-full bg-[#8FBF3F] animate-pulse" />
+            <span>loading_category_index...</span>
+          </div>
+        ) : filteredCategories.length > 0 ? (
+          <div className="space-y-12">
+            {CATEGORY_GROUPS.map((group) => {
+              const data = groupedCategoriesMap[group.id];
+              if (!data || data.groupCategories.length === 0) return null;
+              
+              return (
+                <CategoryGroupSection
+                  key={group.id}
+                  group={group}
+                  groupCategories={data.groupCategories}
+                  sortedGroupCategories={data.sortedGroupCategories}
+                  toolCounts={toolCounts}
+                  getCategoryIcon={getCategoryIcon}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-[#131B2E]/20 border border-slate-900 rounded-2xl font-sans">
+            <svg className="mx-auto h-10 w-10 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            <h3 className="text-sm font-semibold text-white">No categories found</h3>
+            <p className="text-xs text-slate-500 mt-1">Try clearing your filters or typing a different search query</p>
+            <button
+              onClick={() => { setSelectedLetter("All"); setCategorySearchQuery(""); }}
+              className="mt-4 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-white transition-colors duration-200"
+            >
+              Reset Search Filter
+            </button>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}

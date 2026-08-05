@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { mockDb } from "@/data/mockDb";
+import { mockDb, Tool } from "@/data/mockDb";
 import ToolDetailPageClient from "./ToolDetailPageClient";
 
 export const dynamic = "force-dynamic";
@@ -61,57 +61,64 @@ export default async function ToolDetailPage({
   params: Promise<{ id: string }>;
 }) {
   let id = "";
+  let tool: Tool | null = null;
+  let similarTools: Tool[] = [];
   let jsonLd = null;
+
   try {
     const resolvedParams = await params;
     id = resolvedParams.id;
-    const tool = id ? await mockDb.getActiveToolById(id) : undefined;
+    if (id) {
+      const t = await mockDb.getActiveToolById(id);
+      if (t) {
+        tool = t;
+        similarTools = await mockDb.getRelatedTools(t.id, t.category_id, t.tags);
 
-    if (tool) {
-      const categoryName = tool.categories?.name || "AI Tools";
-      const categorySlug = tool.categories?.slug || "";
+        const categoryName = tool.categories?.name || "AI Tools";
+        const categorySlug = tool.categories?.slug || "";
 
-      const appSchema = {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": tool.name,
-        "description": tool.short_description,
-        "applicationCategory": categoryName,
-        "operatingSystem": "All",
-        "offers": {
-          "@type": "Offer",
-          "price": tool.pricing_model === "free" ? "0" : undefined,
-          "priceCurrency": tool.pricing_model === "free" ? "USD" : undefined,
-          "category": tool.pricing_model,
-        },
-      };
-
-      const breadcrumbSchema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://crawlers.dpdns.org"
+        const appSchema = {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": tool.name,
+          "description": tool.short_description,
+          "applicationCategory": categoryName,
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": tool.pricing_model === "free" ? "0" : undefined,
+            "priceCurrency": tool.pricing_model === "free" ? "USD" : undefined,
+            "category": tool.pricing_model,
           },
-          ...(categorySlug ? [{
-            "@type": "ListItem",
-            "position": 2,
-            "name": categoryName,
-            "item": `https://crawlers.dpdns.org/category/${categorySlug}`
-          }] : []),
-          {
-            "@type": "ListItem",
-            "position": categorySlug ? 3 : 2,
-            "name": tool.name,
-            "item": `https://crawlers.dpdns.org/tool/${id}`
-          }
-        ]
-      };
+        };
 
-      jsonLd = [appSchema, breadcrumbSchema];
+        const breadcrumbSchema = {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://crawlers.dpdns.org"
+            },
+            ...(categorySlug ? [{
+              "@type": "ListItem",
+              "position": 2,
+              "name": categoryName,
+              "item": `https://crawlers.dpdns.org/category/${categorySlug}`
+            }] : []),
+            {
+              "@type": "ListItem",
+              "position": categorySlug ? 3 : 2,
+              "name": tool.name,
+              "item": `https://crawlers.dpdns.org/tool/${id}`
+            }
+          ]
+        };
+
+        jsonLd = [appSchema, breadcrumbSchema];
+      }
     }
   } catch (err) {
     console.error("Error in ToolDetailPage server component:", err);
@@ -125,7 +132,11 @@ export default async function ToolDetailPage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <ToolDetailPageClient id={id} />
+      <ToolDetailPageClient
+        id={id}
+        initialTool={tool}
+        initialSimilarTools={similarTools}
+      />
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -355,16 +356,13 @@ export default function Header() {
                   aria-label="User account dropdown"
                 >
                   {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img 
+                    <Image 
                       src={user.user_metadata.avatar_url || user.user_metadata.picture} 
                       alt="Profile" 
-                      referrerPolicy="no-referrer"
                       width={32}
                       height={32}
-                      loading="lazy"
-                      decoding="async"
                       className="h-full w-full object-cover"
+                      unoptimized
                     />
                   ) : (
                     user.email?.charAt(0).toUpperCase()
@@ -519,16 +517,13 @@ export default function Header() {
               <div className="flex flex-col space-y-2">
                 <div className="px-3 py-1 flex items-center gap-2 font-mono text-[10px] text-slate-500">
                   {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img 
+                    <Image 
                       src={user.user_metadata.avatar_url || user.user_metadata.picture} 
                       alt="Profile" 
-                      referrerPolicy="no-referrer"
                       width={20}
                       height={20}
-                      loading="lazy"
-                      decoding="async"
                       className="h-5 w-5 rounded-full object-cover border border-[#8FBF3F]/30"
+                      unoptimized
                     />
                   ) : (
                     <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[#8FBF3F] to-[#7ba235] text-[#0D0F0E] font-bold flex items-center justify-center text-[9px]">

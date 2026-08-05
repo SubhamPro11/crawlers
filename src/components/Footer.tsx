@@ -39,7 +39,7 @@ export default function Footer() {
                   /stacks &rarr;
                 </Link>
                 <Link href="/" className="text-slate-400 hover:text-white transition-colors font-normal">
-                  All 150+ Categories &rarr;
+                  All Categories &rarr;
                 </Link>
               </li>
             </ul>

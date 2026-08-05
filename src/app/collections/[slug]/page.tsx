@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { mockDb } from "@/data/mockDb";
+import { mockDb, Collection, Tool } from "@/data/mockDb";
 import CollectionDetailPageClient from "./CollectionDetailPageClient";
 
 export const dynamic = "force-dynamic";
@@ -73,5 +73,24 @@ export default async function CollectionDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <CollectionDetailPageClient slug={slug} />;
+  let collection: Collection | null = null;
+  let tools: Tool[] = [];
+
+  if (slug) {
+    try {
+      const res = await mockDb.getCollectionBySlug(slug);
+      collection = res.collection;
+      tools = res.tools;
+    } catch (err) {
+      console.error("Error fetching collection server-side:", err);
+    }
+  }
+
+  return (
+    <CollectionDetailPageClient
+      slug={slug}
+      initialCollection={collection}
+      initialTools={tools}
+    />
+  );
 }

@@ -12,7 +12,7 @@ export function cleanDescription(desc: string): string {
   let clean = desc.trim();
   
   // Pattern matches common trailing conjunctions, prepositions, determiners, and transition phrases
-  const danglingPattern = /\s+(&|and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet|including|such as|allows you to|designed for|used to|which|that|across|along|around|through|under|without|vs|etc|into|over|than|their|your|its|our|these|those)[.,\s]*([.]{3}|…)?$/i;
+  const danglingPattern = /\s+(&|and|or|the|with|a|an|for|of|to|at|by|from|in|on|about|as|but|so|yet|including|such as|allows you to|designed for|used to|which|that|across|along|around|through|under|without|vs|etc|into|over|than|their|your|its|our|these|those|via|using|helps|features|provides|offering|built|is|are|was|were|can|will|should|more|other|all|any|every|such)[.,\s]*([.]{3}|…)?$/i;
   while (danglingPattern.test(clean)) {
     clean = clean.replace(danglingPattern, (_match, _word, dots) => (dots ? ` ${dots}` : ""));
   }
@@ -20,6 +20,17 @@ export function cleanDescription(desc: string): string {
   // Clean up trailing commas, colons, hyphens, or semicolons before ellipsis or end
   clean = clean.replace(/[,;:&\-\s]+\s*([.]{3}|…)$/, "$1");
   clean = clean.replace(/[,;:&\-\s]+$/, "");
+
+  // Strip orphaned sentence fragments: if there's a sentence-ending punctuation (.!?)
+  // followed by trailing words that don't end with punctuation, remove the fragment
+  const lastSentenceEnd = Math.max(clean.lastIndexOf("."), clean.lastIndexOf("!"), clean.lastIndexOf("?"));
+  if (lastSentenceEnd > 0 && lastSentenceEnd < clean.length - 1) {
+    const trailing = clean.substring(lastSentenceEnd + 1).trim();
+    // If trailing text exists and doesn't end with sentence-ending punctuation, strip it
+    if (trailing.length > 0 && !/[.!?]$/.test(trailing)) {
+      clean = clean.substring(0, lastSentenceEnd + 1);
+    }
+  }
   
   return clean;
 }

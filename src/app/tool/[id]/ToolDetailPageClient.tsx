@@ -9,12 +9,22 @@ import AddToCollectionModal from "@/components/AddToCollectionModal";
 import { fetchStacksForTool, Stack } from "@/lib/stacks";
 import { getVerificationStatus } from "@/lib/verification";
 
-export default function ToolDetailPageClient({ id }: { id: string }) {
-  const [tool, setTool] = useState<Tool | null>(null);
-  const [categoryName, setCategoryName] = useState("");
-  const [categorySlug, setCategorySlug] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [similarTools, setSimilarTools] = useState<Tool[]>([]);
+interface ToolDetailPageClientProps {
+  id: string;
+  initialTool?: Tool | null;
+  initialSimilarTools?: Tool[];
+}
+
+export default function ToolDetailPageClient({
+  id,
+  initialTool = null,
+  initialSimilarTools = [],
+}: ToolDetailPageClientProps) {
+  const [tool, setTool] = useState<Tool | null>(initialTool);
+  const [categoryName, setCategoryName] = useState(initialTool?.categories?.name || "");
+  const [categorySlug, setCategorySlug] = useState(initialTool?.categories?.slug || "");
+  const [isLoading, setIsLoading] = useState(!initialTool);
+  const [similarTools, setSimilarTools] = useState<Tool[]>(initialSimilarTools);
   const [featuredStacks, setFeaturedStacks] = useState<Stack[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
@@ -30,15 +40,12 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
       setCategoryName(t.categories?.name || "");
       setCategorySlug(t.categories?.slug || "");
       
-      // Load related tools (shared tags first, fallback to same-category)
       const res = await mockDb.getRelatedTools(t.id, t.category_id, t.tags);
       setSimilarTools(res);
 
-      // Load Featured Stacks
       const stacks = await fetchStacksForTool(t.id);
       setFeaturedStacks(stacks);
 
-      // Log Recently Viewed
       try {
         const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
         const filtered = items.filter((i: { id: string }) => i.id !== t.id);
@@ -52,7 +59,6 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
         console.error("Error writing recent items:", e);
       }
 
-      // Load Favorite Status
       try {
         const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
         setIsFavorite(favs.includes(t.id));
@@ -64,9 +70,29 @@ export default function ToolDetailPageClient({ id }: { id: string }) {
   }, [id]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchToolData();
-  }, [fetchToolData]);
+    if (!initialTool) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchToolData();
+    } else {
+      // Async side-effects like stacks & recent items log on mount
+      fetchStacksForTool(initialTool.id).then(setFeaturedStacks);
+      try {
+        const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+        const filtered = items.filter((i: { id: string }) => i.id !== initialTool.id);
+        const updated = [
+          { id: initialTool.id, name: initialTool.name, type: "tool", slugOrUrl: initialTool.id, timestamp: Date.now() },
+          ...filtered
+        ].slice(0, 10);
+        localStorage.setItem("crawlers_recent_items", JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent("recent-items-updated"));
+
+        const favs = JSON.parse(localStorage.getItem("crawlers_favorites") || "[]");
+        setIsFavorite(favs.includes(initialTool.id));
+      } catch (e) {
+        console.error("Error in initialTool client side effects:", e);
+      }
+    }
+  }, [initialTool, fetchToolData]);
 
   const handleVisit = async () => {
     if (tool) {

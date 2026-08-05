@@ -11,7 +11,7 @@ interface HomepageExtensionsProps {
 export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: HomepageExtensionsProps) {
   const [displayTools, setDisplayTools] = useState(totalTools);
   const [displayCategories, setDisplayCategories] = useState(totalCategories);
-  const [hasTriggered, setHasTriggered] = useState(true);
+  const [hasTriggered, setHasTriggered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export function WhyCrawlers({ totalTools, totalCategories, lastUpdated }: Homepa
           Why Crawlers?
         </h2>
         <p className="text-slate-400 text-sm mt-2">
-          An AI tools directory organized by **use case**, not by brand. Monospace style, curated listings, link-out only.
+          An AI tools directory organized by <strong className="text-white font-semibold">use case</strong>, not by brand. Monospace style, curated listings, link-out only.
         </p>
       </div>
 

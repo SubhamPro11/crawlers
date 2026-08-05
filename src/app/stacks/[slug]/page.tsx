@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { fetchStackBySlug } from "@/lib/stacks";
+import { fetchStackBySlug, Stack } from "@/lib/stacks";
 import StackDetailPageClient from "./StackDetailPageClient";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -35,5 +37,15 @@ export default async function StackDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <StackDetailPageClient slug={slug} />;
+  let stack: Stack | null = null;
+
+  if (slug) {
+    try {
+      stack = await fetchStackBySlug(slug);
+    } catch (err) {
+      console.error("Error fetching stack server-side:", err);
+    }
+  }
+
+  return <StackDetailPageClient slug={slug} initialStack={stack} />;
 }

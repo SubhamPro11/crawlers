@@ -6,10 +6,20 @@ import { mockDb, Collection, Tool } from "@/data/mockDb";
 import ToolCard from "@/components/ToolCard";
 import { TerminalLoader } from "@/components/TerminalLoader";
 
-export default function CollectionDetailPageClient({ slug }: { slug: string }) {
-  const [collection, setCollection] = useState<Collection | null>(null);
-  const [tools, setTools] = useState<Tool[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(Boolean(slug));
+interface CollectionDetailPageClientProps {
+  slug: string;
+  initialCollection?: Collection | null;
+  initialTools?: Tool[];
+}
+
+export default function CollectionDetailPageClient({
+  slug,
+  initialCollection = null,
+  initialTools = [],
+}: CollectionDetailPageClientProps) {
+  const [collection, setCollection] = useState<Collection | null>(initialCollection);
+  const [tools, setTools] = useState<Tool[]>(initialTools);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialCollection && Boolean(slug));
 
   const fetchCollectionData = useCallback(async () => {
     if (!slug) return;
@@ -20,17 +30,11 @@ export default function CollectionDetailPageClient({ slug }: { slug: string }) {
   }, [slug]);
 
   useEffect(() => {
-    let active = true;
-    if (!slug) return;
-    Promise.resolve().then(() => {
-      if (active) {
-        fetchCollectionData();
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [slug, fetchCollectionData]);
+    if (!initialCollection && slug) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchCollectionData();
+    }
+  }, [slug, initialCollection, fetchCollectionData]);
 
   if (isLoading) {
     return <TerminalLoader message="querying_collection_index" />;

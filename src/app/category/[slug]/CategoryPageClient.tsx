@@ -8,13 +8,23 @@ import { TerminalLoader } from "@/components/TerminalLoader";
 import { useVimNavigation } from "@/hooks/useVimNavigation";
 import { useRouter } from "next/navigation";
 
-export default function CategoryPageClient({ slug }: { slug: string }) {
+interface CategoryPageClientProps {
+  slug: string;
+  initialCategory?: Category | null;
+  initialTools?: Tool[];
+}
+
+export default function CategoryPageClient({
+  slug,
+  initialCategory = null,
+  initialTools = [],
+}: CategoryPageClientProps) {
   const router = useRouter();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [tools, setTools] = useState<Tool[]>([]);
+  const [category, setCategory] = useState<Category | null>(initialCategory);
+  const [tools, setTools] = useState<Tool[]>(initialTools);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"name" | "recent">("name");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialCategory);
 
   const sortedAndFilteredTools = useMemo(() => {
     const filtered = tools.filter(tool => {
@@ -43,23 +53,6 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
 
   const { selectedIndex } = useVimNavigation(sortedAndFilteredTools.length, handleSelectTool);
 
-  // Load from local storage cache instantly on mount/slug change
-  useEffect(() => {
-    if (!slug) return;
-    try {
-      const cached = localStorage.getItem(`crawlers_cached_cat_${slug}`);
-      if (cached) {
-        const { category: cachedCat, tools: cachedTools } = JSON.parse(cached);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setCategory(cachedCat);
-        setTools(cachedTools);
-        setIsLoading(false);
-      }
-    } catch (e) {
-      console.error("Error reading category cache:", e);
-    }
-  }, [slug]);
-
   const fetchCategoryData = useCallback(async () => {
     if (!slug) {
       setIsLoading(false);
@@ -70,16 +63,6 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
       setCategory(cat);
       const categoryTools = await mockDb.getToolsByCategory(cat.id);
       setTools(categoryTools);
-
-      // Save to cache
-      try {
-        localStorage.setItem(
-          `crawlers_cached_cat_${slug}`,
-          JSON.stringify({ category: cat, tools: categoryTools })
-        );
-      } catch (e) {
-        console.error("Error writing category cache:", e);
-      }
 
       // Log Recently Viewed Category
       const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
@@ -95,147 +78,153 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
   }, [slug]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCategoryData();
-  }, [fetchCategoryData]);
+    if (!initialCategory) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchCategoryData();
+    } else {
+      // Log Recently Viewed Category even on initial server render
+      const items = JSON.parse(localStorage.getItem("crawlers_recent_items") || "[]");
+      const filtered = items.filter((i: { id: string }) => i.id !== initialCategory.id);
+      const updated = [
+        { id: initialCategory.id, name: initialCategory.name, type: "category", slugOrUrl: initialCategory.slug, timestamp: Date.now() },
+        ...filtered
+      ].slice(0, 10);
+      localStorage.setItem("crawlers_recent_items", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("recent-items-updated"));
+    }
+  }, [initialCategory, fetchCategoryData]);
 
   if (isLoading) {
-    return <TerminalLoader message="loading_category_data" />;
-  }
-
-  if (!category) {
     return (
-      <div className="flex-1 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-3xl font-bold text-white mb-4">Category Not Found</h1>
-        <p className="text-slate-400 mb-8">The category you are looking for does not exist in our directory.</p>
-        <Link 
-          href="/" 
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-sm font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
-        >
-          Go Back Home
-        </Link>
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 text-center">
+        <TerminalLoader message="fetching_category_index" />
       </div>
     );
   }
 
-  const pricingFilters = [
-    { label: "All", value: "all" },
-    { label: "Free", value: "free" },
-    { label: "Freemium", value: "freemium" },
-    { label: "Paid", value: "paid" }
-  ];
+  if (!category) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 text-center font-mono">
+        <div className="inline-block rounded-xl border border-[#212623] bg-[#131615] p-8 max-w-md">
+          <div className="text-rose-400 text-sm font-bold mb-2">404 // CATEGORY_NOT_FOUND</div>
+          <p className="text-slate-400 text-xs mb-6">
+            The category slug <code className="text-[#8FBF3F]">{slug}</code> does not exist in our index.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#8FBF3F] px-4 py-2 text-xs font-bold text-slate-950 hover:bg-[#7ba235] transition-colors"
+          >
+            &larr; Return to Index
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const parentGroup = category ? getCategoryGroup(category) : null;
+  const group = getCategoryGroup(category);
 
   return (
-    <div className="flex-1 mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6 font-sans">
-        <Link href="/" className="hover:text-white transition-colors font-sans">Home</Link>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 font-sans">
+      {/* Breadcrumb Header */}
+      <div className="mb-6 flex flex-wrap items-center gap-2 font-mono text-xs text-[#8A8F87]">
+        <Link href="/" className="hover:text-white transition-colors">
+          index
+        </Link>
         <span>/</span>
-        {parentGroup && (
-          <>
-            <Link href={`/#group-${parentGroup.id}`} className="hover:text-white transition-colors font-sans capitalize">
-              {parentGroup.name}
-            </Link>
-            <span>/</span>
-          </>
-        )}
-        <span className="text-slate-300 capitalize font-sans">{category.name}</span>
-      </nav>
-
-      {/* Header Info */}
-      <div className="border-b border-slate-800/80 pb-8 mb-8 font-sans">
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#8FBF3F] mb-2 font-mono">
-          Category Directory
-        </span>
-        <h1 className="font-serif text-3xl font-medium tracking-tight text-white sm:text-4xl">
-          {category.name}
-        </h1>
-        <p className="text-slate-400 text-base mt-3 max-w-2xl leading-relaxed font-sans">
-          {category.description}
-        </p>
-
-        {category.description_long && category.description_long.trim().length > 0 && (
-          <div className="mt-4 p-4 rounded-xl border border-[#212623] bg-[#131615] max-w-3xl border-l-2 border-l-[#8FBF3F]">
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
-              {category.description_long.replace(/<!--[\s\S]*?-->/g, "").trim()}
-            </p>
-          </div>
-        )}
+        <Link href={`/#group-${group.id}`} className="hover:text-[#8FBF3F] transition-colors">
+          {group.name.toLowerCase()}
+        </Link>
+        <span>/</span>
+        <span className="text-white font-bold">{category.name.toLowerCase()}</span>
       </div>
 
-      {/* Filters Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8 font-sans">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-wrap gap-2">
-            {pricingFilters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setActiveFilter(filter.value)}
-                className={`rounded-full px-4 py-2.5 text-xs font-bold transition-colors duration-[100ms] font-sans cursor-pointer ${
-                  activeFilter === filter.value
-                    ? "bg-[#8FBF3F] text-slate-950 active:bg-[#7ba235]"
-                    : "bg-[#131615] text-slate-400 border border-[#212623] hover:text-white hover:border-[#8FBF3F]/30 active:bg-[#0c0d0c] active:border-[#8FBF3F]/50"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
+      {/* Category Main Header */}
+      <div className="mb-8 border-b border-[#212623] pb-8">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {category.name}
+              </h1>
+              <span className="rounded-full bg-[#131615] border border-[#212623] px-3 py-1 text-xs font-mono font-bold text-[#8FBF3F]">
+                {tools.length} {tools.length === 1 ? 'tool' : 'tools'}
+              </span>
+            </div>
+            <p className="text-slate-400 text-sm max-w-3xl leading-relaxed mt-2">
+              {category.description || `Curated index of verified ${category.name} AI platforms, bots, and CLI utilities.`}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 font-mono text-xs">
+            <Link
+              href="/"
+              className="rounded-lg border border-[#212623] bg-[#131615] px-3 py-2 text-[#8A8F87] hover:text-white hover:border-[#8FBF3F]/40 transition-all"
+            >
+              &larr; All Categories
+            </Link>
           </div>
         </div>
+      </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 font-mono">
-          <span>SORT BY:</span>
-          <button
-            onClick={() => setSortBy("name")}
-            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "name" ? "text-[#8FBF3F]" : "hover:text-white"}`}
+      {/* Filter and Sort Toolbar */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#212623]/60 pb-4 font-mono text-xs">
+        {/* Pricing Model Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-slate-500 uppercase font-bold text-[10px] mr-1">pricing:</span>
+          {["all", "free", "freemium", "paid"].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`rounded-lg px-3 py-1.5 font-semibold capitalize transition-all cursor-pointer ${
+                activeFilter === filter
+                  ? "bg-[#8FBF3F] text-slate-950 font-bold"
+                  : "bg-[#131615] border border-[#212623] text-slate-400 hover:text-white hover:border-slate-700"
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort selector */}
+        <div className="flex items-center gap-2">
+          <span className="text-slate-500 uppercase font-bold text-[10px]">sort:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as "name" | "recent")}
+            className="rounded-lg border border-[#212623] bg-[#131615] px-3 py-1.5 text-white outline-none focus:border-[#8FBF3F] transition-all cursor-pointer font-mono"
           >
-            A-Z
-          </button>
-          <span>|</span>
-          <button
-            onClick={() => setSortBy("recent")}
-            className={`transition-colors duration-[100ms] active:text-[#7ba235] cursor-pointer ${sortBy === "recent" ? "text-[#8FBF3F]" : "hover:text-white"}`}
-          >
-            NEWEST
-          </button>
+            <option value="name">Alphabetical (A-Z)</option>
+            <option value="recent">Recently Added</option>
+          </select>
         </div>
       </div>
 
       {/* Tools Grid */}
       {sortedAndFilteredTools.length > 0 ? (
-        <div>
-          <div className="mb-4 flex items-center justify-between text-xs text-slate-500 font-mono">
-            <span>&gt; {sortedAndFilteredTools.length} {sortedAndFilteredTools.length === 1 ? 'tool' : 'tools'} listed</span>
-            <span className="hidden sm:inline-block font-mono text-[10px] text-[#8FBF3F] bg-[#8FBF3F]/10 border border-[#8FBF3F]/20 px-2 py-0.5 rounded">
-              [j / k navigation active — press Enter to open]
-            </span>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {sortedAndFilteredTools.map((tool, index) => (
-              <ToolCard
-                key={tool.id}
-                tool={tool}
-                categoryName={category.name}
-                onRefresh={fetchCategoryData}
-                isFocused={index === selectedIndex}
-              />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {sortedAndFilteredTools.map((tool, idx) => (
+            <ToolCard 
+              key={tool.id} 
+              tool={tool} 
+              categoryName={category.name}
+              onRefresh={fetchCategoryData}
+              isFocused={selectedIndex === idx}
+            />
+          ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#212623] bg-[#131615]/20 p-12 text-center font-sans">
-          <h3 className="text-base font-bold text-white mb-2">No tools found</h3>
-          <p className="text-slate-400 text-xs max-w-xs mx-auto mb-6">
-            There are no tools listed under this category matching the active filter.
+        <div className="py-16 text-center border border-[#212623] rounded-xl bg-[#131615] font-mono">
+          <div className="text-slate-500 text-xs mb-2">&gt; no_tools_matched_filter</div>
+          <p className="text-slate-400 text-sm mb-4">
+            No tools in <span className="text-white font-bold">{category.name}</span> match the selected filter <code className="text-[#8FBF3F]">{activeFilter}</code>.
           </p>
-          <Link
-            href="/"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#8FBF3F] px-5 text-xs font-semibold text-slate-950 hover:bg-[#7ba235] transition-colors"
+          <button
+            onClick={() => setActiveFilter("all")}
+            className="rounded-lg bg-[#131615] border border-[#212623] px-4 py-2 text-xs font-bold text-[#8FBF3F] hover:border-[#8FBF3F] transition-colors"
           >
-            Back to Directory
-          </Link>
+            Reset Filters
+          </button>
         </div>
       )}
     </div>
