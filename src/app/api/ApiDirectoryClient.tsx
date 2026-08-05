@@ -353,23 +353,29 @@ const SEED_APIS: Omit<ApiBot, "id" | "click_count">[] = [
   }
 ];
 
-export default function ApiDirectoryClient() {
-  const [dbTools, setDbTools] = useState<Tool[]>([]);
+interface ApiDirectoryClientProps {
+  initialTools?: Tool[];
+}
+
+export default function ApiDirectoryClient({ initialTools = [] }: ApiDirectoryClientProps) {
+  const [dbTools, setDbTools] = useState<Tool[]>(initialTools);
   const [selectedProvider, setSelectedProvider] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialTools.length);
 
   useEffect(() => {
-    mockDb.getTools()
-      .then(tools => {
-        setDbTools(tools);
-        setIsLoading(false);
-      })
-      .catch(err => {
-        console.error("Error loading tools for API page:", err);
-        setIsLoading(false);
-      });
-  }, []);
+    if (!initialTools.length) {
+      mockDb.getTools()
+        .then(tools => {
+          setDbTools(tools);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error("Error loading tools for API page:", err);
+          setIsLoading(false);
+        });
+    }
+  }, [initialTools.length]);
 
   // Classify a tool's creator/company
   const getCreatorName = (tool: Tool): string => {

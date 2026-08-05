@@ -5,24 +5,30 @@ import Link from "next/link";
 import { mockDb, Collection } from "@/data/mockDb";
 import { TerminalLoader } from "@/components/TerminalLoader";
 
-export default function CollectionsIndexClient() {
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+interface CollectionsIndexClientProps {
+  initialCollections?: Collection[];
+}
+
+export default function CollectionsIndexClient({ initialCollections = [] }: CollectionsIndexClientProps) {
+  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialCollections.length);
 
   useEffect(() => {
-    let ignore = false;
-    async function fetchData() {
-      const data = await mockDb.getCollections();
-      if (!ignore) {
-        setCollections(data);
-        setIsLoading(false);
+    if (!initialCollections.length) {
+      let ignore = false;
+      async function fetchData() {
+        const data = await mockDb.getCollections();
+        if (!ignore) {
+          setCollections(data);
+          setIsLoading(false);
+        }
       }
+      fetchData();
+      return () => {
+        ignore = true;
+      };
     }
-    fetchData();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  }, [initialCollections.length]);
 
   if (isLoading) {
     return <TerminalLoader message="loading_curated_collections" />;

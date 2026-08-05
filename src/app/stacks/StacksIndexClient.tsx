@@ -5,24 +5,30 @@ import Link from "next/link";
 import { fetchAllStacks, fetchStackBySlug, Stack } from "@/lib/stacks";
 import { TerminalLoader } from "@/components/TerminalLoader";
 
-export default function StacksIndexClient() {
-  const [stacks, setStacks] = useState<Stack[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface StacksIndexClientProps {
+  initialStacks?: Stack[];
+}
+
+export default function StacksIndexClient({ initialStacks = [] }: StacksIndexClientProps) {
+  const [stacks, setStacks] = useState<Stack[]>(initialStacks);
+  const [isLoading, setIsLoading] = useState(!initialStacks.length);
 
   useEffect(() => {
-    async function loadData() {
-      const list = await fetchAllStacks();
-      const detailed = await Promise.all(
-        list.map(async (s) => {
-          const full = await fetchStackBySlug(s.slug);
-          return full || s;
-        })
-      );
-      setStacks(detailed);
-      setIsLoading(false);
+    if (!initialStacks.length) {
+      async function loadData() {
+        const list = await fetchAllStacks();
+        const detailed = await Promise.all(
+          list.map(async (s) => {
+            const full = await fetchStackBySlug(s.slug);
+            return full || s;
+          })
+        );
+        setStacks(detailed);
+        setIsLoading(false);
+      }
+      loadData();
     }
-    loadData();
-  }, []);
+  }, [initialStacks.length]);
 
   if (isLoading) {
     return <TerminalLoader message="loading_editorial_stacks" />;
