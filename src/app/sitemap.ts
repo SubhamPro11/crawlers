@@ -1,11 +1,18 @@
 import { MetadataRoute } from "next";
 import { mockDb, slugify } from "@/data/mockDb";
+import { fetchAllStacks } from "@/lib/stacks";
+
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://crawlers.dpdns.org";
 
-  const categories = await mockDb.getCategories();
-  const tools = await mockDb.getTools();
+  const [categories, tools, collections, stacks] = await Promise.all([
+    mockDb.getCategories(),
+    mockDb.getTools(),
+    mockDb.getCollections(),
+    fetchAllStacks(),
+  ]);
 
   // Collect unique tags across all tools
   const tagSet = new Set<string>();
@@ -55,9 +62,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }));
 
-  const collections = await mockDb.getCollections();
   const collectionUrls = collections.map((col) => ({
     url: `${baseUrl}/collections/${col.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  const stackUrls = stacks.map((stack) => ({
+    url: `${baseUrl}/stacks/${stack.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
@@ -77,16 +90,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/stacks`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/api`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/compare`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/changelog`,
       lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.8,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
     },
     {
       url: `${baseUrl}/search`,
@@ -105,5 +130,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tagUrls,
     ...alternativeUrls,
     ...collectionUrls,
+    ...stackUrls,
   ];
 }
